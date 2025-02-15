@@ -1,101 +1,124 @@
-import Image from "next/image";
+"use client";
+import React, { useMemo } from "react";
+import isHotkey from "is-hotkey";
+import { Editable, withReact, Slate } from "slate-react";
+import { createEditor, Descendant } from "slate";
+import { withHistory } from "slate-history";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import { TextMarkTypes } from "./editor/types";
+import { Menubar } from "@radix-ui/react-menubar";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import ElementRenderer from "./editor/ElementRenderer";
+import { LeafRenderer } from "./editor/LeafRenderer";
+import { MarkButton } from "./editor/MarkButton";
+import { toggleMark } from "./editor/editor-utils";
+import { BlockButton } from "./editor/BlockButton";
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
-}
+const HOTKEYS: { [key: string]: TextMarkTypes } = {
+	"mod+b": "bold",
+	"mod+i": "italic",
+	"mod+u": "underline",
+	"mod+`": "code",
+};
+
+const HomePage = () => {
+	const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+	return (
+		<TooltipProvider>
+			<Slate editor={editor} initialValue={initialValue} onChange={(v) => console.log(v)}>
+				<Menubar className="mb-2 sticky top-0 bg-white z-50">
+					<MarkButton hoverText="Bold" format="bold" icon="format_bold" />
+					<MarkButton hoverText="Italic" format="italic" icon="format_italic" />
+					<MarkButton hoverText="Underline" format="underline" icon="format_underlined" />
+					<MarkButton hoverText="Code" format="code" icon="code" />
+					<BlockButton hoverText="Heading 1" format="heading-1" icon="looks_one" />
+					<BlockButton hoverText="Heading 2" format="heading-2" icon="looks_two" />
+					<BlockButton hoverText="Blockquote" format="block-quote" icon="format_quote" />
+					<BlockButton hoverText="Numbered List" format="numbered-list" icon="format_list_numbered" />
+					<BlockButton hoverText="Bulleted List" format="bulleted-list" icon="format_list_bulleted" />
+					<BlockButton hoverText="Left" format="left" icon="format_align_left" />
+					<BlockButton hoverText="Center" format="center" icon="format_align_center" />
+					<BlockButton hoverText="Right" format="right" icon="format_align_right" />
+					<BlockButton hoverText="Justify" format="justify" icon="format_align_justify" />
+				</Menubar>
+				<Editable
+					renderElement={ElementRenderer}
+					renderLeaf={LeafRenderer}
+					placeholder="Enter some rich text…"
+					spellCheck
+					autoFocus
+					onKeyDown={(event) => {
+						for (const hotkey in HOTKEYS) {
+							if (isHotkey(hotkey, event)) {
+								event.preventDefault();
+								const mark = HOTKEYS[hotkey];
+								toggleMark(editor, mark);
+							}
+						}
+					}}
+				/>
+			</Slate>
+		</TooltipProvider>
+	);
+};
+
+const initialValue: Descendant[] = [
+	{ type: "heading-1", children: [{ text: "Heading 1", italic: true }] },
+	{ type: "heading-2", children: [{ text: "Heading 2", code: true }] },
+	{
+		type: "paragraph",
+		children: [
+			{ text: "This is editable " },
+			{ text: "rich", bold: true },
+			{ text: " text, " },
+			{ text: "much", italic: true },
+			{ text: " better than a " },
+			{ text: "<textarea>", code: true },
+			{ text: "!" },
+		],
+	},
+	{
+		type: "paragraph",
+		align: "justify",
+		children: [
+			{
+				text: "Since it's rich text, you can do things like turn a selection of text ",
+			},
+			{ text: "bold, ", bold: true },
+			{ text: "italic, ", italic: true },
+			{ text: "justify it, ", bold: true },
+			{ text: "and much more", italic: true, bold: true, underline: true, code: true },
+			{
+				text: " , or add a semantically rendered block quote in the middle of the page, like this:",
+			},
+		],
+	},
+	{
+		type: "block-quote",
+		children: [{ text: "A wise quote." }],
+	},
+	{
+		type: "bulleted-list",
+		children: [
+			{ type: "list-item", children: [{ text: "Or, add" }] },
+			{ type: "list-item", children: [{ text: "an unordered list of", bold: true }] },
+			{ type: "list-item", children: [{ text: "several elements", italic: true, bold: true, underline: true, code: true }] },
+		],
+	},
+	{
+		type: "numbered-list",
+		children: [
+			{ type: "list-item", children: [{ text: "And add" }] },
+			{ type: "list-item", children: [{ text: "a ordered list of", bold: true }] },
+			{ type: "list-item", children: [{ text: "elements,", italic: true, bold: true, underline: true, code: true }] },
+			{ type: "list-item", children: [{ text: "like so" }] },
+		],
+	},
+	{
+		type: "paragraph",
+		align: "center",
+		children: [{ text: "Try it out for yourself!" }],
+	},
+];
+
+export default HomePage;

@@ -6,11 +6,41 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+	baseDirectory: __dirname,
+	allConfig: {},
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+	...compat.extends("next/core-web-vitals", "next/typescript"),
+	...compat.config({
+		extends: ["next", "plugin:@typescript-eslint/recommended-type-checked"],
+		rules: {
+			"@typescript-eslint/no-explicit-any": "warn",
+			"@typescript-eslint/switch-exhaustiveness-check": [
+				"error",
+				{
+					allowDefaultCaseForExhaustiveSwitch: true,
+					considerDefaultExhaustiveForUnions: false,
+					requireDefaultForNonUnion: false,
+				},
+			],
+			"@typescript-eslint/no-unused-vars": [
+				"warn", // or "error"
+				{
+					argsIgnorePattern: "^_",
+					varsIgnorePattern: "^_",
+					caughtErrorsIgnorePattern: "^_",
+				},
+			],
+		},
+		plugins: ["@typescript-eslint"],
+		parser: "@typescript-eslint/parser",
+		parserOptions: {
+			projectService: true,
+			tsconfigRootDir: __dirname,
+		},
+		root: true,
+	}),
 ];
 
 export default eslintConfig;
