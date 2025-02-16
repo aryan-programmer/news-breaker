@@ -16,15 +16,11 @@ import { BlockButton } from "./editor/BlockButton";
 import { randomAddress } from "@/lib/uniq-address";
 import { ElementSettingsSidebarProvider } from "./editor/ElementSettingsSidebar";
 import { Button } from "@/components/ui/button";
-import {
-	DropdownMenu,
-	DropdownMenuTrigger,
-	DropdownMenuContent,
-	DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { MaterialIcon } from "@/components/ui/material-icon";
 import { DATA_GIF_URL } from "@/lib/utils";
 import { insertImage } from "./editor/EditableImage";
+import { withSimpleCopyPaste } from "./editor/custom-copy-paste";
 
 const HOTKEYS: { [key: string]: TextMarkTypes } = {
 	"mod+b": "bold",
@@ -34,7 +30,7 @@ const HOTKEYS: { [key: string]: TextMarkTypes } = {
 };
 
 const HomePage = () => {
-	const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+	const editor = useMemo(() => withHistory(withSimpleCopyPaste(withReact(createEditor()))), []);
 	const onInsertImage = useCallback(() => insertImage(editor, DATA_GIF_URL), [editor]);
 	return (
 		<TooltipProvider>
