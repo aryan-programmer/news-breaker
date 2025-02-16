@@ -13,9 +13,12 @@ const compat = new FlatCompat({
 const eslintConfig = [
 	...compat.extends("next/core-web-vitals", "next/typescript"),
 	...compat.config({
+		ignorePatterns: ["**/*.guard.ts"],
 		extends: ["next", "plugin:@typescript-eslint/recommended-type-checked"],
 		rules: {
-			"@typescript-eslint/no-explicit-any": "warn",
+			"eqeqeq": ["error", "always", {"null": "ignore"}],
+			"@typescript-eslint/no-explicit-any": "off",
+			"react-hooks/exhaustive-deps": "error",
 			"@typescript-eslint/switch-exhaustiveness-check": [
 				"error",
 				{

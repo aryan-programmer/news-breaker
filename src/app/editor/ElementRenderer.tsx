@@ -1,7 +1,11 @@
 import React from "react";
 import { RenderElementProps } from "slate-react";
+import EditableImage from "./EditableImage";
+import { FrontPageWithText } from "./FrontPageWithText";
 
-export default function ElementRenderer({ attributes, children, element }: RenderElementProps) {
+export default function ElementRenderer(props: RenderElementProps) {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const { attributes, children, element } = props;
 	const style = { textAlign: "align" in element ? element.align : undefined };
 	if ("type" in element) {
 		switch (element.type) {
@@ -19,13 +23,13 @@ export default function ElementRenderer({ attributes, children, element }: Rende
 				);
 			case "heading-1":
 				return (
-					<h1 className="mb-4 text-4xl md:text-5xl lg:text-6xl font-extrabold leading-none" style={style} {...attributes}>
+					<h1 className="mb-4 text-5xl font-extrabold leading-none" style={style} {...attributes}>
 						{children}
 					</h1>
 				);
 			case "heading-2":
 				return (
-					<h2 className="mb-3 text-3xl lg:text-4xl font-extrabold leading-none" style={style} {...attributes}>
+					<h2 className="mb-3 text-4xl font-extrabold leading-none" style={style} {...attributes}>
 						{children}
 					</h2>
 				);
@@ -46,6 +50,18 @@ export default function ElementRenderer({ attributes, children, element }: Rende
 					<p style={style} {...attributes}>
 						{children}
 					</p>
+				);
+			case "image":
+				return (
+					<EditableImage element={element} attributes={attributes}>
+						{children}
+					</EditableImage>
+				);
+			case "front-page-with-text":
+				return (
+					<FrontPageWithText element={element} attributes={attributes}>
+						{children}
+					</FrontPageWithText>
 				);
 		}
 	} else {
