@@ -1,12 +1,11 @@
 "use client";
-import { MaterialIcon } from "@/components/ui/material-icon";
 import { ToolbarIconToggle } from "@/components/ui/toolbar";
-import React from "react";
+import { ReactNode } from "react";
 import { useSlate } from "slate-react";
 import { isBlockActive, toggleBlock } from "./editor-utils";
 import { AlignType, CustomElementTypeStr } from "./types";
 
-export function BlockButton({ format, hoverText, icon }: { format: AlignType | CustomElementTypeStr; hoverText: string; icon: string }) {
+export function BlockButton({ format, hoverText, children }: { format: AlignType | CustomElementTypeStr; hoverText: string; children: ReactNode }) {
 	const editor = useSlate();
 	return (
 		<ToolbarIconToggle
@@ -17,7 +16,7 @@ export function BlockButton({ format, hoverText, icon }: { format: AlignType | C
 				toggleBlock(editor, format);
 			}}
 			hoverText={hoverText}>
-			<MaterialIcon>{icon}</MaterialIcon>
+			{children}
 		</ToolbarIconToggle>
 	);
 }

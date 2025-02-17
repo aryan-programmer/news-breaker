@@ -35,21 +35,46 @@ export function toggleBlock(editor: CustomEditor, format: AlignType | CustomElem
 	const isActive = isBlockActive(editor, format);
 	const isList = isListElementTypeStr(format);
 
+	let newProperties: Partial<SlateElement>;
 	Transforms.unwrapNodes(editor, {
 		match: (n) => !Editor.isEditor(n) && SlateElement.isElement(n) && isListElementTypeStr(n.type) && !isAlignTypeVal,
 		split: true,
 	});
-	let newProperties: Partial<SlateElement>;
+	// console.log(editor.selection, { isActive, format });
+	// let at: Path | undefined;
 	if (isAlignTypeVal) {
 		newProperties = {
 			align: isActive ? undefined : format,
 		};
+	} else if (isList) {
+		newProperties = {
+			type: isActive ? "paragraph" : "list-item",
+		};
 	} else {
 		newProperties = {
-			type: isActive ? "paragraph" : isList ? "list-item" : format,
+			type: isActive ? "paragraph" : format,
 		};
-		console.log(newProperties);
+		// const currSelection = editor.selection?.anchor.path;
+		// if (currSelection != null) {
+		// 	const lookingFor: CustomElementTypeStr = isActive ? format : "paragraph";
+		// 	let curr = editor.children;
+		// 	let next: Descendant;
+		// 	let i = 0;
+		// 	while (i <= currSelection.length && "type" in (next = curr[currSelection[i]])) {
+		// 		if (next.type === lookingFor) {
+		// 			break;
+		// 		}
+		// 		curr = next.children;
+		// 		i++;
+		// 	}
+		// 	i++;
+		// 	if (i !== currSelection.length) {
+		// 		at = currSelection.slice(0, i);
+		// 	}
+		// 	console.log({ at, i, curr, next, currSelection });
+		// }
 	}
+	// console.log(newProperties);
 	Transforms.setNodes<SlateElement>(editor, newProperties);
 
 	if (!isActive && isList) {

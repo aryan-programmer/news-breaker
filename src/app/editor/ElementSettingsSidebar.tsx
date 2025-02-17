@@ -1,9 +1,9 @@
-import { MaterialIcon } from "@/components/ui/material-icon";
-import { Sidebar, SidebarHeader, SidebarProvider } from "@/components/ui/sidebar";
-import React, { useCallback } from "react";
-import { createContext, ReactNode, useContext, useState } from "react";
-import { create } from "zustand";
 import { Button } from "@/components/ui/button";
+import { Sidebar, SidebarHeader, SidebarProvider } from "@/components/ui/sidebar";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { createContext, ReactNode, useCallback, useContext, useState } from "react";
+import { create } from "zustand";
 
 export type ElementSettingsSidebarData = {
 	name: string;
@@ -45,7 +45,7 @@ export function ElementSettingsSidebarProvider(props: { children: any }) {
 						<div className="flex justify-between items-center flex-row">
 							<span>Settings for {storeRes.data?.name}</span>
 							<Button variant="ghost" rounding="md" className="px-2 py-1" onClick={onClose}>
-								<MaterialIcon>close</MaterialIcon>
+								<FontAwesomeIcon icon={faXmark} />
 							</Button>
 						</div>
 					</SidebarHeader>

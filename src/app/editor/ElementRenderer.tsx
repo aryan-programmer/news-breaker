@@ -1,7 +1,10 @@
-import React from "react";
+import { TableBody, TableFooter, TableHeader, TableRow } from "@/components/ui/table";
 import { RenderElementProps } from "slate-react";
+import { AutoTableOfContents } from "./AutoTableOfContents";
 import EditableImage from "./EditableImage";
 import { FrontPageWithText } from "./FrontPageWithText";
+import { PageBreak } from "./PageBreak";
+import { TableCellElementRenderer, TableElementRenderer, TableHeaderCellElementRenderer } from "./TableElements";
 
 export default function ElementRenderer(props: RenderElementProps) {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -62,6 +65,66 @@ export default function ElementRenderer(props: RenderElementProps) {
 					<FrontPageWithText element={element} attributes={attributes}>
 						{children}
 					</FrontPageWithText>
+				);
+			case "auto-toc":
+				return (
+					<AutoTableOfContents element={element} attributes={attributes}>
+						{children}
+					</AutoTableOfContents>
+				);
+			case "page-break":
+				return (
+					<PageBreak element={element} attributes={attributes}>
+						{children}
+					</PageBreak>
+				);
+			case "table-cell":
+				return (
+					<TableCellElementRenderer element={element} attributes={attributes}>
+						{children}
+					</TableCellElementRenderer>
+				);
+			case "table-header-cell":
+				return (
+					<TableHeaderCellElementRenderer element={element} attributes={attributes}>
+						{children}
+					</TableHeaderCellElementRenderer>
+				);
+			case "table-row":
+				return (
+					<TableRow style={style} {...attributes}>
+						{children}
+					</TableRow>
+				);
+			case "table":
+				return (
+					<TableElementRenderer element={element} attributes={attributes}>
+						{children}
+					</TableElementRenderer>
+				);
+			case "table-body":
+				return (
+					<TableBody style={style} {...attributes}>
+						{children}
+					</TableBody>
+				);
+			case "table-footer":
+				return (
+					<TableFooter style={style} {...attributes}>
+						{children}
+					</TableFooter>
+				);
+			case "table-head":
+				return (
+					<TableHeader style={style} {...attributes}>
+						{children}
+					</TableHeader>
+				);
+			case "div":
+				return (
+					<div style={style} {...attributes}>
+						{children}
+					</div>
 				);
 		}
 	} else {

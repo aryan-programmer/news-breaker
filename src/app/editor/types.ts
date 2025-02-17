@@ -1,6 +1,6 @@
-import { ReactEditor, RenderElementProps } from "slate-react";
 import { BaseEditor, Descendant } from "slate";
 import { HistoryEditor } from "slate-history";
+import { ReactEditor, RenderElementProps } from "slate-react";
 
 /** @see {isAlignType} ts-auto-guard:type-guard */
 export type AlignType = "left" | "center" | "right" | "justify";
@@ -12,6 +12,22 @@ export type FrontPageWithTextElement = {
 	logoImageUrl?: string | null | undefined;
 	textSectionBgColor?: string | null | undefined;
 	id: string;
+};
+export type AutoTableOfContentsElement = {
+	type: "auto-toc";
+	children: [CustomText];
+	id: string;
+	includeHeaderLevelUpto: 1 | 2 | 3;
+};
+export type PageBreakElement = {
+	type: "page-break";
+	children: [CustomText];
+	id: string;
+};
+export type DivElement = {
+	type: "div";
+	align?: AlignType;
+	children: Descendant[];
 };
 export type Paragraph = {
 	type: "paragraph";
@@ -48,6 +64,29 @@ export type ImageElement = {
 	children: [CustomText];
 	id: string;
 };
+export type TableCellElement = {
+	type: "table-cell";
+	children: Descendant[];
+	rowSpan?: number;
+	colSpan?: number;
+};
+export type TableHeaderCellElement = {
+	type: "table-header-cell";
+	children: Descendant[];
+	rowSpan?: number;
+	colSpan?: number;
+};
+export type TableRowElement = {
+	type: "table-row";
+	children: (TableCellElement | TableHeaderCellElement)[];
+};
+export type TableElement = {
+	type: "table";
+	children: (TableHeadSectionElement | TableBodySectionElement | TableFootSectionElement)[];
+};
+export type TableBodySectionElement = { type: "table-body"; children: TableRowElement[] };
+export type TableFootSectionElement = { type: "table-footer"; children: TableRowElement[] };
+export type TableHeadSectionElement = { type: "table-head"; children: TableRowElement[] };
 
 export type CustomElement =
 	| Paragraph
@@ -58,7 +97,17 @@ export type CustomElement =
 	| BulletedListElement
 	| NumberedListElement
 	| ImageElement
-	| FrontPageWithTextElement;
+	| FrontPageWithTextElement
+	| AutoTableOfContentsElement
+	| PageBreakElement
+	| TableCellElement
+	| TableHeaderCellElement
+	| TableRowElement
+	| TableElement
+	| TableBodySectionElement
+	| TableFootSectionElement
+	| TableHeadSectionElement
+	| DivElement;
 export type CustomText = { text: string; bold?: true; italic?: true; underline?: true; code?: true };
 export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
 

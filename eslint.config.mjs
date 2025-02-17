@@ -16,9 +16,10 @@ const eslintConfig = [
 		ignorePatterns: ["**/*.guard.ts"],
 		extends: ["next", "plugin:@typescript-eslint/recommended-type-checked"],
 		rules: {
-			"eqeqeq": ["error", "always", {"null": "ignore"}],
+			eqeqeq: ["error", "always", { null: "ignore" }],
 			"@typescript-eslint/no-explicit-any": "off",
 			"react-hooks/exhaustive-deps": "error",
+			"react-hooks/rules-of-hooks": "error",
 			"@typescript-eslint/switch-exhaustiveness-check": [
 				"error",
 				{
