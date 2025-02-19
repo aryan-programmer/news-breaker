@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import { RenderLeafProps } from "slate-react";
 
 export function LeafRenderer({ attributes, children, leaf }: RenderLeafProps) {
@@ -17,6 +16,10 @@ export function LeafRenderer({ attributes, children, leaf }: RenderLeafProps) {
 
 	if (leaf.underline) {
 		children = <u>{children}</u>;
+	}
+
+	if (leaf.pageNumberOverride) {
+		children = <span className="font-mono bg-red-600">{children}</span>;
 	}
 
 	return <span {...attributes}>{children}</span>;

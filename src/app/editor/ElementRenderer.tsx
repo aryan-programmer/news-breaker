@@ -4,6 +4,7 @@ import { AutoTableOfContents } from "./AutoTableOfContents";
 import EditableImage from "./EditableImage";
 import { FrontPageWithText } from "./FrontPageWithText";
 import { PageBreak } from "./PageBreak";
+import { SectionBreak, SectionBreakHeaderFooterCellRenderer, SectionBreakHeaderFooterEditorElementRenderer } from "./SectionBreak";
 import { TableCellElementRenderer, TableElementRenderer, TableHeaderCellElementRenderer } from "./TableElements";
 
 export default function ElementRenderer(props: RenderElementProps) {
@@ -32,9 +33,15 @@ export default function ElementRenderer(props: RenderElementProps) {
 				);
 			case "heading-2":
 				return (
-					<h2 className="mb-3 text-4xl font-extrabold leading-none" style={style} {...attributes}>
+					<h2 className="mb-3 text-4xl font-bold leading-none" style={style} {...attributes}>
 						{children}
 					</h2>
+				);
+			case "heading-3":
+				return (
+					<h3 className="mb-2 text-3xl leading-none" style={style} {...attributes}>
+						{children}
+					</h3>
 				);
 			case "list-item":
 				return (
@@ -125,6 +132,24 @@ export default function ElementRenderer(props: RenderElementProps) {
 					<div style={style} {...attributes}>
 						{children}
 					</div>
+				);
+			case "section-break":
+				return (
+					<SectionBreak element={element} attributes={attributes}>
+						{children}
+					</SectionBreak>
+				);
+			case "section-break-header-footer-editor-element":
+				return (
+					<SectionBreakHeaderFooterEditorElementRenderer element={element} attributes={attributes}>
+						{children}
+					</SectionBreakHeaderFooterEditorElementRenderer>
+				);
+			case "section-break-header-footer-cell":
+				return (
+					<SectionBreakHeaderFooterCellRenderer element={element} attributes={attributes}>
+						{children}
+					</SectionBreakHeaderFooterCellRenderer>
 				);
 		}
 	} else {

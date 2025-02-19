@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "npx ts-auto-guard ./src/**/*.ts && npx ts-auto-guard ./src/**/*.tsx && next build",
+    "gen:ts-auto-guard": "npx ts-auto-guard ./src/**/*.ts && npx ts-auto-guard ./src/**/*.tsx",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
     "@emotion/css": "^11.13.5",
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
@@ -23,6 +25,7 @@
     "@radix-ui/react-select": "^2.1.6",
     "@radix-ui/react-separator": "^1.1.2",
     "@radix-ui/react-slot": "^1.1.2",
+    "@radix-ui/react-switch": "^1.1.3",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@react-pdf/renderer": "^4.2.1",
     "@types/color-string": "^1.5.5",

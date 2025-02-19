@@ -14,6 +14,7 @@ import { TableCursor, TableEditor, withTable } from "@/slate-table";
 import {
 	fa1,
 	fa2,
+	fa3,
 	faAlignCenter,
 	faAlignJustify,
 	faAlignLeft,
@@ -40,10 +41,11 @@ import { ElementSettingsSidebarProvider } from "./editor/ElementSettingsSidebar"
 import { LeafRenderer } from "./editor/LeafRenderer";
 import { MarkButton } from "./editor/MarkButton";
 import { insertPageBreak } from "./editor/PageBreak";
-import { PageBreakIcon } from "./editor/SVGIcons";
+import { HeaderFooterIcon, PageBreakIcon, PageNumberIcon } from "./editor/SVGIcons";
+import { insertSectionBreak } from "./editor/SectionBreak";
 import { TableDropDownMenu } from "./editor/TableDropDownMenu";
 import { withSimpleCopyPaste } from "./editor/custom-copy-paste";
-import { toggleMark } from "./editor/editor-utils";
+import { toggleMark, withNormalizedParagraphs } from "./editor/editor-utils";
 import { TextMarkTypes } from "./editor/types";
 
 const FORMATTING_HOTKEYS: { [key: string]: TextMarkTypes } = {
@@ -63,11 +65,13 @@ const NAVIGATION_HOTKEYS = {
 };
 
 const HomePage = () => {
-	const editor = useMemo(() => withTable(withHistory(withSimpleCopyPaste(withReact(createEditor()))), {}), []);
+	const editor = useMemo(() => withTable(withNormalizedParagraphs(withHistory(withSimpleCopyPaste(withReact(createEditor())))), {}), []);
 	const onInsertImage = useCallback(() => insertImage(editor, DATA_GIF_URL), [editor]);
 	const onInsertPageBreak = useCallback(() => insertPageBreak(editor), [editor]);
 	const onInsertTableOfContents = useCallback(() => insertTableOfContents(editor), [editor]);
 	const onInsertTable = useCallback(() => TableEditor.insertTable(editor, { rows: 3, cols: 3 }), [editor]);
+	const onInsertSectionBreak = useCallback(() => insertSectionBreak(editor), [editor]);
+	const onAddPageNumber = useCallback(() => toggleMark(editor, "pageNumberOverride"), [editor]);
 	//[2].children[0].children[0].children[0].children[0]
 	return (
 		<TooltipProvider>
@@ -92,6 +96,9 @@ const HomePage = () => {
 							</BlockButton>
 							<BlockButton hoverText="Heading 2" format="heading-2">
 								<FontAwesomeIcon icon={fa2} />
+							</BlockButton>
+							<BlockButton hoverText="Heading 3" format="heading-3">
+								<FontAwesomeIcon icon={fa3} />
 							</BlockButton>
 							<BlockButton hoverText="Blockquote" format="block-quote">
 								<FontAwesomeIcon icon={faQuoteLeft} />
@@ -128,11 +135,17 @@ const HomePage = () => {
 									<DropdownMenuItem onSelect={onInsertPageBreak}>
 										<PageBreakIcon width={20} height={20} /> Page Break
 									</DropdownMenuItem>
+									<DropdownMenuItem onSelect={onInsertSectionBreak}>
+										<HeaderFooterIcon width={20} height={20} /> Section Break (with Header & Footer)
+									</DropdownMenuItem>
 									<DropdownMenuItem onSelect={onInsertTableOfContents}>
 										<FontAwesomeIcon icon={faListAlt} transform={{ flipX: true }} /> Table of Contents
 									</DropdownMenuItem>
 									<DropdownMenuItem onSelect={onInsertTable}>
 										<FontAwesomeIcon icon={faTable} /> Table
+									</DropdownMenuItem>
+									<DropdownMenuItem onSelect={onAddPageNumber}>
+										<PageNumberIcon /> Page Number
 									</DropdownMenuItem>
 								</DropdownMenuContent>
 							</DropdownMenu>
@@ -210,6 +223,58 @@ const initialValue: Descendant[] = [
 	},
 	{ type: "auto-toc", children: [{ text: "" }], id: randomAddress(), includeHeaderLevelUpto: 3 },
 	{
+		type: "section-break",
+		children: [
+			{
+				type: "section-break-header-footer-editor-element",
+				elementType: "odd-header",
+				bgColor: "#aaf",
+				children: [
+					{ type: "section-break-header-footer-cell", elementType: "left", children: [{ text: "Left" }] },
+					{ type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
+					{ type: "section-break-header-footer-cell", elementType: "right", children: [{ text: "Right" }] },
+				],
+			},
+			{
+				type: "section-break-header-footer-editor-element",
+				elementType: "odd-footer",
+				bgColor: "#aaf",
+				children: [
+					{ type: "section-break-header-footer-cell", elementType: "left", children: [{ text: "Left" }] },
+					{ type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
+					{
+						type: "section-break-header-footer-cell",
+						elementType: "right",
+						children: [{ text: "Pg. " }, { text: "PAGE", pageNumberOverride: true }],
+					},
+				],
+			},
+			{
+				type: "section-break-header-footer-editor-element",
+				elementType: "even-header",
+				bgColor: "#aaf",
+				children: [
+					{ type: "section-break-header-footer-cell", elementType: "left", children: [{ text: "Left" }] },
+					{ type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
+					{ type: "section-break-header-footer-cell", elementType: "right", children: [{ text: "Right" }] },
+				],
+			},
+			{
+				type: "section-break-header-footer-editor-element",
+				elementType: "even-footer",
+				bgColor: "#aaf",
+				children: [
+					{ type: "section-break-header-footer-cell", elementType: "left", children: [{ text: "Pg. " }, { text: "PAGE", pageNumberOverride: true }] },
+					{ type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
+					{ type: "section-break-header-footer-cell", elementType: "right", children: [{ text: "Right" }] },
+				],
+			},
+		],
+		id: randomAddress(),
+		pageNumberFormat: "numeric",
+		resetPageNumbering: false,
+	},
+	{
 		type: "table",
 		children: [
 			{
@@ -222,7 +287,7 @@ const initialValue: Descendant[] = [
 								type: "table-header-cell",
 								children: [
 									{
-										type: "heading-2",
+										type: "heading-3",
 										children: [
 											{
 												text: "Time",
@@ -235,7 +300,7 @@ const initialValue: Descendant[] = [
 								type: "table-header-cell",
 								children: [
 									{
-										type: "heading-2",
+										type: "heading-3",
 										children: [
 											{
 												text: "🎨 Frontend team",
@@ -248,7 +313,7 @@ const initialValue: Descendant[] = [
 								type: "table-header-cell",
 								children: [
 									{
-										type: "heading-2",
+										type: "heading-3",
 										children: [
 											{
 												text: "👷 Backend team ",

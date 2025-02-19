@@ -43,7 +43,7 @@ export default function EditableImage({ attributes, element, children }: Editabl
 	}, [settingsSidebarStore, element, attributes, editor, path]);
 	return (
 		<div {...attributes}>
-			<div className="h-0 text-transparent outline-0 outline-none absolute">{children as any}</div>
+			<div className="h-0 text-transparent outline-0 outline-none absolute w-0" style={{fontSize: 0}}>{children as any}</div>
 			<div contentEditable={false} className="relative">
 				{/* eslint-disable-next-line @next/next/no-img-element*/}
 				<img

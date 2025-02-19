@@ -20,7 +20,7 @@ export function insertTableOfContents(editor: CustomEditor) {
 	});
 }
 
-export function AutoTableOfContents({ attributes, children: _children, element }: AutoTableOfContentsProps) {
+export function AutoTableOfContents({ attributes, children, element }: AutoTableOfContentsProps) {
 	const editor = useSlateStatic();
 	const path = ReactEditor.findPath(editor, element);
 	const onLevelChange = useCallback(
@@ -40,7 +40,12 @@ export function AutoTableOfContents({ attributes, children: _children, element }
 		<div contentEditable={false} {...attributes}>
 			<h1 className="py-2 mb-2 text-5xl font-extrabold leading-none w-100 text-center bg-black text-white">Table of Contents</h1>
 			<div className="flex w-full items-center justify-center space-x-2 border-b-2 border-black">
-				<span>Include Headers with level upto:</span>
+				<span>
+					Include Headers with level upto:
+					<span className="h-0 text-transparent outline-0 outline-none absolute w-0" style={{ fontSize: 0 }}>
+						{children as any}
+					</span>
+				</span>
 				<Select value={element.includeHeaderLevelUpto.toString()} onValueChange={onLevelChange}>
 					<SelectTrigger className="w-[180px]">
 						<SelectValue placeholder="Select heading level" />

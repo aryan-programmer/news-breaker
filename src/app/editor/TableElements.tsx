@@ -1,4 +1,4 @@
-import { Table, TableCell, TableHead } from "@/components/ui/table";
+import { Table, TableCell, TableHeadCell } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { TableCursor } from "@/slate-table";
 import { FC } from "react";
@@ -32,9 +32,9 @@ export const TableHeaderCellElementRenderer: FC<{
 	const selected = TableCursor.isSelected(editor, element);
 
 	return (
-		<TableHead className={cn(selected ? "bg-amber-200" : "", className)} rowSpan={element.rowSpan} colSpan={element.colSpan} {...attributes}>
+		<TableHeadCell className={cn(selected ? "bg-amber-200" : "", className)} rowSpan={element.rowSpan} colSpan={element.colSpan} {...attributes}>
 			{children as any}
-		</TableHead>
+		</TableHeadCell>
 	);
 };
 
