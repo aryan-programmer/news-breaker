@@ -1,11 +1,11 @@
 "use client";
 
-import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
 import { composeEventHandlers } from "@radix-ui/primitive";
-import { useControllableState } from "@radix-ui/react-use-controllable-state";
 import { Primitive } from "@radix-ui/react-primitive";
-import { Button } from "./button";
+import { useControllableState } from "@radix-ui/react-use-controllable-state";
+import { cva, type VariantProps } from "class-variance-authority";
+import * as React from "react";
+import { Button } from "./Button";
 
 import { cn } from "@/lib/utils";
 

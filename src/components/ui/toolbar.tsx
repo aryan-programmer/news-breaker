@@ -1,7 +1,7 @@
 import React from "react";
-import { Button } from "./button";
-import { Toggle } from "./toggle";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
+import { Button } from "./Button";
+import { Toggle } from "./Toggle";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./Tooltip";
 
 export const ToolbarIconButton = React.forwardRef<
 	React.ComponentRef<typeof Button>,

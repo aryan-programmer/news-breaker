@@ -1,8 +1,8 @@
-import { ColorPicker } from "@/components/ui/color-picker";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Table, TableBody, TableCell, TableHeadCell, TableHeader, TableRow } from "@/components/ui/table";
+import { ColorPicker } from "@/components/ui/ColorPicker";
+import { Label } from "@/components/ui/Label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
+import { Switch } from "@/components/ui/Switch";
+import { Table, TableBody, TableCell, TableHeadCell, TableHeader, TableRow } from "@/components/ui/Table";
 import { randomAddress } from "@/lib/uniq-address";
 import { useCallback } from "react";
 import { Transforms } from "slate";
@@ -14,60 +14,79 @@ import {
 	SectionBreakHeaderFooterCell,
 	SectionBreakHeaderFooterEditorElement,
 	SectionBreakHeaderFooterEditorElementType,
-} from "./types";
-import { isPageNumberFormatType } from "./types.guard";
+} from "../types";
+import { isPageNumberFormatType } from "../types.guard";
 
-export function insertSectionBreak(editor: CustomEditor) {
-	const sectionBreak: SectionBreakElement = {
+export function generateDefaultSectionBreakElement(): SectionBreakElement {
+	return {
+		id: randomAddress(),
 		type: "section-break",
 		children: [
 			{
+				id: randomAddress(),
 				type: "section-break-header-footer-editor-element",
 				elementType: "odd-header",
 				bgColor: "#aaf",
 				children: [
-					{ type: "section-break-header-footer-cell", elementType: "left", children: [{ text: "Left" }] },
-					{ type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
-					{ type: "section-break-header-footer-cell", elementType: "right", children: [{ text: "Right" }] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "left", children: [{ text: "Left" }] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "right", children: [{ text: "Right" }] },
 				],
 			},
 			{
+				id: randomAddress(),
 				type: "section-break-header-footer-editor-element",
 				elementType: "odd-footer",
 				bgColor: "#aaf",
 				children: [
-					{ type: "section-break-header-footer-cell", elementType: "left", children: [{ text: "Left" }] },
-					{ type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
-					{ type: "section-break-header-footer-cell", elementType: "right", children: [{ text: "Right" }] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "left", children: [{ text: "Left" }] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
+					{
+						id: randomAddress(),
+						type: "section-break-header-footer-cell",
+						elementType: "right",
+						children: [{ text: "Pg. " }, { text: "PAGE", pageNumberOverride: true }],
+					},
 				],
 			},
 			{
+				id: randomAddress(),
 				type: "section-break-header-footer-editor-element",
 				elementType: "even-header",
 				bgColor: "#aaf",
 				children: [
-					{ type: "section-break-header-footer-cell", elementType: "left", children: [{ text: "Left" }] },
-					{ type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
-					{ type: "section-break-header-footer-cell", elementType: "right", children: [{ text: "Right" }] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "left", children: [{ text: "Left" }] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "right", children: [{ text: "Right" }] },
 				],
 			},
 			{
+				id: randomAddress(),
 				type: "section-break-header-footer-editor-element",
 				elementType: "even-footer",
 				bgColor: "#aaf",
 				children: [
-					{ type: "section-break-header-footer-cell", elementType: "left", children: [{ text: "Left" }] },
-					{ type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
-					{ type: "section-break-header-footer-cell", elementType: "right", children: [{ text: "Right" }] },
+					{
+						id: randomAddress(),
+						type: "section-break-header-footer-cell",
+						elementType: "left",
+						children: [{ text: "Pg. " }, { text: "PAGE", pageNumberOverride: true }],
+					},
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "right", children: [{ text: "Right" }] },
 				],
 			},
 		],
-		id: randomAddress(),
 		pageNumberFormat: "numeric",
 		resetPageNumbering: false,
 	};
+}
+
+export function insertSectionBreak(editor: CustomEditor) {
+	const sectionBreak: SectionBreakElement = generateDefaultSectionBreakElement();
 	Transforms.insertNodes(editor, sectionBreak);
 	Transforms.insertNodes(editor, {
+		id: randomAddress(),
 		type: "paragraph",
 		children: [{ text: "" }],
 	});
@@ -97,7 +116,7 @@ export function SectionBreak({ attributes, element, children }: SectionBreakProp
 	return (
 		<>
 			<h1 className="py-2 text-2xl font-extrabold leading-none w-100 text-center bg-muted">Section Break</h1>
-			<Table {...attributes} className=" !mt-0">
+			<Table className=" !mt-0">
 				<TableHeader>
 					<TableRow>
 						<TableHeadCell className="max-w-full w-0 text-nowrap text-center">Name</TableHeadCell>
@@ -107,7 +126,7 @@ export function SectionBreak({ attributes, element, children }: SectionBreakProp
 						<TableHeadCell className="text-right">Right part</TableHeadCell>
 					</TableRow>
 				</TableHeader>
-				<TableBody>
+				<TableBody {...attributes}>
 					{children as any}
 					<TableRow>
 						<TableCell colSpan={5}>
@@ -167,7 +186,7 @@ export function SectionBreakHeaderFooterEditorElementRenderer({ attributes, chil
 		[editor, path],
 	);
 	return (
-		<TableRow>
+		<TableRow {...attributes}>
 			<TableCell className="max-w-full w-0 text-nowrap text-center">{HFerElementTypeToPrintableName[element.elementType]}</TableCell>
 			<TableCell className="max-w-full w-0 text-nowrap text-center">
 				<ColorPicker className="mx-auto" value={element.bgColor} onChange={onColorChange} />
@@ -194,7 +213,8 @@ export function SectionBreakHeaderFooterCellRenderer({ attributes, children, ele
 					: element.elementType === "right"
 					? "text-right"
 					: ""
-			}>
+			}
+			{...attributes}>
 			{children as any}
 		</TableCell>
 	);

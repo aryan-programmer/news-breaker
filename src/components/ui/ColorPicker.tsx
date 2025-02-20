@@ -1,12 +1,12 @@
 "use client";
 
+import type { ButtonProps } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
+import { cn } from "@/lib/utils";
 import { forwardRef, useMemo, useState } from "react";
 import { HexColorPicker } from "react-colorful";
-import { cn } from "@/lib/utils";
-import type { ButtonProps } from "@/components/ui/button";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
 
 interface ColorPickerProps {
 	value: string;

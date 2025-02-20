@@ -1,7 +1,8 @@
-import { EDITOR_TO_SELECTION } from "./weak-maps";
+import { randomAddress } from "@/lib/uniq-address";
 import { Editor, Node, Path, Point, Range, Transforms } from "slate";
 import { WithTableOptions } from "./options";
 import { hasCommon, isOfType } from "./utils";
+import { EDITOR_TO_SELECTION } from "./weak-maps";
 
 export function withDelete<T extends Editor>(editor: T, { withDelete, withSelection, blocks }: WithTableOptions): T {
 	if (!withDelete) {
@@ -122,9 +123,10 @@ export function withDelete<T extends Editor>(editor: T, { withDelete, withSelect
 						Transforms.insertNodes(
 							editor,
 							{
+								id: randomAddress(),
 								type: blocks.content,
 								children: [{ text: "" }],
-							} as Node,
+							},
 							{ at: [...path, 0] },
 						);
 					}
@@ -155,9 +157,10 @@ export function withDelete<T extends Editor>(editor: T, { withDelete, withSelect
 				Transforms.insertNodes(
 					editor,
 					{
+						id: randomAddress(),
 						type: blocks.content,
 						children: [{ text: "" }],
-					} as Node,
+					},
 					{ at: [...path, 0] },
 				);
 			}

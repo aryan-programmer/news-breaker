@@ -1,5 +1,6 @@
 "use client";
-import { Descendant, Editor, Element, Node, Element as SlateElement, Transforms } from "slate";
+import { randomAddress } from "@/lib/uniq-address";
+import { Descendant, Editor, Element, Node, Point, Element as SlateElement, Transforms } from "slate";
 import { AlignType, CustomEditor, CustomElementTypeStr, TextMarkTypes } from "./types";
 import { isAlignType, isElementNameThatOfElementWhoseTypeCannotBeChanged, isListElementTypeStr } from "./types.guard";
 
@@ -74,7 +75,6 @@ export function toggleBlock(editor: CustomEditor, format: AlignType | CustomElem
 					i++;
 				}
 				i++;
-				console.log(curr);
 				if ("type" in curr && isElementNameThatOfElementWhoseTypeCannotBeChanged(curr.type)) return;
 			}
 		}
@@ -83,7 +83,7 @@ export function toggleBlock(editor: CustomEditor, format: AlignType | CustomElem
 		Transforms.setNodes<SlateElement>(editor, newProperties);
 
 		if (!isActive && isList) {
-			const block = { type: format, children: [] };
+			const block = { id: randomAddress(), type: format, children: [] };
 			Transforms.wrapNodes(editor, block);
 		}
 	});
@@ -110,4 +110,28 @@ export function withNormalizedParagraphs(editor: CustomEditor) {
 	};
 
 	return editor;
+}
+
+export function resetNodes(
+	editor: Editor,
+	options: {
+		nodes?: Node | Node[];
+		at?: Location;
+	} = {},
+): void {
+	const children = [...editor.children];
+
+	children.forEach((node) => editor.apply({ type: "remove_node", path: [0], node }));
+
+	if (options.nodes) {
+		const nodes = Node.isNode(options.nodes) ? [options.nodes] : options.nodes;
+
+		nodes.forEach((node, i) => editor.apply({ type: "insert_node", path: [i], node: node }));
+	}
+
+	const point = options.at && Point.isPoint(options.at) ? options.at : Editor.end(editor, []);
+
+	if (point) {
+		Transforms.select(editor, point);
+	}
 }

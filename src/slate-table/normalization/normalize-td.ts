@@ -1,4 +1,5 @@
-import { Editor, Element, Node, Transforms } from "slate";
+import { randomAddress } from "@/lib/uniq-address";
+import { Editor, Node, Transforms } from "slate";
 import { WithTableOptions } from "../options";
 import { isElement } from "../utils";
 
@@ -20,9 +21,10 @@ export function normalizeTd<T extends Editor>(editor: T, { blocks: { content, td
 				return Transforms.wrapNodes(
 					editor,
 					{
+						id: randomAddress(),
 						type: content,
 						children: [child],
-					} as Element,
+					},
 					{ at: childPath },
 				);
 			}

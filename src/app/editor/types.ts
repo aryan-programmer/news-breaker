@@ -12,31 +12,30 @@ export type SectionBreakHeaderFooterEditorElementType = "odd-header" | "odd-foot
 /** @see {isPageNumberFormatType} ts-auto-guard:type-guard */
 export type PageNumberFormatType = "numeric" | "lower" | "upper" | "lower-roman" | "upper-roman";
 
-export type FrontPageWithTextElement = {
+export type CommonElement = { id: string };
+
+export type FrontPageWithTextElement = CommonElement & {
 	type: "front-page-with-text";
 	children: Descendant[];
 	mainImageUrl: string;
 	logoImageUrl?: string | null | undefined;
 	textSectionBgColor?: string | null | undefined;
-	id: string;
 };
-export type AutoTableOfContentsElement = {
+export type AutoTableOfContentsElement = CommonElement & {
 	type: "auto-toc";
 	children: [CustomText];
-	id: string;
 	includeHeaderLevelUpto: 1 | 2 | 3;
 };
-export type PageBreakElement = {
+export type PageBreakElement = CommonElement & {
 	type: "page-break";
 	children: [CustomText];
-	id: string;
 };
-export type DivElement = {
+export type DivElement = CommonElement & {
 	type: "div";
 	align?: AlignType;
 	children: Descendant[];
 };
-export type Paragraph = {
+export type Paragraph = CommonElement & {
 	type: "paragraph";
 	align?: AlignType;
 	children: CustomText[];
@@ -45,68 +44,67 @@ export type BlockQuote = {
 	type: "block-quote";
 	children: CustomText[];
 };
-export type ListItemElement = {
+export type ListItemElement = CommonElement & {
 	type: "list-item";
 	children: CustomText[];
 };
-export type Heading1Element = {
+export type Heading1Element = CommonElement & {
 	type: "heading-1";
 	children: CustomText[];
 };
-export type Heading2Element = {
+export type Heading2Element = CommonElement & {
 	type: "heading-2";
 	children: CustomText[];
 };
-export type Heading3Element = {
+export type Heading3Element = CommonElement & {
 	type: "heading-3";
 	children: CustomText[];
 };
-export type NumberedListElement = {
+export type NumberedListElement = CommonElement & {
 	type: "numbered-list";
 	children: ListItemElement[];
 };
-export type BulletedListElement = {
+export type BulletedListElement = CommonElement & {
 	type: "bulleted-list";
 	children: ListItemElement[];
 };
-export type ImageElement = {
+export type ImageElement = CommonElement & {
 	type: "image";
 	srcUrl: string;
 	children: [CustomText];
-	id: string;
 };
-export type TableCellElement = {
+export type TableCellElement = CommonElement & {
 	type: "table-cell";
 	children: Descendant[];
 	rowSpan?: number;
 	colSpan?: number;
 };
-export type TableHeaderCellElement = {
+export type TableHeaderCellElement = CommonElement & {
 	type: "table-header-cell";
 	children: Descendant[];
 	rowSpan?: number;
 	colSpan?: number;
 };
-export type TableRowElement = {
+export type TableRowElement = CommonElement & {
 	type: "table-row";
 	children: (TableCellElement | TableHeaderCellElement)[];
 };
-export type TableElement = {
+export type TableElement = CommonElement & {
 	type: "table";
 	children: (TableHeadSectionElement | TableBodySectionElement | TableFootSectionElement)[];
 };
-export type TableBodySectionElement = { type: "table-body"; children: TableRowElement[] };
-export type TableFootSectionElement = { type: "table-footer"; children: TableRowElement[] };
-export type TableHeadSectionElement = { type: "table-head"; children: TableRowElement[] };
+export type TableBodySectionElement = CommonElement & { type: "table-body"; children: TableRowElement[] };
+export type TableFootSectionElement = CommonElement & { type: "table-footer"; children: TableRowElement[] };
+export type TableHeadSectionElement = CommonElement & { type: "table-head"; children: TableRowElement[] };
 
-export type SectionBreakHeaderFooterCellGeneric<T extends AlignTypeNoJustify> = {
+export type SectionBreakHeaderFooterCellGeneric<T extends AlignTypeNoJustify> = CommonElement & {
 	type: "section-break-header-footer-cell";
 	elementType: T;
 	children: CustomText[];
 };
 export type SectionBreakHeaderFooterCell = SectionBreakHeaderFooterCellGeneric<AlignTypeNoJustify>;
 
-export type SectionBreakHeaderFooterEditorElementGeneric<T extends SectionBreakHeaderFooterEditorElementType> = {
+export type SectionBreakHeaderFooterEditorElementGeneric<T extends SectionBreakHeaderFooterEditorElementType> = CommonElement & {
 	type: "section-break-header-footer-editor-element";
 	elementType: T;
 	children: [
@@ -117,9 +115,8 @@ export type SectionBreakHeaderFooterEditorElementGeneric<T extends SectionBreakH
 	bgColor: string;
 };
 export type SectionBreakHeaderFooterEditorElement = SectionBreakHeaderFooterEditorElementGeneric<SectionBreakHeaderFooterEditorElementType>;
-export type SectionBreakElement = {
+export type SectionBreakElement = CommonElement & {
 	type: "section-break";
-	id: string;
 	pageNumberFormat: PageNumberFormatType;
 	resetPageNumbering: boolean;
 	children: [

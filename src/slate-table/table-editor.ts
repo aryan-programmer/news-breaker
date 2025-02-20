@@ -1,10 +1,16 @@
 import { TableCellElement, TableHeaderCellElement, TableRowElement } from "@/app/editor/types";
+import { randomAddress } from "@/lib/uniq-address";
 import { Editor, Location, Node, NodeEntry, Path, Transforms } from "slate";
 import { DEFAULT_INSERT_TABLE_OPTIONS, InsertTableOptions } from "./options";
 import { TableCursor } from "./table-cursor";
 import { filledMatrix, hasCommon, isElement, isOfType } from "./utils";
 import { CellElement } from "./utils/types";
 import { EDITOR_TO_SELECTION, EDITOR_TO_WITH_TABLE_OPTIONS } from "./weak-maps";
+
+		// number of rows and cols can't be less than 1
+		function clamp(n: number) {
+			return (n < 1 ? 1 : n);
+		}
 
 export const TableEditor = {
 	/**
@@ -34,23 +40,25 @@ export const TableEditor = {
 			return;
 		}
 
-		// number of rows and cols can't be less than 1
-		const clamp = (n: number) => (n < 1 ? 1 : n);
-
 		Transforms.insertNodes(
 			editor,
 			{
+				id: randomAddress(),
 				type: table,
 				children: [
 					{
+						id: randomAddress(),
 						type: thead,
 						children: [
 							{
+								id: randomAddress(),
 								type: tr,
 								children: Array.from({ length: clamp(cols) }).map<TableHeaderCellElement>(() => ({
+									id: randomAddress(),
 									type: th,
 									children: [
 										{
+											id: randomAddress(),
 											type: content,
 											children: [{ text: "Heading" }],
 										},
@@ -58,31 +66,39 @@ export const TableEditor = {
 								})),
 							},
 						],
-					} as Node,
+					},
 					{
+						id: randomAddress(),
 						type: tbody,
 						children: Array.from({ length: clamp(rows) }).map<TableRowElement>(() => ({
+							id: randomAddress(),
 							type: tr,
 							children: Array.from({ length: clamp(cols) }).map<TableCellElement>(() => ({
+								id: randomAddress(),
 								type: td,
 								children: [
 									{
+										id: randomAddress(),
 										type: content,
 										children: [{ text: "Data" }],
 									},
 								],
 							})),
 						})),
-					} as Node,
+					},
 					{
+						id: randomAddress(),
 						type: tfoot,
 						children: [
 							{
+								id: randomAddress(),
 								type: tr,
 								children: Array.from({ length: clamp(cols) }).map<TableCellElement>(() => ({
+									id: randomAddress(),
 									type: td,
 									children: [
 										{
+											id: randomAddress(),
 											type: content,
 											children: [{ text: "Footer" }],
 										},
@@ -90,9 +106,9 @@ export const TableEditor = {
 								})),
 							},
 						],
-					} as Node,
+					},
 				],
-			} as Node,
+			},
 			{ at },
 		);
 	},
@@ -208,17 +224,20 @@ export const TableEditor = {
 			Transforms.insertNodes(
 				editor,
 				{
+					id: randomAddress(),
 					type: blocks.tr,
 					children: Array.from({ length: colLen - increasedRowspan }).map(() => ({
+						id: randomAddress(),
 						type: section.type === blocks.thead ? blocks.th : blocks.td,
 						children: [
 							{
+								id: randomAddress(),
 								type: blocks.content,
 								children: [{ text: "" }],
 							},
 						],
 					})),
-				} as Node,
+				},
 				{
 					at: options.before ? currentPath : Path.next(currentPath),
 				},
@@ -348,6 +367,7 @@ export const TableEditor = {
 				Transforms.insertNodes(
 					editor,
 					{
+						id: randomAddress(),
 						type: blocks.tr,
 						children: toAdd.map((entry) => {
 							const [element] = entry;
@@ -360,7 +380,7 @@ export const TableEditor = {
 
 							return element;
 						}),
-					} as Node,
+					},
 					{ at: Path.next(trPath) },
 				);
 			}
@@ -442,20 +462,23 @@ export const TableEditor = {
 					at: path,
 				});
 
-				const insertTd = (path: Path): void =>
-					Transforms.insertNodes(
+				function insertTd(path: Path): void {
+					return Transforms.insertNodes(
 						editor,
 						{
+							id: randomAddress(),
 							type: section.type === blocks.thead ? blocks.th : blocks.td,
 							children: [
 								{
+									id: randomAddress(),
 									type: blocks.content,
 									children: [{ text: "" }],
-								} as Node,
+								},
 							],
-						} as Node,
-						{ at: path },
+						},
+						{ at: path }
 					);
+				}
 
 				// if the cell has no rowspan, just insert:
 				if (ttb === 1) {
@@ -784,14 +807,16 @@ export const TableEditor = {
 								Transforms.insertNodes(
 									editor,
 									{
+										id: randomAddress(),
 										type: section.type === blocks.thead ? blocks.th : blocks.td,
 										children: [
 											{
+												id: randomAddress(),
 												type: blocks.content,
 												children: [{ text: "" }],
-											} as Node,
+											},
 										],
-									} as Node,
+									},
 									{ at: Path.next(path) },
 								);
 							}
@@ -809,14 +834,16 @@ export const TableEditor = {
 								Transforms.insertNodes(
 									editor,
 									{
+										id: randomAddress(),
 										type: section.type === blocks.thead ? blocks.th : blocks.td,
 										children: [
 											{
+												id: randomAddress(),
 												type: blocks.content,
 												children: [{ text: "" }],
-											} as Node,
+											},
 										],
-									} as Node,
+									},
 									{ at: [...Path.parent(path), 0] },
 								);
 							}
@@ -828,14 +855,16 @@ export const TableEditor = {
 						Transforms.insertNodes(
 							editor,
 							{
+								id: randomAddress(),
 								type: section.type === blocks.thead ? blocks.th : blocks.td,
 								children: [
 									{
+										id: randomAddress(),
 										type: blocks.content,
 										children: [{ text: "" }],
-									} as Node,
+									},
 								],
-							} as Node,
+							},
 							{ at: Path.next(path) },
 						);
 					}

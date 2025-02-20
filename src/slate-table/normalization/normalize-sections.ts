@@ -1,4 +1,6 @@
-import { Editor, Element, Node, Transforms } from "slate";
+import { TableCellElement, TableHeaderCellElement } from "@/app/editor/types";
+import { randomAddress } from "@/lib/uniq-address";
+import { Editor, Node, Transforms } from "slate";
 import { WithTableOptions } from "../options";
 import { isElement } from "../utils";
 
@@ -17,9 +19,10 @@ export function normalizeSections<T extends Editor>(editor: T, { blocks: { thead
 					return Transforms.wrapNodes(
 						editor,
 						{
+							id: randomAddress(),
 							type: tr,
-							children: [child],
-						} as Element,
+							children: [child as TableCellElement | TableHeaderCellElement],
+						},
 						{ at: childPath },
 					);
 				}

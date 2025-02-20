@@ -1,7 +1,7 @@
-import { Separator } from "@/components/ui/separator";
+import { Separator } from "@/components/ui/Separator";
 import { randomAddress } from "@/lib/uniq-address";
 import { Transforms } from "slate";
-import { CustomEditor, PageBreakElement, RenderElementAttributesProp } from "./types";
+import { CustomEditor, PageBreakElement, RenderElementAttributesProp } from "../types";
 
 export type PageBreakProps = {
 	attributes: RenderElementAttributesProp;
@@ -13,6 +13,7 @@ export function insertPageBreak(editor: CustomEditor) {
 	const pageBreak: PageBreakElement = { type: "page-break", children: [{ text: "" }], id: randomAddress() };
 	Transforms.insertNodes(editor, pageBreak);
 	Transforms.insertNodes(editor, {
+		id: randomAddress(),
 		type: "paragraph",
 		children: [{ text: "" }],
 	});

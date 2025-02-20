@@ -1,16 +1,19 @@
-import { Table, TableCell, TableHeadCell } from "@/components/ui/table";
+import { Table, TableCell, TableHeadCell } from "@/components/ui/Table";
 import { cn } from "@/lib/utils";
 import { TableCursor } from "@/slate-table";
-import { FC } from "react";
 import { useSlateSelection, useSlateStatic } from "slate-react";
-import { RenderElementAttributesProp, TableCellElement, TableElement, TableHeaderCellElement } from "./types";
+import { RenderElementAttributesProp, TableCellElement, TableElement, TableHeaderCellElement } from "../types";
 
-export const TableElementRenderer: FC<{
+export function TableElementRenderer({
+	attributes,
+	children,
+	className,
+}: {
 	attributes: RenderElementAttributesProp;
 	element: TableElement;
 	children: unknown;
 	className?: string;
-}> = ({ attributes, children, className }) => {
+}) {
 	const editor = useSlateStatic();
 	const [isSelecting] = TableCursor.selection(editor);
 
@@ -19,14 +22,19 @@ export const TableElementRenderer: FC<{
 			{children as any}
 		</Table>
 	);
-};
+}
 
-export const TableHeaderCellElementRenderer: FC<{
+export function TableHeaderCellElementRenderer({
+	attributes,
+	children,
+	className,
+	element,
+}: {
 	attributes: RenderElementAttributesProp;
 	element: TableHeaderCellElement;
 	children: unknown;
 	className?: string;
-}> = ({ attributes, children, className, element }) => {
+}) {
 	useSlateSelection();
 	const editor = useSlateStatic();
 	const selected = TableCursor.isSelected(editor, element);
@@ -36,14 +44,19 @@ export const TableHeaderCellElementRenderer: FC<{
 			{children as any}
 		</TableHeadCell>
 	);
-};
+}
 
-export const TableCellElementRenderer: FC<{
+export function TableCellElementRenderer({
+	attributes,
+	children,
+	className,
+	element,
+}: {
 	attributes: RenderElementAttributesProp;
 	element: TableCellElement;
 	children: unknown;
 	className?: string;
-}> = ({ attributes, children, className, element }) => {
+}) {
 	useSlateSelection();
 	const editor = useSlateStatic();
 	const selected = TableCursor.isSelected(editor, element);
@@ -53,4 +66,4 @@ export const TableCellElementRenderer: FC<{
 			{children as any}
 		</TableCell>
 	);
-};
+}

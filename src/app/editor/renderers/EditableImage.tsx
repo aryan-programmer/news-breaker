@@ -1,16 +1,17 @@
-import React, { useCallback } from "react";
-import { useSlateStatic, ReactEditor } from "slate-react";
-import { CustomEditor, ImageElement, RenderElementAttributesProp } from "./types";
-import { Transforms, Location } from "slate";
-import { useElementSettingsSidebarStore } from "./ElementSettingsSidebar";
-import { Input } from "@/components/ui/input";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { nonAsyncForwardingFn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
+import { Input } from "@/components/ui/Input";
+import { useStoreAsIs } from "@/hooks/useStore";
 import { randomAddress } from "@/lib/uniq-address";
+import { forwardFnDropAsync } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useCallback } from "react";
+import { useForm } from "react-hook-form";
+import { Location, Transforms } from "slate";
+import { ReactEditor, useSlateStatic } from "slate-react";
+import { z } from "zod";
+import { useElementSettingsSidebarStore } from "../elements/ElementSettingsSidebar";
+import { CustomEditor, ImageElement, RenderElementAttributesProp } from "../types";
 
 export type EditableImageProps = {
 	attributes: RenderElementAttributesProp;
@@ -22,6 +23,7 @@ export function insertImage(editor: CustomEditor, url: string) {
 	const image: ImageElement = { type: "image", srcUrl: url, children: [{ text: "" }], id: randomAddress() };
 	Transforms.insertNodes(editor, image);
 	Transforms.insertNodes(editor, {
+		id: randomAddress(),
 		type: "paragraph",
 		children: [{ text: "" }],
 	});
@@ -30,10 +32,10 @@ export function insertImage(editor: CustomEditor, url: string) {
 export default function EditableImage({ attributes, element, children }: EditableImageProps) {
 	const editor = useSlateStatic();
 	const path = ReactEditor.findPath(editor, element);
-	const settingsSidebarStore = useElementSettingsSidebarStore()();
+	const settingsSidebarStore = useStoreAsIs(useElementSettingsSidebarStore);
 	const select = useCallback(() => {
+		if (settingsSidebarStore == null) return;
 		if (settingsSidebarStore.data?.id !== element.id) {
-			console.log("Focused & Selected");
 			settingsSidebarStore.setData({
 				name: "Image",
 				element: <EditableImageSidebarSettings attributes={attributes} element={element} editor={editor} at={path} />,
@@ -43,7 +45,9 @@ export default function EditableImage({ attributes, element, children }: Editabl
 	}, [settingsSidebarStore, element, attributes, editor, path]);
 	return (
 		<div {...attributes}>
-			<div className="h-0 text-transparent outline-0 outline-none absolute w-0" style={{fontSize: 0}}>{children as any}</div>
+			<div className="h-0 text-transparent outline-0 outline-none absolute w-0" style={{ fontSize: 0 }}>
+				{children as any}
+			</div>
 			<div contentEditable={false} className="relative">
 				{/* eslint-disable-next-line @next/next/no-img-element*/}
 				<img
@@ -51,7 +55,7 @@ export default function EditableImage({ attributes, element, children }: Editabl
 					src={element.srcUrl}
 					className="block max-w-full max-h-60 shadow-none data-[selected=on]:drop-shadow-lg data-[selected=on]:shadow-foreground"
 					onClick={select}
-					data-selected={settingsSidebarStore.data?.id === element.id ? "on" : "off"}
+					data-selected={settingsSidebarStore?.data?.id === element.id ? "on" : "off"}
 				/>
 			</div>
 		</div>
@@ -76,12 +80,11 @@ function EditableImageSidebarSettings({
 
 	// 2. Define a submit handler.
 	function onSubmit(values: z.infer<typeof formSchema>) {
-		console.log("Clicked");
 		Transforms.setNodes<ImageElement>(editor, { srcUrl: values.url }, { at });
 	}
 	return (
 		<Form {...form}>
-			<form onSubmit={nonAsyncForwardingFn(form.handleSubmit(onSubmit))} className="pb-4 px-2">
+			<form onSubmit={forwardFnDropAsync(form.handleSubmit(onSubmit))} className="pb-4 px-2">
 				<FormField
 					control={form.control}
 					name="url"

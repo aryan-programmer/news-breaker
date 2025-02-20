@@ -1,16 +1,17 @@
-import { blockClick, colorValidator, nonAsyncForwardingFn } from "@/lib/utils";
-import { RenderElementAttributesProp, FrontPageWithTextElement, CustomEditor } from "./types";
-import React, { useCallback } from "react";
-import { useSlateStatic, ReactEditor } from "slate-react";
-import { useElementSettingsSidebarStore } from "./ElementSettingsSidebar";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
+import { ColorPicker } from "@/components/ui/ColorPicker";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
+import { Input } from "@/components/ui/Input";
+import { useStoreAsIs } from "@/hooks/useStore";
+import { blockClick, colorValidator, forwardFnDropAsync } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { Transforms, Location } from "slate";
+import { Location, Transforms } from "slate";
+import { ReactEditor, useSlateStatic } from "slate-react";
 import { z } from "zod";
-import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { ColorPicker } from "@/components/ui/color-picker";
+import { useElementSettingsSidebarStore } from "../elements/ElementSettingsSidebar";
+import { CustomEditor, FrontPageWithTextElement, RenderElementAttributesProp } from "../types";
 
 export type FrontPageWithTextProps = {
 	attributes: RenderElementAttributesProp;
@@ -21,10 +22,10 @@ export type FrontPageWithTextProps = {
 export function FrontPageWithText({ attributes, children, element }: FrontPageWithTextProps) {
 	const editor = useSlateStatic();
 	const path = ReactEditor.findPath(editor, element);
-	const settingsSidebarStore = useElementSettingsSidebarStore()();
+	const settingsSidebarStore = useStoreAsIs(useElementSettingsSidebarStore);
 	const select = useCallback(() => {
+		if (settingsSidebarStore == null) return;
 		if (settingsSidebarStore.data?.id !== element.id) {
-			console.log("Focused & Selected");
 			settingsSidebarStore.setData({
 				name: "Image",
 				element: <FrontPageWithTextSidebarSettings attributes={attributes} element={element} editor={editor} at={path} />,
@@ -77,7 +78,6 @@ function FrontPageWithTextSidebarSettings({
 
 	// 2. Define a submit handler.
 	function onSubmit(values: z.infer<typeof formSchema>) {
-		console.log("Clicked");
 		Transforms.setNodes<FrontPageWithTextElement>(
 			editor,
 			{
@@ -90,7 +90,7 @@ function FrontPageWithTextSidebarSettings({
 	}
 	return (
 		<Form {...form}>
-			<form onSubmit={nonAsyncForwardingFn(form.handleSubmit(onSubmit))} className="pb-4 px-2">
+			<form onSubmit={forwardFnDropAsync(form.handleSubmit(onSubmit))} className="pb-4 px-2">
 				<FormField
 					control={form.control}
 					name="mainImageUrl"

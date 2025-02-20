@@ -1,4 +1,4 @@
-import { TableBody, TableFooter, TableHeader, TableRow } from "@/components/ui/table";
+import { TableBody, TableFooter, TableHeader, TableRow } from "@/components/ui/Table";
 import { RenderElementProps } from "slate-react";
 import { AutoTableOfContents } from "./AutoTableOfContents";
 import EditableImage from "./EditableImage";

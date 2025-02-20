@@ -1,9 +1,9 @@
 "use client";
-import { ToolbarIconToggle } from "@/components/ui/toolbar";
+import { ToolbarIconToggle } from "@/components/ui/Toolbar";
 import { ReactNode } from "react";
 import { useSlate } from "slate-react";
-import { isBlockActive, toggleBlock } from "./editor-utils";
-import { AlignType, CustomElementTypeStr } from "./types";
+import { isBlockActive, toggleBlock } from "../editor-utils";
+import { AlignType, CustomElementTypeStr } from "../types";
 
 export function BlockButton({ format, hoverText, children }: { format: AlignType | CustomElementTypeStr; hoverText: string; children: ReactNode }) {
 	const editor = useSlate();

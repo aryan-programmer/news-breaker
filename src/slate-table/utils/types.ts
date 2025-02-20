@@ -1,6 +1,7 @@
+import { TableCellElement, TableHeaderCellElement } from "@/app/editor/types";
 import { Element, NodeEntry } from "slate";
 
-export type CellElement = WithType<{ rowSpan?: number; colSpan?: number } & Element>;
+export type CellElement = TableHeaderCellElement | TableCellElement;
 
 /** Extends an element with the "type" property  */
 export type WithType<T extends Element> = T & Record<"type", unknown>;

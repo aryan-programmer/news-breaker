@@ -1,6 +1,6 @@
+import { FlatCompat } from "@eslint/eslintrc";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -18,8 +18,13 @@ const eslintConfig = [
 		rules: {
 			eqeqeq: ["error", "always", { null: "ignore" }],
 			"@typescript-eslint/no-explicit-any": "off",
-			"react-hooks/exhaustive-deps": "error",
-			"react-hooks/rules-of-hooks": "error",
+			"react-hooks/exhaustive-deps": [
+				"error",
+				{
+					additionalHooks: "useCallbackDropAsync",
+				},
+			],
+			"react-hooks/rules-of-hooks": ["error"],
 			"@typescript-eslint/switch-exhaustiveness-check": [
 				"error",
 				{

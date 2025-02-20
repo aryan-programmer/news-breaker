@@ -1,9 +1,9 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { randomAddress } from "@/lib/uniq-address";
 import { useCallback } from "react";
 import { Transforms } from "slate";
 import { ReactEditor, useSlateStatic } from "slate-react";
-import { AutoTableOfContentsElement, CustomEditor, RenderElementAttributesProp } from "./types";
+import { AutoTableOfContentsElement, CustomEditor, RenderElementAttributesProp } from "../types";
 
 export type AutoTableOfContentsProps = {
 	attributes: RenderElementAttributesProp;
@@ -15,6 +15,7 @@ export function insertTableOfContents(editor: CustomEditor) {
 	const pageBreak: AutoTableOfContentsElement = { type: "auto-toc", children: [{ text: "" }], id: randomAddress(), includeHeaderLevelUpto: 3 };
 	Transforms.insertNodes(editor, pageBreak);
 	Transforms.insertNodes(editor, {
+		id: randomAddress(),
 		type: "paragraph",
 		children: [{ text: "" }],
 	});

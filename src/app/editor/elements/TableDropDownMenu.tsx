@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -7,7 +7,7 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/ui/DropdownMenu";
 import { TableCursor, TableEditor } from "@/slate-table";
 import { faTable } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -25,7 +25,7 @@ import {
 	RowRemoveIcon,
 	SplitCellIcon,
 	TableMinusIcon,
-} from "./SVGIcons";
+} from "../../../components/ui/SVGIcons";
 
 export function TableDropDownMenu(): ReactNode {
 	const editor = useSlate();

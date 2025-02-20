@@ -12,7 +12,7 @@ export const MaterialIcon = React.forwardRef<HTMLSpanElement, React.PropsWithout
 			ref={ref}
 			className={cx(
 				"material-icons",
-				className as string,
+				className,
 				css`
 					font-size: 18px;
 					vertical-align: text-bottom;

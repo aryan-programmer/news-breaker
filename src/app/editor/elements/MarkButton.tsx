@@ -1,9 +1,9 @@
 "use client";
-import { ToolbarIconToggle } from "@/components/ui/toolbar";
+import { ToolbarIconToggle } from "@/components/ui/Toolbar";
 import { ReactNode } from "react";
 import { useSlate } from "slate-react";
-import { isMarkActive, toggleMark } from "./editor-utils";
-import { TextMarkTypes } from "./types";
+import { isMarkActive, toggleMark } from "../editor-utils";
+import { TextMarkTypes } from "../types";
 
 export function MarkButton({ format, hoverText, children }: { format: TextMarkTypes; hoverText: string; children: ReactNode }) {
 	const editor = useSlate();

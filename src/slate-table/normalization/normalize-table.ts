@@ -1,6 +1,8 @@
+import { randomAddress } from "@/lib/uniq-address";
 import { Editor, Element, Node, NodeEntry, Path, Transforms } from "slate";
 import { WithTableOptions } from "../options";
 import { isElement, isOfType } from "../utils";
+import { TableRowElement } from "@/app/editor/types";
 
 /** Normalizes the given `table` node by wrapping invalid nodes into a `tbody`. */
 export function normalizeTable<T extends Editor>(editor: T, { blocks: { table, thead, tbody, tfoot } }: WithTableOptions): T {
@@ -20,9 +22,10 @@ export function normalizeTable<T extends Editor>(editor: T, { blocks: { table, t
 					return Transforms.wrapNodes(
 						editor,
 						{
+							id: randomAddress(),
 							type: tbody,
-							children: [child],
-						} as Element,
+							children: [child as TableRowElement],
+						},
 						{ at: childPath },
 					);
 				}
@@ -48,7 +51,7 @@ export function normalizeTable<T extends Editor>(editor: T, { blocks: { table, t
  * @returns {NodeEntry<Element> | undefined} The immediate child `tbody` element
  * of the `table`, or `undefined` if it does not exist.
  */
-const immediateTbody = (editor: Editor, tablePath: Path): NodeEntry<Element> | undefined => {
+function immediateTbody(editor: Editor, tablePath: Path): NodeEntry<Element> | undefined {
 	const [tbody] = Editor.nodes(editor, {
 		match: isOfType(editor, "tbody"),
 		at: tablePath,
@@ -65,4 +68,4 @@ const immediateTbody = (editor: Editor, tablePath: Path): NodeEntry<Element> | u
 	}
 
 	return tbody;
-};
+}
