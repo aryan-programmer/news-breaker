@@ -1,7 +1,8 @@
-import { CellElement } from "../utils/types";
+import { TableCellElement, TableHeaderCellElement } from "@/app/editor/types";
 import { Editor, Transforms } from "slate";
 import { WithTableOptions } from "../options";
 import { isElement } from "../utils";
+import { CellElement } from "../utils/types";
 
 /**
  * Normalizes the `rowspan` and `colspan` attributes of the `td` elements
@@ -13,16 +14,20 @@ export function normalizeAttributes<T extends Editor>(editor: T, { blocks: { td,
 	editor.normalizeNode = (entry, options) => {
 		const [node, path] = entry;
 		if (isElement<CellElement>(node) && [th, td].includes(node.type)) {
-			const { rowSpan, colSpan } = node;
+			// const { rowSpan, colSpan } = node;
 
-			if (rowSpan === 1 || colSpan === 1) {
-				const attributes: Array<keyof typeof node> = ["rowSpan", "colSpan"];
+			// if (rowSpan === 1 || colSpan === 1) {
+			// 	const attributes: Array<keyof typeof node> = ["rowSpan", "colSpan"];
 
-				return Transforms.unsetNodes(
-					editor,
-					attributes.filter((attr) => node[attr] === 1),
-					{ at: path },
-				);
+			// 	return Transforms.unsetNodes(
+			// 		editor,
+			// 		attributes.filter((attr) => node[attr] === 1),
+			// 		{ at: path },
+			// 	);
+			// }
+			if (node.colSpan === 1) {
+				Transforms.unsetNodes<TableCellElement | TableHeaderCellElement>(editor, ["colSpan"], { at: path });
+				return;
 			}
 		}
 

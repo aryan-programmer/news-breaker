@@ -1,8 +1,26 @@
 "use client";
 import { randomAddress } from "@/lib/uniq-address";
-import { Descendant, Editor, Element, Node, Point, Element as SlateElement, Transforms } from "slate";
-import { AlignType, CustomEditor, CustomElementTypeStr, TextMarkTypes } from "./types";
-import { isAlignType, isElementNameThatOfElementWhoseTypeCannotBeChanged, isListElementTypeStr } from "./types.guard";
+import { DEMO_IMAGE_URL } from "@/lib/utils";
+import { Descendant, Editor, Element, Node, Path, Point, Element as SlateElement, Transforms } from "slate";
+import { EditorNormalizeOptions } from "slate/dist/interfaces/editor";
+import {
+	AlignType,
+	AlignTypeNoJustify,
+	CustomEditor,
+	CustomElementTypeStr,
+	FrontPageWithTextElement,
+	ParagraphElement,
+	SectionBreakHeaderFooterCell,
+	SectionBreakHeaderFooterEditorElement,
+	SectionBreakHeaderFooterEditorElementType,
+	TextMarkTypes,
+} from "./types";
+import {
+	isAlignType,
+	isElementNameThatOfElementWhoseTypeCannotBeChanged,
+	isElementNameThatOfTextChildrenOnlyElement,
+	isListElementTypeStr,
+} from "./types.guard";
 
 export function toggleMark(editor: CustomEditor, format: TextMarkTypes) {
 	const isActive = isMarkActive(editor, format);
@@ -95,18 +113,168 @@ export function withNormalizedParagraphs(editor: CustomEditor) {
 	editor.normalizeNode = (entry) => {
 		const [node, path] = entry;
 
-		// If the element is a paragraph, ensure its children are valid.
-		if (Element.isElement(node) && node.type === "paragraph") {
-			for (const [child, childPath] of Node.children(editor, path)) {
-				if (Element.isElement(child) && !editor.isInline(child)) {
-					Transforms.unwrapNodes(editor, { at: childPath });
+		if (Element.isElement(node)) {
+			if (isElementNameThatOfTextChildrenOnlyElement(node.type)) {
+				for (const [child, childPath] of Node.children(editor, path)) {
+					if (Element.isElement(child) && !editor.isInline(child)) {
+						Transforms.unwrapNodes(editor, { at: childPath });
+						return;
+					}
+				}
+			}
+			if (node.type === "section-break-header-footer-cell") {
+				const parent = Node.parent(editor, path);
+				if (!(Element.isElement(parent) && "type" in parent && parent.type === "section-break-header-footer-editor-element")) {
+					Transforms.setNodes<ParagraphElement>(editor, { type: "paragraph" }, { at: path });
 					return;
+				}
+			}
+			if (node.type === "section-break-header-footer-editor-element") {
+				const parent = Node.parent(editor, path);
+				if (!(Element.isElement(parent) && "type" in parent && parent.type === "section-break")) {
+					Transforms.setNodes<ParagraphElement>(editor, { type: "paragraph" }, { at: path });
+					return;
+				}
+				const children = [...Node.children(editor, path)];
+				if (children.length < 3) {
+					Transforms.insertNodes<SectionBreakHeaderFooterCell>(
+						editor,
+						{
+							id: randomAddress(),
+							type: "section-break-header-footer-cell",
+							elementType: "center",
+							children: [{ text: "" }],
+						},
+						{ at: Path.next(children[children.length - 1][1]) },
+					);
+					console.log(editor.children);
+					return;
+				}
+				if (children.length > 3) {
+					Transforms.removeNodes<SectionBreakHeaderFooterCell>(editor, { at: children[children.length - 1][1] });
+					return;
+				}
+				let i = 0;
+				const elementTypeArr: AlignTypeNoJustify[] = ["left", "center", "right"];
+				for (const [child, childPath] of children) {
+					if (!Element.isElement(child)) {
+						continue;
+					}
+					if (!("type" in child && child.type === "section-break-header-footer-cell")) {
+						Transforms.setNodes<SectionBreakHeaderFooterCell>(editor, { type: "section-break-header-footer-cell" }, { at: childPath });
+						return;
+					}
+					const elementType = elementTypeArr[i];
+					if (child.elementType !== elementType) {
+						Transforms.setNodes<SectionBreakHeaderFooterCell>(editor, { elementType }, { at: childPath });
+						return;
+					}
+					i++;
+				}
+			}
+			if (node.type === "section-break") {
+				const children = [...Node.children(editor, path)];
+				if (children.length < 4) {
+					Transforms.insertNodes<SectionBreakHeaderFooterEditorElement>(
+						editor,
+						{
+							id: randomAddress(),
+							type: "section-break-header-footer-editor-element",
+							elementType: "even-footer",
+							children: [
+								{
+									id: randomAddress(),
+									type: "section-break-header-footer-cell",
+									elementType: "left",
+									children: [{ text: "" }],
+								},
+								{
+									id: randomAddress(),
+									type: "section-break-header-footer-cell",
+									elementType: "center",
+									children: [{ text: "" }],
+								},
+								{
+									id: randomAddress(),
+									type: "section-break-header-footer-cell",
+									elementType: "right",
+									children: [{ text: "" }],
+								},
+							],
+							bgColor: "#aaf",
+						},
+						{ at: Path.next(children[children.length - 1][1]) },
+					);
+					return;
+				}
+				if (children.length > 4) {
+					Transforms.removeNodes<SectionBreakHeaderFooterEditorElement>(editor, { at: children[children.length - 1][1] });
+					return;
+				}
+				let i = 0;
+				const elementTypeArr: SectionBreakHeaderFooterEditorElementType[] = ["odd-header", "odd-footer", "even-header", "even-footer"];
+				for (const [child, childPath] of children) {
+					if (!Element.isElement(child)) {
+						continue;
+					}
+					if (!("type" in child && child.type === "section-break-header-footer-editor-element")) {
+						Transforms.setNodes<SectionBreakHeaderFooterEditorElement>(
+							editor,
+							{ type: "section-break-header-footer-editor-element" },
+							{ at: childPath },
+						);
+						return;
+					}
+					const elementType = elementTypeArr[i];
+					if (child.elementType !== elementType) {
+						Transforms.setNodes<SectionBreakHeaderFooterEditorElement>(editor, { elementType }, { at: childPath });
+						return;
+					}
+					i++;
 				}
 			}
 		}
 
 		// Fall back to the original `normalizeNode` to enforce other constraints.
 		normalizeNode(entry);
+	};
+
+	return editor;
+}
+
+export function withNormalizedFrontPage(editor: CustomEditor) {
+	const { normalize } = editor;
+
+	editor.normalize = (options?: EditorNormalizeOptions) => {
+		const initialNode = editor.children[0];
+
+		if (!(Element.isElement(initialNode) && initialNode.type === "front-page-with-text")) {
+			Transforms.insertNodes<FrontPageWithTextElement>(
+				editor,
+				{
+					id: randomAddress(),
+					type: "front-page-with-text",
+					children: [{ text: "" }],
+					mainImageUrl: DEMO_IMAGE_URL,
+				},
+				{ at: [1] },
+			);
+		}
+		const nextNode = editor.children[1];
+		if (!(nextNode != null && Element.isElement(nextNode) && nextNode.type === "paragraph")) {
+			Transforms.insertNodes<ParagraphElement>(
+				editor,
+				{
+					id: randomAddress(),
+					type: "paragraph",
+					children: [{ text: "" }],
+				},
+				{ at: [1] },
+			);
+		}
+
+		// Fall back to the original `normalize` to enforce other constraints.
+		normalize(options);
 	};
 
 	return editor;

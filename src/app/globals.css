@@ -2,14 +2,463 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+	font-family: "Arimo";
+	font-style: normal;
+	font-weight: 400;
+	src: url("/Arimo/static/Arimo-Regular.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Arimo";
+	font-style: italic;
+	font-weight: 400;
+	src: url("/Arimo/static/Arimo-Italic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Arimo";
+	font-style: normal;
+	font-weight: 500;
+	src: url("/Arimo/static/Arimo-Medium.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Arimo";
+	font-style: italic;
+	font-weight: 500;
+	src: url("/Arimo/static/Arimo-MediumItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Arimo";
+	font-style: normal;
+	font-weight: 600;
+	src: url("/Arimo/static/Arimo-SemiBold.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Arimo";
+	font-style: italic;
+	font-weight: 600;
+	src: url("/Arimo/static/Arimo-SemiBoldItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Arimo";
+	font-style: normal;
+	font-weight: 700;
+	src: url("/Arimo/static/Arimo-Bold.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Arimo";
+	font-style: italic;
+	font-weight: 700;
+	src: url("/Arimo/static/Arimo-BoldItalic.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "Roboto";
+	font-style: normal;
+	font-weight: 100;
+	src: url("/Roboto/static/Roboto-Thin.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: italic;
+	font-weight: 100;
+	src: url("/Roboto/static/Roboto-ThinItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: normal;
+	font-weight: 200;
+	src: url("/Roboto/static/Roboto-ExtraLight.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: italic;
+	font-weight: 200;
+	src: url("/Roboto/static/Roboto-ExtraLightItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: normal;
+	font-weight: 300;
+	src: url("/Roboto/static/Roboto-Light.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: italic;
+	font-weight: 300;
+	src: url("/Roboto/static/Roboto-LightItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: normal;
+	font-weight: 400;
+	src: url("/Roboto/static/Roboto-Regular.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: italic;
+	font-weight: 400;
+	src: url("/Roboto/static/Roboto-Italic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: normal;
+	font-weight: 500;
+	src: url("/Roboto/static/Roboto-Medium.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: italic;
+	font-weight: 500;
+	src: url("/Roboto/static/Roboto-MediumItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: normal;
+	font-weight: 600;
+	src: url("/Roboto/static/Roboto-SemiBold.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: italic;
+	font-weight: 600;
+	src: url("/Roboto/static/Roboto-SemiBoldItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: normal;
+	font-weight: 700;
+	src: url("/Roboto/static/Roboto-Bold.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: italic;
+	font-weight: 700;
+	src: url("/Roboto/static/Roboto-BoldItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: normal;
+	font-weight: 800;
+	src: url("/Roboto/static/Roboto-ExtraBold.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: italic;
+	font-weight: 800;
+	src: url("/Roboto/static/Roboto-ExtraBoldItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: normal;
+	font-weight: 900;
+	src: url("/Roboto/static/Roboto-Black.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Roboto";
+	font-style: italic;
+	font-weight: 900;
+	src: url("/Roboto/static/Roboto-BlackItalic.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "Josefin Slab";
+	font-style: normal;
+	font-weight: 100;
+	src: url("/Josefin_Slab/static/JosefinSlab-Thin.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Josefin Slab";
+	font-style: italic;
+	font-weight: 100;
+	src: url("/Josefin_Slab/static/JosefinSlab-ThinItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Josefin Slab";
+	font-style: normal;
+	font-weight: 200;
+	src: url("/Josefin_Slab/static/JosefinSlab-ExtraLight.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Josefin Slab";
+	font-style: italic;
+	font-weight: 200;
+	src: url("/Josefin_Slab/static/JosefinSlab-ExtraLightItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Josefin Slab";
+	font-style: normal;
+	font-weight: 300;
+	src: url("/Josefin_Slab/static/JosefinSlab-Light.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Josefin Slab";
+	font-style: italic;
+	font-weight: 300;
+	src: url("/Josefin_Slab/static/JosefinSlab-LightItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Josefin Slab";
+	font-style: normal;
+	font-weight: 400;
+	src: url("/Josefin_Slab/static/JosefinSlab-Regular.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Josefin Slab";
+	font-style: italic;
+	font-weight: 400;
+	src: url("/Josefin_Slab/static/JosefinSlab-Italic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Josefin Slab";
+	font-style: normal;
+	font-weight: 500;
+	src: url("/Josefin_Slab/static/JosefinSlab-Medium.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Josefin Slab";
+	font-style: italic;
+	font-weight: 500;
+	src: url("/Josefin_Slab/static/JosefinSlab-MediumItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Josefin Slab";
+	font-style: normal;
+	font-weight: 600;
+	src: url("/Josefin_Slab/static/JosefinSlab-SemiBold.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Josefin Slab";
+	font-style: italic;
+	font-weight: 600;
+	src: url("/Josefin_Slab/static/JosefinSlab-SemiBoldItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Josefin Slab";
+	font-style: normal;
+	font-weight: 700;
+	src: url("/Josefin_Slab/static/JosefinSlab-Bold.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Josefin Slab";
+	font-style: italic;
+	font-weight: 700;
+	src: url("/Josefin_Slab/static/JosefinSlab-BoldItalic.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: normal;
+	font-weight: 100;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-Thin.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: italic;
+	font-weight: 100;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-ThinItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: normal;
+	font-weight: 200;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-ExtraLight.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: italic;
+	font-weight: 200;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-ExtraLightItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: normal;
+	font-weight: 300;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-Light.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: italic;
+	font-weight: 300;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-LightItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: normal;
+	font-weight: 400;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-Regular.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: italic;
+	font-weight: 400;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-Italic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: normal;
+	font-weight: 500;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-Medium.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: italic;
+	font-weight: 500;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-MediumItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: normal;
+	font-weight: 600;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-SemiBold.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: italic;
+	font-weight: 600;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-SemiBoldItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: normal;
+	font-weight: 700;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-Bold.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: italic;
+	font-weight: 700;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-BoldItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: normal;
+	font-weight: 800;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-ExtraBold.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: italic;
+	font-weight: 800;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-ExtraBoldItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: normal;
+	font-weight: 900;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-Black.ttf") format("truetype");
+}
+@font-face {
+	font-family: "JetBrains Mono";
+	font-style: italic;
+	font-weight: 900;
+	src: url("/JetBrains_Mono/static/JetBrainsMono-BlackItalic.ttf") format("truetype");
+}
+
+@font-face {
+	font-family: "Nunito";
+	font-style: normal;
+	font-weight: 200;
+	src: url("/Nunito/static/Nunito-ExtraLight.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Nunito";
+	font-style: italic;
+	font-weight: 200;
+	src: url("/Nunito/static/Nunito-ExtraLightItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Nunito";
+	font-style: normal;
+	font-weight: 300;
+	src: url("/Nunito/static/Nunito-Light.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Nunito";
+	font-style: italic;
+	font-weight: 300;
+	src: url("/Nunito/static/Nunito-LightItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Nunito";
+	font-style: normal;
+	font-weight: 400;
+	src: url("/Nunito/static/Nunito-Regular.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Nunito";
+	font-style: italic;
+	font-weight: 400;
+	src: url("/Nunito/static/Nunito-Italic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Nunito";
+	font-style: normal;
+	font-weight: 500;
+	src: url("/Nunito/static/Nunito-Medium.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Nunito";
+	font-style: italic;
+	font-weight: 500;
+	src: url("/Nunito/static/Nunito-MediumItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Nunito";
+	font-style: normal;
+	font-weight: 600;
+	src: url("/Nunito/static/Nunito-SemiBold.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Nunito";
+	font-style: italic;
+	font-weight: 600;
+	src: url("/Nunito/static/Nunito-SemiBoldItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Nunito";
+	font-style: normal;
+	font-weight: 700;
+	src: url("/Nunito/static/Nunito-Bold.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Nunito";
+	font-style: italic;
+	font-weight: 700;
+	src: url("/Nunito/static/Nunito-BoldItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Nunito";
+	font-style: normal;
+	font-weight: 800;
+	src: url("/Nunito/static/Nunito-ExtraBold.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Nunito";
+	font-style: italic;
+	font-weight: 800;
+	src: url("/Nunito/static/Nunito-ExtraBoldItalic.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Nunito";
+	font-style: normal;
+	font-weight: 900;
+	src: url("/Nunito/static/Nunito-Black.ttf") format("truetype");
+}
+@font-face {
+	font-family: "Nunito";
+	font-style: italic;
+	font-weight: 900;
+	src: url("/Nunito/static/Nunito-BlackItalic.ttf") format("truetype");
+}
+
 body {
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: Nunito, Arimo, Arial, Helvetica, sans-serif;
 }
 
 html,
 input,
 textarea {
-	font-family: "Roboto", sans-serif;
+	font-family: Nunito, Arimo, "Roboto", sans-serif;
 	line-height: 1.4;
 	background: #eee;
 }
@@ -29,7 +478,7 @@ pre {
 }
 
 :not(pre) > code {
-	font-family: monospace;
+	font-family: "JetBrains Mono", monospace;
 	background-color: #eee;
 	padding: 3px;
 }
@@ -187,4 +636,13 @@ iframe {
 *:focus {
 	outline: 0px none transparent;
 	-moz-appearance: none;
+}
+
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+	}
+	body {
+		@apply bg-background text-foreground;
+	}
 }

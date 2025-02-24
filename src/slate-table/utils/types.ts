@@ -11,8 +11,8 @@ export type NodeEntryWithContext = [
 	{
 		rtl: number; // right-to-left (colspan)
 		ltr: number; // left-to-right (colspan)
-		ttb: number; // top-to-bottom (rowspan)
-		btt: number; // bottom-to-top (rowspan)
+		//ttb: never; // top-to-bottom (rowspan)
+		//btt: never; // bottom-to-top (rowspan)
 	},
 ];
 

@@ -83,12 +83,13 @@ export function withSelection<T extends Editor>(editor: T, { withSelection }: Wi
 
 			for (let x = nextStart.x; x <= nextEnd.x; x++) {
 				for (let y = nextStart.y; y <= nextEnd.y; y++) {
-					const [, { rtl, ltr, btt, ttb }] = filled[x][y];
+					const [, { rtl, ltr }] = filled[x][y];
+					//const [, { rtl, ltr, btt, ttb }] = filled[x][y];
 
-					nextStart.x = Math.min(nextStart.x, x - (ttb - 1));
+					//nextStart.x = Math.min(nextStart.x, x - (ttb - 1));
 					nextStart.y = Math.min(nextStart.y, y - (rtl - 1));
 
-					nextEnd.x = Math.max(nextEnd.x, x + (btt - 1));
+					//nextEnd.x = Math.max(nextEnd.x, x + (btt - 1));
 					nextEnd.y = Math.max(nextEnd.y, y + (ltr - 1));
 				}
 			}

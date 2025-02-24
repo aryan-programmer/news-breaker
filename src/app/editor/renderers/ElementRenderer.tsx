@@ -5,7 +5,7 @@ import EditableImage from "./EditableImage";
 import { FrontPageWithText } from "./FrontPageWithText";
 import { PageBreak } from "./PageBreak";
 import { SectionBreak, SectionBreakHeaderFooterCellRenderer, SectionBreakHeaderFooterEditorElementRenderer } from "./SectionBreak";
-import { TableCellElementRenderer, TableElementRenderer, TableHeaderCellElementRenderer } from "./TableElements";
+import { TableCellElementCommonRenderer, TableElementRenderer } from "./TableElements";
 
 export default function ElementRenderer(props: RenderElementProps) {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -27,19 +27,19 @@ export default function ElementRenderer(props: RenderElementProps) {
 				);
 			case "heading-1":
 				return (
-					<h1 className="mb-4 text-5xl font-extrabold leading-none" style={style} {...attributes}>
+					<h1 className="mb-4 mt-4 text-5xl font-serif font-extrabold leading-none" style={style} {...attributes}>
 						{children}
 					</h1>
 				);
 			case "heading-2":
 				return (
-					<h2 className="mb-3 text-4xl font-bold leading-none" style={style} {...attributes}>
+					<h2 className="mb-3 mt-3 text-4xl font-serif font-bold leading-none" style={style} {...attributes}>
 						{children}
 					</h2>
 				);
 			case "heading-3":
 				return (
-					<h3 className="mb-2 text-3xl leading-none" style={style} {...attributes}>
+					<h3 className="mb-2 mt-2 text-3xl font-serif leading-none" style={style} {...attributes}>
 						{children}
 					</h3>
 				);
@@ -86,16 +86,11 @@ export default function ElementRenderer(props: RenderElementProps) {
 					</PageBreak>
 				);
 			case "table-cell":
-				return (
-					<TableCellElementRenderer element={element} attributes={attributes}>
-						{children}
-					</TableCellElementRenderer>
-				);
 			case "table-header-cell":
 				return (
-					<TableHeaderCellElementRenderer element={element} attributes={attributes}>
+					<TableCellElementCommonRenderer element={element} attributes={attributes}>
 						{children}
-					</TableHeaderCellElementRenderer>
+					</TableCellElementCommonRenderer>
 				);
 			case "table-row":
 				return (
@@ -127,7 +122,7 @@ export default function ElementRenderer(props: RenderElementProps) {
 						{children}
 					</TableHeader>
 				);
-			case "div":
+			case "table-cell-content":
 				return (
 					<div style={style} {...attributes}>
 						{children}

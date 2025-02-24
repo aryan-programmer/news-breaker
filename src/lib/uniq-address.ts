@@ -1,7 +1,7 @@
 function* generator() {
 	let i = 0;
 	while (true) {
-		yield "0x" + (++i).toString(16).padStart(2, "0") + Math.random().toString(16).slice(2, 10);
+		yield (++i).toString(36) + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
 	}
 	return "";
 }

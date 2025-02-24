@@ -1,6 +1,6 @@
 import { Editor, Location } from "slate";
-import { NodeEntryWithContext } from "./types";
 import { matrices } from "./matrices";
+import { NodeEntryWithContext } from "./types";
 
 export function filledMatrix(editor: Editor, options: { at?: Location } = {}): NodeEntryWithContext[][] {
 	const filled: NodeEntryWithContext[][] = [];
@@ -15,7 +15,8 @@ export function filledMatrix(editor: Editor, options: { at?: Location } = {}): N
 			}
 
 			for (let y = 0, offset = 0; y < matrix[x].length; y++) {
-				const [{ rowSpan = 1, colSpan = 1 }] = matrix[x][y];
+				// const [{ rowSpan = 1, colSpan = 1 }] = matrix[x][y];
+				const [{ colSpan = 1 }] = matrix[x][y];
 
 				for (let c = 0, occupied = 0; c < colSpan + occupied; c++) {
 					if (filledSection[x][y + c + offset]) {
@@ -23,21 +24,22 @@ export function filledMatrix(editor: Editor, options: { at?: Location } = {}): N
 						continue;
 					}
 
-					for (let r = 0; r < rowSpan; r++) {
-						if (!filledSection[x + r]) {
-							filledSection[x + r] = [];
-						}
-
-						filledSection[x + r][y + c + offset] = [
-							matrix[x][y], // entry
-							{
-								rtl: c - occupied + 1,
-								ltr: colSpan - c + occupied,
-								ttb: r + 1,
-								btt: rowSpan - r,
-							},
-						];
+					const r = 0;
+					// for (let r = 0; r < rowSpan; r++) {
+					if (!filledSection[x + r]) {
+						filledSection[x + r] = [];
 					}
+
+					filledSection[x + r][y + c + offset] = [
+						matrix[x][y], // entry
+						{
+							rtl: c - occupied + 1,
+							ltr: colSpan - c + occupied,
+							//ttb: r + 1,
+							//btt: rowSpan - r,
+						},
+					];
+					// }
 				}
 				offset += colSpan - 1;
 			}

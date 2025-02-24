@@ -1,16 +1,16 @@
 import { TableCellElement, TableHeaderCellElement, TableRowElement } from "@/app/editor/types";
 import { randomAddress } from "@/lib/uniq-address";
-import { Editor, Location, Node, NodeEntry, Path, Transforms } from "slate";
+import { Editor, Location, Node, Path, Transforms } from "slate";
 import { DEFAULT_INSERT_TABLE_OPTIONS, InsertTableOptions } from "./options";
 import { TableCursor } from "./table-cursor";
-import { filledMatrix, hasCommon, isElement, isOfType } from "./utils";
+import { filledMatrix, hasCommon, isOfType } from "./utils";
 import { CellElement } from "./utils/types";
 import { EDITOR_TO_SELECTION, EDITOR_TO_WITH_TABLE_OPTIONS } from "./weak-maps";
 
-		// number of rows and cols can't be less than 1
-		function clamp(n: number) {
-			return (n < 1 ? 1 : n);
-		}
+// number of rows and cols can't be less than 1
+function clamp(n: number) {
+	return n < 1 ? 1 : n;
+}
 
 export const TableEditor = {
 	/**
@@ -170,7 +170,8 @@ export const TableEditor = {
 		outer: for (let x = 0; x < matrix.length; x++) {
 			const [, currentTdPath] = currentTd;
 			for (let y = 0; y < matrix[x].length; y++) {
-				const [[, path], { btt }] = matrix[x][y];
+				// const [[, path], { btt }] = matrix[x][y];
+				const [[, path]] = matrix[x][y];
 				if (!Path.equals(currentTdPath, path)) {
 					continue;
 				}
@@ -180,7 +181,8 @@ export const TableEditor = {
 				// When determining the exit condition, we consider two scenarios:
 				// 1. If a row will be added above the current selection, we seek the first match.
 				// 2. Otherwise, if cells have a rowspan, we aim to find the last match.
-				if (options.before || btt < 2) {
+				// if (options.before || btt < 2) {
+				if (options.before) {
 					break outer;
 				}
 			}
@@ -195,25 +197,25 @@ export const TableEditor = {
 			const destIndex = options.before ? trIndex - 1 : trIndex + 1;
 			const isWithinBounds = destIndex >= 0 && destIndex < matrix.length;
 
-			let increasedRowspan = 0;
-			for (let y = 0; isWithinBounds && y < matrix[destIndex].length; y++) {
-				const [[element, path], { ltr, ttb, btt }] = matrix[destIndex][y];
-				const rowSpan = element.rowSpan || 1;
+			// let increasedRowspan = 0;
+			// for (let y = 0; isWithinBounds && y < matrix[destIndex].length; y++) {
+			// 	const [[element, path], { ltr, ttb, btt }] = matrix[destIndex][y];
+			// 	const rowSpan = element.rowSpan || 1;
 
-				if (options.before ? btt > 1 : ttb > 1) {
-					increasedRowspan += ltr;
+			// 	if (options.before ? btt > 1 : ttb > 1) {
+			// 		increasedRowspan += ltr;
 
-					Transforms.setNodes<CellElement>(
-						editor,
-						{
-							rowSpan: rowSpan + 1,
-						},
-						{ at: path },
-					);
-				}
+			// 		Transforms.setNodes<CellElement>(
+			// 			editor,
+			// 			{
+			// 				rowSpan: rowSpan + 1,
+			// 			},
+			// 			{ at: path },
+			// 		);
+			// 	}
 
-				y += ltr - 1;
-			}
+			// 	y += ltr - 1;
+			// }
 
 			const { length: colLen } = isWithinBounds ? matrix[destIndex] : matrix[0];
 			const { blocks } = editorOptions;
@@ -226,7 +228,7 @@ export const TableEditor = {
 				{
 					id: randomAddress(),
 					type: blocks.tr,
-					children: Array.from({ length: colLen - increasedRowspan }).map(() => ({
+					children: Array.from({ length: colLen /*- increasedRowspan */ }).map(() => ({
 						id: randomAddress(),
 						type: section.type === blocks.thead ? blocks.th : blocks.td,
 						children: [
@@ -277,7 +279,7 @@ export const TableEditor = {
 		const [, tablePath] = table;
 		const [, sectionPath] = section;
 		const [, trPath] = tr;
-		const [, tdPath] = td;
+		//const [, tdPath] = td;
 
 		// check if there is a sibling in the table
 		const [, globalSibling] = Editor.nodes(editor, {
@@ -291,99 +293,99 @@ export const TableEditor = {
 			});
 		}
 
-		const matrix = filledMatrix(editor, { at: options.at });
+		//const matrix = filledMatrix(editor, { at: options.at });
 
-		let trIndex = 0;
-		out: for (let x = 0; x < matrix.length; x++) {
-			for (let y = 0; y < matrix[x].length; y++) {
-				const [[, path], { ltr: colSpan }] = matrix[x][y];
+		//let trIndex = 0;
+		// out: for (let x = 0; x < matrix.length; x++) {
+		// 	for (let y = 0; y < matrix[x].length; y++) {
+		// 		const [[, path], { ltr: colSpan }] = matrix[x][y];
 
-				if (Path.equals(tdPath, path)) {
-					trIndex = x;
-					break out;
-				}
+		// 		if (Path.equals(tdPath, path)) {
+		// 			trIndex = x;
+		// 			break out;
+		// 		}
 
-				y += colSpan - 1;
-			}
-		}
+		// 		y += colSpan - 1;
+		// 	}
+		// }
 
 		// Flags whether the tr has a cell with a rowspan attribute (greater than 1).
 		// If true, cells with a rowspan will be moved to the next tr.
-		let hasRowspan = false;
+		//let hasRowspan = false;
 
 		// cells which span over multiple rows and have to be reduced
 		// when deleting the current tr
-		const toReduce: NodeEntry<CellElement>[] = [];
+		// const toReduce: NodeEntry<CellElement>[] = [];
 
-		for (let i = 0; i < matrix[trIndex].length; i++) {
-			const [entry, { ltr: colSpan, ttb, btt }] = matrix[trIndex][i];
+		// for (let i = 0; i < matrix[trIndex].length; i++) {
+		// 	const [entry, { ltr: colSpan, ttb, btt }] = matrix[trIndex][i];
 
-			// checks if the cell marks the beginning of a rowspan.
-			if (ttb === 1 && btt > 1) {
-				hasRowspan = true;
-			}
+		// 	// checks if the cell marks the beginning of a rowspan.
+		// 	if (ttb === 1 && btt > 1) {
+		// 		hasRowspan = true;
+		// 	}
 
-			// check if the cell has a rowspan greater 1, indicating
-			// it spans multiple rows.
-			if (ttb > 1 || btt > 1) {
-				toReduce.push(entry);
-			}
+		// 	// check if the cell has a rowspan greater 1, indicating
+		// 	// it spans multiple rows.
+		// 	if (ttb > 1 || btt > 1) {
+		// 		toReduce.push(entry);
+		// 	}
 
-			i += colSpan - 1;
-		}
+		// 	i += colSpan - 1;
+		// }
 
-		const toAdd: NodeEntry<CellElement>[] = [];
-		const next = matrix[trIndex + 1];
-		for (let i = 0; hasRowspan && i < next?.length; i++) {
-			const [entry, { ltr: colSpan, ttb }] = next[i];
+		//const toAdd: NodeEntry<CellElement>[] = [];
+		//const next = matrix[trIndex + 1];
+		// for (let i = 0; hasRowspan && i < next?.length; i++) {
+		// 	const [entry, { ltr: colSpan, ttb }] = next[i];
 
-			// - If 1, it indicates the start of either a rowspan or a normal cell, and it can be carried over.
-			// - If 2, it signifies the start of a rowspan in the previous cell and should be carried over.
-			// - If greater than 2, the rowspan is above the current row and should not be carried over.
-			if (ttb > 2) {
-				continue;
-			}
+		// 	// - If 1, it indicates the start of either a rowspan or a normal cell, and it can be carried over.
+		// 	// - If 2, it signifies the start of a rowspan in the previous cell and should be carried over.
+		// 	// - If greater than 2, the rowspan is above the current row and should not be carried over.
+		// 	if (ttb > 2) {
+		// 		continue;
+		// 	}
 
-			toAdd.push(entry);
+		// 	toAdd.push(entry);
 
-			i += colSpan - 1;
-		}
+		// 	i += colSpan - 1;
+		// }
 
 		Editor.withoutNormalizing(editor, () => {
-			for (const [{ rowSpan = 1 }, path] of toReduce) {
-				Transforms.setNodes<CellElement>(editor, { rowSpan: rowSpan - 1 }, { at: path });
-			}
+			// for (const [{ rowSpan = 1 }, path] of toReduce) {
+			// 	Transforms.setNodes<CellElement>(editor, { rowSpan: rowSpan - 1 }, { at: path });
+			// }
 
 			// If a cell of the tr contains the start of a rowspan
 			// the cells will be merged with the next row
-			if (hasRowspan) {
-				const { blocks } = editorOptions;
+			// if (hasRowspan) {
+			// 	const { blocks } = editorOptions;
 
-				Transforms.mergeNodes(editor, {
-					match: isOfType(editor, "tr"),
-					at: Path.next(trPath),
-				});
+			// 	Transforms.mergeNodes(editor, {
+			// 		match: isOfType(editor, "tr"),
+			// 		at: Path.next(trPath),
+			// 	});
 
-				Transforms.insertNodes(
-					editor,
-					{
-						id: randomAddress(),
-						type: blocks.tr,
-						children: toAdd.map((entry) => {
-							const [element] = entry;
+			// 	Transforms.insertNodes(
+			// 		editor,
+			// 		{
+			// 			id: randomAddress(),
+			// 			type: blocks.tr,
+			// 			children: toAdd.map((entry) => {
+			// 				const [element] = entry;
 
-							if (toReduce.includes(entry)) {
-								const { rowSpan = 1, ...rest } = element;
+			// 				if (toReduce.includes(entry)) {
+			// 					const { rowSpan = 1, ...rest } = element;
 
-								return { ...rest, rowSpan: rowSpan === 1 ? 1 : rowSpan - 1 };
-							}
+			// 					return { ...rest, rowSpan: rowSpan === 1 ? 1 : rowSpan - 1 };
+			// 				}
 
-							return element;
-						}),
-					},
-					{ at: Path.next(trPath) },
-				);
-			}
+			// 				return element;
+			// 			}),
+			// 		},
+			// 		{ at: Path.next(trPath) },
+			// 	);
+			// }
 
 			// check if there is a sibling in the table section
 			const [, sibling] = Editor.nodes(editor, {
@@ -444,7 +446,8 @@ export const TableEditor = {
 		Editor.withoutNormalizing(editor, () => {
 			const { blocks } = editorOptions;
 			outer: for (let x = 0; x < matrix.length; x++) {
-				const [[{ colSpan = 1 }, path], { ltr, rtl, ttb, btt }] = matrix[x][tdIndex];
+				const [[{ colSpan = 1 }, path], { ltr, rtl }] = matrix[x][tdIndex];
+				// const [[{ colSpan = 1 }, path], { ltr, rtl, ttb, btt }] = matrix[x][tdIndex];
 
 				// when inserting left and the right-to-left is greater than 1, the colspan is increased
 				// when inserting right and the left-to-right is greater than 1, the colspan is increased
@@ -452,7 +455,7 @@ export const TableEditor = {
 					Transforms.setNodes<CellElement>(editor, { colSpan: colSpan + 1 }, { at: path });
 
 					// skip increasing the colspan for the same cell if it has a rowspan
-					x += btt - 1;
+					//x += btt - 1;
 					continue;
 				}
 
@@ -476,43 +479,44 @@ export const TableEditor = {
 								},
 							],
 						},
-						{ at: path }
+						{ at: path },
 					);
 				}
 
 				// if the cell has no rowspan, just insert:
-				if (ttb === 1) {
+				// if (ttb === 1)
+				{
 					insertTd(options.before ? path : Path.next(path));
 					continue;
 				}
 
 				// iterate to the prev real cell
-				for (let y = tdIndex; y >= 0; y--) {
-					const [[, path], { ttb }] = matrix[x][y];
+				// for (let y = tdIndex; y >= 0; y--) {
+				// 	const [[, path], { ttb }] = matrix[x][y];
 
-					// skip cells which span through the row because of their rowspan attribute
-					if (ttb !== 1) {
-						continue;
-					}
+				// 	// skip cells which span through the row because of their rowspan attribute
+				// 	if (ttb !== 1) {
+				// 		continue;
+				// 	}
 
-					// always the next path when adding from this loop
-					insertTd(Path.next(path));
-					continue outer;
-				}
+				// 	// always the next path when adding from this loop
+				// 	insertTd(Path.next(path));
+				// 	continue outer;
+				// }
 
-				let index = 0;
-				for (const [, path] of Editor.nodes(editor, {
-					match: isOfType(editor, "tr"),
-					at: table[1],
-				})) {
-					if (index !== x) {
-						index++;
-						continue;
-					}
+				// let index = 0;
+				// for (const [, path] of Editor.nodes(editor, {
+				// 	match: isOfType(editor, "tr"),
+				// 	at: table[1],
+				// })) {
+				// 	if (index !== x) {
+				// 		index++;
+				// 		continue;
+				// 	}
 
-					insertTd(path.concat(0));
-					continue outer;
-				}
+				// 	insertTd(path.concat(0));
+				// 	continue outer;
+				// }
 			}
 		});
 	},
@@ -564,12 +568,13 @@ export const TableEditor = {
 
 		Editor.withoutNormalizing(editor, () => {
 			for (let x = matrix.length - 1; x >= 0; x--) {
-				const [[{ colSpan = 1 }, path], { ltr, rtl, ttb }] = matrix[x][tdIndex];
+				// const [[{ colSpan = 1 }, path], { ltr, rtl, ttb }] = matrix[x][tdIndex];
+				const [[{ colSpan = 1 }, path], { ltr, rtl }] = matrix[x][tdIndex];
 
 				// skip "fake" cells which belong to a cell with a `rowspan`
-				if (ttb > 1) {
-					continue;
-				}
+				// if (ttb > 1) {
+				// 	continue;
+				// }
 
 				let hasSibling = false;
 				for (let y = 0; y < matrix[x].length; y++) {
@@ -594,7 +599,7 @@ export const TableEditor = {
 				if (ltr === 1 && rtl === 1) Transforms.removeNodes(editor, { at: path });
 				else Transforms.setNodes<CellElement>(editor, { colSpan: colSpan - 1 }, { at: path });
 
-				x -= ttb - 1;
+				// x -= ttb - 1;
 			}
 		});
 	},
@@ -608,6 +613,10 @@ export const TableEditor = {
 		const matrix = EDITOR_TO_SELECTION.get(editor);
 		// cannot merge when selection is empty
 		if (!matrix || !matrix.length) {
+			return false;
+		}
+
+		if (matrix.length > 1) {
 			return false;
 		}
 
@@ -643,28 +652,29 @@ export const TableEditor = {
 		const matrix = filledMatrix(editor, { at: basePath });
 
 		Editor.withoutNormalizing(editor, () => {
-			let rowSpan = 0;
+			//let rowSpan = 0;
 			let colSpan = 0;
-			for (let x = selection.length - 1; x >= 0; x--, rowSpan++) {
+			for (let x = selection.length - 1; x >= 0; x-- /*, rowSpan++ */) {
 				colSpan = 0;
 				for (let y = selection[x].length - 1; y >= 0; y--, colSpan++) {
-					const [[, path], { rtl: colspan, ttb }] = selection[x][y];
+					//const [[, path], { rtl: colspan, ttb }] = selection[x][y];
+					const [[, path], { rtl: colspan }] = selection[x][y];
 
 					y -= colspan - 1;
 					colSpan += colspan - 1;
 
 					// skip first cell and "fake" cells which belong to a cell with a `rowspan`
-					if (Path.equals(basePath, path) || ttb > 1) {
+					if (Path.equals(basePath, path) /*|| ttb > 1 */) {
 						continue;
 					}
 
 					// prettier-ignore
 					for (const [, childPath] of Node.children(editor, path, { reverse: true })) {
-            Transforms.moveNodes(editor, {
-              to: Path.next(lastPath),
-              at: childPath,
-            });
-          }
+						Transforms.moveNodes(editor, {
+							to: Path.next(lastPath),
+							at: childPath,
+						});
+					}
 
 					const [[, trPath]] = Editor.nodes(editor, {
 						match: isOfType(editor, "tr"),
@@ -679,33 +689,33 @@ export const TableEditor = {
 					}
 
 					// there has to be a better way to do this
-					let trIndex = 0;
-					out: for (let i = 0; i < matrix.length; i++) {
-						for (let j = 0; j < matrix[i].length; j++) {
-							const [[, tdPath]] = matrix[i][j];
-							if (Path.equals(tdPath, path)) {
-								trIndex = i;
-								break out;
-							}
-						}
-					}
+					// let trIndex = 0;
+					// out: for (let i = 0; i < matrix.length; i++) {
+					// 	for (let j = 0; j < matrix[i].length; j++) {
+					// 		const [[, tdPath]] = matrix[i][j];
+					// 		if (Path.equals(tdPath, path)) {
+					// 			trIndex = i;
+					// 			break out;
+					// 		}
+					// 	}
+					// }
 
-					for (let y = 0; y < matrix[trIndex].length; y++) {
-						const [[, tdPath], { ttb, ltr }] = matrix[trIndex][y];
-						y += ltr - 1;
+					// for (let y = 0; y < matrix[trIndex].length; y++) {
+					// 	const [[, tdPath], { ttb, ltr }] = matrix[trIndex][y];
+					// 	y += ltr - 1;
 
-						if (ttb === 1) {
-							continue;
-						}
+					// 	if (ttb === 1) {
+					// 		continue;
+					// 	}
 
-						const [element] = Editor.node(editor, tdPath);
-						if (isElement<CellElement>(element)) {
-							const { rowSpan = 1 } = element;
-							Transforms.setNodes<CellElement>(editor, { rowSpan: rowSpan - 1 }, { at: tdPath });
-						}
-					}
+					// 	const [element] = Editor.node(editor, tdPath);
+					// 	if (isElement<CellElement>(element)) {
+					// 		const { rowSpan = 1 } = element;
+					// 		Transforms.setNodes<CellElement>(editor, { rowSpan: rowSpan - 1 }, { at: tdPath });
+					// 	}
+					// }
 
-					rowSpan--;
+					//rowSpan--;
 					Transforms.removeNodes(editor, { at: trPath });
 				}
 			}
@@ -715,7 +725,8 @@ export const TableEditor = {
 				colSpan = 1;
 			}
 
-			Transforms.setNodes<CellElement>(editor, { rowSpan, colSpan }, { at: basePath });
+			//Transforms.setNodes<CellElement>(editor, { rowSpan, colSpan }, { at: basePath });
+			Transforms.setNodes<CellElement>(editor, { colSpan }, { at: basePath });
 		});
 	},
 	/**
@@ -750,7 +761,8 @@ export const TableEditor = {
 			for (let x = matrix.length - 1; x >= 0; x--) {
 				for (let y = matrix[x].length - 1; y >= 0; y--) {
 					const [[, path], context] = matrix[x][y];
-					const { ltr: colSpan, rtl, btt: rowSpan, ttb } = context;
+					// const { ltr: colSpan, rtl, btt: rowSpan, ttb } = context;
+					const { ltr: colSpan, rtl } = context;
 
 					if (rtl > 1) {
 						// get to the start of the colspan
@@ -758,11 +770,12 @@ export const TableEditor = {
 						continue;
 					}
 
-					if (ttb > 1) {
-						continue;
-					}
+					// if (ttb > 1) {
+					// 	continue;
+					// }
 
-					if (rowSpan === 1 && colSpan === 1) {
+					// if (rowSpan === 1 && colSpan === 1) {
+					if (colSpan === 1) {
 						continue;
 					}
 
@@ -795,61 +808,61 @@ export const TableEditor = {
 						at: path,
 					});
 
-					out: for (let r = 1; r < rowSpan; r++) {
-						for (let i = y; i >= 0; i--) {
-							const [[, path], { ttb }] = matrix[x + r][i];
+					// out: for (let r = 1; r < rowSpan; r++) {
+					// 	for (let i = y; i >= 0; i--) {
+					// 		const [[, path], { ttb }] = matrix[x + r][i];
 
-							if (ttb !== 1) {
-								continue;
-							}
+					// 		if (ttb !== 1) {
+					// 			continue;
+					// 		}
 
-							for (let c = 0; c < colSpan; c++) {
-								Transforms.insertNodes(
-									editor,
-									{
-										id: randomAddress(),
-										type: section.type === blocks.thead ? blocks.th : blocks.td,
-										children: [
-											{
-												id: randomAddress(),
-												type: blocks.content,
-												children: [{ text: "" }],
-											},
-										],
-									},
-									{ at: Path.next(path) },
-								);
-							}
-							continue out;
-						}
+					// 		for (let c = 0; c < colSpan; c++) {
+					// 			Transforms.insertNodes(
+					// 				editor,
+					// 				{
+					// 					id: randomAddress(),
+					// 					type: section.type === blocks.thead ? blocks.th : blocks.td,
+					// 					children: [
+					// 						{
+					// 							id: randomAddress(),
+					// 							type: blocks.content,
+					// 							children: [{ text: "" }],
+					// 						},
+					// 					],
+					// 				},
+					// 				{ at: Path.next(path) },
+					// 			);
+					// 		}
+					// 		continue out;
+					// 	}
 
-						for (let i = y; i < matrix[x].length; i++) {
-							const [[, path], { ttb }] = matrix[x + r][i];
+					// 	for (let i = y; i < matrix[x].length; i++) {
+					// 		const [[, path], { ttb }] = matrix[x + r][i];
 
-							if (ttb !== 1) {
-								continue;
-							}
+					// 		if (ttb !== 1) {
+					// 			continue;
+					// 		}
 
-							for (let c = 0; c < colSpan; c++) {
-								Transforms.insertNodes(
-									editor,
-									{
-										id: randomAddress(),
-										type: section.type === blocks.thead ? blocks.th : blocks.td,
-										children: [
-											{
-												id: randomAddress(),
-												type: blocks.content,
-												children: [{ text: "" }],
-											},
-										],
-									},
-									{ at: [...Path.parent(path), 0] },
-								);
-							}
-							continue out;
-						}
-					}
+					// 		for (let c = 0; c < colSpan; c++) {
+					// 			Transforms.insertNodes(
+					// 				editor,
+					// 				{
+					// 					id: randomAddress(),
+					// 					type: section.type === blocks.thead ? blocks.th : blocks.td,
+					// 					children: [
+					// 						{
+					// 							id: randomAddress(),
+					// 							type: blocks.content,
+					// 							children: [{ text: "" }],
+					// 						},
+					// 					],
+					// 				},
+					// 				{ at: [...Path.parent(path), 0] },
+					// 			);
+					// 		}
+					// 		continue out;
+					// 	}
+					// }
 
 					for (let c = 1; c < colSpan; c++) {
 						Transforms.insertNodes(
@@ -869,7 +882,8 @@ export const TableEditor = {
 						);
 					}
 
-					Transforms.setNodes<CellElement>(editor, { rowSpan: 1, colSpan: 1 }, { at: path });
+					//Transforms.setNodes<CellElement>(editor, { rowSpan: 1, colSpan: 1 }, { at: path });
+					Transforms.setNodes<CellElement>(editor, { colSpan: 1 }, { at: path });
 				}
 			}
 		});

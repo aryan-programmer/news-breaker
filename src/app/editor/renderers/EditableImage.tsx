@@ -48,12 +48,12 @@ export default function EditableImage({ attributes, element, children }: Editabl
 			<div className="h-0 text-transparent outline-0 outline-none absolute w-0" style={{ fontSize: 0 }}>
 				{children as any}
 			</div>
-			<div contentEditable={false} className="relative">
+			<div contentEditable={false} className="w-full">
 				{/* eslint-disable-next-line @next/next/no-img-element*/}
 				<img
 					alt=""
 					src={element.srcUrl}
-					className="block max-w-full max-h-60 shadow-none data-[selected=on]:drop-shadow-lg data-[selected=on]:shadow-foreground"
+					className="block max-w-full max-h-none shadow-none data-[selected=on]:drop-shadow-lg data-[selected=on]:shadow-foreground"
 					onClick={select}
 					data-selected={settingsSidebarStore?.data?.id === element.id ? "on" : "off"}
 				/>
@@ -64,6 +64,7 @@ export default function EditableImage({ attributes, element, children }: Editabl
 
 const formSchema = z.object({
 	url: z.string().url("Enter a valid URL"),
+	//align: z.string().nonempty().refine(isAlignType, "Enter a valid alignment"),
 });
 
 function EditableImageSidebarSettings({
@@ -75,21 +76,30 @@ function EditableImageSidebarSettings({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			url: element.srcUrl,
+			//align: element.align ?? "left",
 		},
 	});
 
-	// 2. Define a submit handler.
+	const onRemove = useCallback(() => Transforms.removeNodes(editor, { at }), [editor, at]);
+
 	function onSubmit(values: z.infer<typeof formSchema>) {
-		Transforms.setNodes<ImageElement>(editor, { srcUrl: values.url }, { at });
+		Transforms.setNodes<ImageElement>(
+			editor,
+			{
+				srcUrl: values.url,
+				//align: values.align
+			},
+			{ at },
+		);
 	}
 	return (
 		<Form {...form}>
-			<form onSubmit={forwardFnDropAsync(form.handleSubmit(onSubmit))} className="pb-4 px-2">
+			<form onSubmit={forwardFnDropAsync(form.handleSubmit(onSubmit))} className="pb-4 px-2 flex flex-col items-center">
 				<FormField
 					control={form.control}
 					name="url"
 					render={({ field }) => (
-						<FormItem>
+						<FormItem className="w-full">
 							<FormLabel>URL of image to display</FormLabel>
 							<FormControl>
 								<Input placeholder="https://example.com/image.png" {...field} type="url" />
@@ -98,8 +108,34 @@ function EditableImageSidebarSettings({
 						</FormItem>
 					)}
 				/>
-				<Button className="mt-2" type="submit">
+				{/* <FormField
+					control={form.control}
+					name="align"
+					render={({ field: { onChange, ...field } }) => (
+						<FormItem>
+							<FormLabel>Alignment</FormLabel>
+							<FormControl>
+								<Select {...field} onValueChange={onChange}>
+									<SelectTrigger className="w-full">
+										<SelectValue placeholder="Select alignment" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="left">Left</SelectItem>
+										<SelectItem value="center">Center</SelectItem>
+										<SelectItem value="right">Right</SelectItem>
+									</SelectContent>
+								</Select>
+							</FormControl>
+							<FormMessage className="w-100" />
+						</FormItem>
+					)}
+				/> */}
+				<Button className="mt-2 mb-12 mx-auto" type="submit">
 					Apply
+				</Button>
+				<br />
+				<Button className="mx-auto" variant="destructive" onClick={onRemove} type="button">
+					Remove Image
 				</Button>
 			</form>
 		</Form>

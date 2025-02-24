@@ -1,6 +1,7 @@
 "use client";
-import { randomAddress } from "@/lib/uniq-address";
-import { DATA_GIF_URL } from "@/lib/utils";
+import { getAddress, randomAddress } from "@/lib/uniq-address";
+import { DEMO_IMAGE_URL } from "@/lib/utils";
+import _ from "lodash";
 import { Descendant } from "slate";
 import { create } from "zustand";
 import { generateDefaultSectionBreakElement } from "./renderers/SectionBreak";
@@ -18,10 +19,12 @@ export function get_demo_editor_value(): Descendant[] {
 			textSectionBgColor: "#f99",
 			id: randomAddress(),
 		},
+		{ id: randomAddress(), type: "paragraph", children: [{ text: "" }] },
 		{ type: "auto-toc", children: [{ text: "" }], id: randomAddress(), includeHeaderLevelUpto: 3 },
 		generateDefaultSectionBreakElement(),
 		{ id: randomAddress(), type: "heading-1", children: [{ text: "Actual content starts here", underline: true }] },
-		{ id: randomAddress(), type: "heading-2", children: [{ text: "Heading 2 again", italic: true }] },
+		{ id: randomAddress(), type: "heading-2", children: [{ text: "Heading 2 " }, { text: "again", italic: true }] },
+		{ id: randomAddress(), type: "heading-3", children: [{ text: "Heading 3" }] },
 		{
 			id: randomAddress(),
 			type: "table",
@@ -37,47 +40,22 @@ export function get_demo_editor_value(): Descendant[] {
 								{
 									id: randomAddress(),
 									type: "table-header-cell",
-									children: [
-										{
-											id: randomAddress(),
-											type: "heading-3",
-											children: [
-												{
-													text: "Time",
-												},
-											],
-										},
-									],
+									children: [{ id: randomAddress(), type: "heading-3", children: [{ text: "Time" }] }],
 								},
 								{
 									id: randomAddress(),
 									type: "table-header-cell",
-									children: [
-										{
-											id: randomAddress(),
-											type: "heading-3",
-											children: [
-												{
-													text: "🎨 Frontend team",
-												},
-											],
-										},
-									],
+									children: [{ id: randomAddress(), type: "heading-3", children: [{ text: "🎨 Frontend team" }] }],
 								},
 								{
 									id: randomAddress(),
 									type: "table-header-cell",
-									children: [
-										{
-											id: randomAddress(),
-											type: "heading-3",
-											children: [
-												{
-													text: "👷 Backend team ",
-												},
-											],
-										},
-									],
+									children: [{ id: randomAddress(), type: "table-cell-content", children: [{ text: "Data row" }] }],
+								},
+								{
+									id: randomAddress(),
+									type: "table-header-cell",
+									children: [{ id: randomAddress(), type: "heading-3", children: [{ text: "👷 Backend team " }] }],
 								},
 							],
 						},
@@ -94,34 +72,47 @@ export function get_demo_editor_value(): Descendant[] {
 								{
 									id: randomAddress(),
 									type: "table-cell",
-									children: [
-										{
-											id: randomAddress(),
-											type: "paragraph",
-											children: [
-												{
-													text: "9:00 AM",
-													bold: true,
-												},
-											],
-										},
-									],
+									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "9:00 AM", bold: true }] }],
 								},
 								{
 									id: randomAddress(),
 									type: "table-cell",
+									colSpan: 3,
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Opening Keynote 🎉" }] }],
+										},
+									],
+								},
+							],
+						},
+						{
+							id: randomAddress(),
+							type: "table-row",
+							children: [
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "10:30 AM", bold: true }] }],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Introduction to 🅰️ngular" }] }],
+										},
+									],
 									colSpan: 2,
-									children: [
-										{
-											id: randomAddress(),
-											type: "paragraph",
-											children: [
-												{
-													text: "Opening Keynote 🎉",
-												},
-											],
-										},
-									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Introduction to Gradle and Java 11 ☕" }] }],
 								},
 							],
 						},
@@ -132,19 +123,12 @@ export function get_demo_editor_value(): Descendant[] {
 								{
 									id: randomAddress(),
 									type: "table-cell",
-									rowSpan: 2,
-									children: [
-										{
-											id: randomAddress(),
-											type: "paragraph",
-											children: [
-												{
-													text: "10:30 AM",
-													bold: true,
-												},
-											],
-										},
-									],
+									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "10:30 AM", bold: true }] }],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Strictly typed forms in v14" }] }],
 								},
 								{
 									id: randomAddress(),
@@ -152,93 +136,66 @@ export function get_demo_editor_value(): Descendant[] {
 									children: [
 										{
 											id: randomAddress(),
-											type: "paragraph",
-											children: [
-												{
-													text: "Introduction to 🅰️ngular",
-												},
-											],
+											type: "table-cell-content",
+											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Advanced Gradle and Java 11 ☕" }] }],
 										},
 									],
-								},
-								{
-									id: randomAddress(),
-									type: "table-cell",
-									rowSpan: 2,
-									children: [
-										{
-											id: randomAddress(),
-											type: "paragraph",
-											children: [
-												{
-													text: "Introduction to Gradle and Java 11 ☕",
-												},
-											],
-										},
-									],
-								},
-							],
-						},
-						{
-							id: randomAddress(),
-							type: "table-row",
-							children: [
-								{
-									id: randomAddress(),
-									type: "table-cell",
-									children: [
-										{
-											id: randomAddress(),
-											type: "paragraph",
-											children: [
-												{
-													text: "Strictly typed forms in v14",
-												},
-											],
-										},
-									],
-								},
-							],
-						},
-						{
-							id: randomAddress(),
-							type: "table-row",
-							children: [
-								{
-									id: randomAddress(),
-									type: "table-cell",
-									children: [
-										{
-											id: randomAddress(),
-											type: "paragraph",
-											children: [
-												{
-													text: "1:00 PM",
-													bold: true,
-												},
-											],
-										},
-									],
-								},
-								{
-									id: randomAddress(),
-									type: "table-cell",
 									colSpan: 2,
+								},
+							],
+						},
+						{
+							id: randomAddress(),
+							type: "table-row",
+							children: [
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "1:00 PM", bold: true }] }],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									colSpan: 3,
 									children: [
 										{
 											id: randomAddress(),
-											type: "paragraph",
-											children: [
-												{
-													text: "Lunch Break",
-													underline: true,
-												},
-												{
-													text: " 🍱",
-												},
-											],
+											type: "table-cell-content",
+											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Lunch Break", underline: true }, { text: " 🍱" }] }],
 										},
 									],
+								},
+							],
+						},
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "table-footer",
+					children: [
+						{
+							id: randomAddress(),
+							type: "table-row",
+							children: [
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Time" }] }],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Frontend team" }] }],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [{ id: randomAddress(), type: "table-cell-content", children: [{ text: "New Cell" }] }],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Backend team" }] }],
 								},
 							],
 						},
@@ -277,6 +234,7 @@ export function get_demo_editor_value(): Descendant[] {
 			],
 		},
 		{
+			id: randomAddress(),
 			type: "block-quote",
 			children: [{ text: "A wise quote." }],
 		},
@@ -301,9 +259,15 @@ export function get_demo_editor_value(): Descendant[] {
 		},
 		{
 			type: "image",
-			srcUrl: DATA_GIF_URL,
+			srcUrl: DEMO_IMAGE_URL,
 			children: [{ text: "" }],
 			id: randomAddress(),
+			align: "center",
+		},
+		{
+			id: randomAddress(),
+			type: "page-break",
+			children: [{ text: "" }],
 		},
 		{
 			id: randomAddress(),
@@ -314,17 +278,50 @@ export function get_demo_editor_value(): Descendant[] {
 	];
 }
 
+/** @see {isTableCellPercentageWidthsRecord} ts-auto-guard:type-guard */
+export type TableCellPercentageWidthsRecord = Readonly<Record<string, string>>;
+
+export function pruneTableCellPercentageWidths(nodesTree: Descendant[], data: TableCellPercentageWidthsRecord): TableCellPercentageWidthsRecord {
+	const ids = new Set<string>();
+	const q = [...nodesTree];
+	while (q.length > 0) {
+		const last = q.pop();
+		if (last == null) continue;
+		const id = "id" in last ? last.id : getAddress(last);
+		if (ids.has(id)) continue;
+		ids.add(id);
+		if ("children" in last) {
+			q.push(...last.children);
+		}
+	}
+	return _.pickBy(data, (_, key) => ids.has(key));
+}
+
 export type EditorStore = {
+	tableCellPercentageWidths: TableCellPercentageWidthsRecord;
+	setTableCellPercentageWidth(tableCellId: string, value: string): void;
+	overwriteTableCellPercentageWidths(tableCellPercentageWidths: TableCellPercentageWidthsRecord): void;
 	children: Descendant[];
 	setChildren(data: Descendant[]): void;
 };
 
 export const useEditorStore = create<EditorStore>()(
 	// persist<EditorStore>(
-	(set) => ({
+	(set, get) => ({
 		children: get_demo_editor_value(),
+		tableCellPercentageWidths: {},
 		setChildren(value: Descendant[]) {
+			// console.log("setChildren");
 			set({ children: value });
+		},
+		setTableCellPercentageWidth(tableCellId: string, value: string) {
+			// console.log("setTableCellPercentageWidth");
+			if (get().tableCellPercentageWidths[tableCellId] !== value) {
+				set({ tableCellPercentageWidths: { ...get().tableCellPercentageWidths, [tableCellId]: value } });
+			}
+		},
+		overwriteTableCellPercentageWidths(tableCellPercentageWidths: TableCellPercentageWidthsRecord) {
+			set({ tableCellPercentageWidths });
 		},
 	}),
 	// 	{

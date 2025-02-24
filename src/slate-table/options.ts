@@ -1,6 +1,6 @@
 import {
-	DivElement,
 	TableBodySectionElement,
+	TableCellContentElement,
 	TableCellElement,
 	TableElement,
 	TableFootSectionElement,
@@ -14,7 +14,7 @@ export interface WithTableOptions {
 	blocks: {
 		td: TableCellElement["type"];
 		th: TableHeaderCellElement["type"];
-		content: DivElement["type"];
+		content: TableCellContentElement["type"];
 		tr: TableRowElement["type"];
 		table: TableElement["type"];
 		tbody: TableBodySectionElement["type"];
@@ -33,7 +33,7 @@ export const DEFAULT_WITH_TABLE_OPTIONS = {
 	blocks: {
 		td: "table-cell",
 		th: "table-header-cell",
-		content: "div",
+		content: "table-cell-content",
 		tr: "table-row",
 		table: "table",
 		tbody: "table-body",

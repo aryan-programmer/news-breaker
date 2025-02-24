@@ -107,10 +107,12 @@ export function withDelete<T extends Editor>(editor: T, { withDelete, withSelect
 
 				for (let x = selected.length - 1; x >= 0; x--) {
 					for (let y = selected[x].length - 1; y >= 0; y--) {
-						const [[, path], { rtl, ttb }] = selected[x][y];
+						const [[, path], { rtl }] = selected[x][y];
+						// const [[, path], { rtl, ttb }] = selected[x][y];
 
 						// skip fake cell
-						if (rtl > 1 || ttb > 1) {
+						// if (rtl > 1 || ttb > 1) {
+						if (rtl > 1) {
 							continue;
 						}
 

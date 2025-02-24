@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/Button";
 import { ColorPicker } from "@/components/ui/ColorPicker";
 import { Label } from "@/components/ui/Label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
@@ -113,6 +114,7 @@ export function SectionBreak({ attributes, element, children }: SectionBreakProp
 		},
 		[editor, path],
 	);
+	const onRemove = useCallback(() => Transforms.removeNodes(editor, { at: path }), [editor, path]);
 	return (
 		<>
 			<h1 className="py-2 text-2xl font-extrabold leading-none w-100 text-center bg-muted">Section Break</h1>
@@ -152,6 +154,9 @@ export function SectionBreak({ attributes, element, children }: SectionBreakProp
 										<span>Reset Page Numbering</span>
 									</Label>
 								</div>
+								<Button variant="destructive" onClick={onRemove}>
+									Remove Section Break
+								</Button>
 							</div>
 						</TableCell>
 					</TableRow>

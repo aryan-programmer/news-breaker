@@ -12,7 +12,10 @@ export type SectionBreakHeaderFooterEditorElementType = "odd-header" | "odd-foot
 /** @see {isPageNumberFormatType} ts-auto-guard:type-guard */
 export type PageNumberFormatType = "numeric" | "lower" | "upper" | "lower-roman" | "upper-roman";
 
-export type CommonElement = { id: string };
+export type CommonElement = {
+	id: string;
+	align?: AlignType;
+};
 
 export type FrontPageWithTextElement = CommonElement & {
 	type: "front-page-with-text";
@@ -30,17 +33,15 @@ export type PageBreakElement = CommonElement & {
 	type: "page-break";
 	children: [CustomText];
 };
-export type DivElement = CommonElement & {
-	type: "div";
-	align?: AlignType;
+export type TableCellContentElement = CommonElement & {
+	type: "table-cell-content";
 	children: Descendant[];
 };
-export type Paragraph = CommonElement & {
+export type ParagraphElement = CommonElement & {
 	type: "paragraph";
-	align?: AlignType;
 	children: CustomText[];
 };
-export type BlockQuote = {
+export type BlockQuoteElement = CommonElement & {
 	type: "block-quote";
 	children: CustomText[];
 };
@@ -76,13 +77,13 @@ export type ImageElement = CommonElement & {
 export type TableCellElement = CommonElement & {
 	type: "table-cell";
 	children: Descendant[];
-	rowSpan?: number;
+	//rowSpan?: never;
 	colSpan?: number;
 };
 export type TableHeaderCellElement = CommonElement & {
 	type: "table-header-cell";
 	children: Descendant[];
-	rowSpan?: number;
+	//rowSpan?: never;
 	colSpan?: number;
 };
 export type TableRowElement = CommonElement & {
@@ -128,8 +129,8 @@ export type SectionBreakElement = CommonElement & {
 };
 
 export type CustomElement =
-	| Paragraph
-	| BlockQuote
+	| ParagraphElement
+	| BlockQuoteElement
 	| ListItemElement
 	| Heading1Element
 	| Heading2Element
@@ -147,10 +148,21 @@ export type CustomElement =
 	| TableBodySectionElement
 	| TableFootSectionElement
 	| TableHeadSectionElement
-	| DivElement
+	| TableCellContentElement
 	| SectionBreakElement
 	| SectionBreakHeaderFooterEditorElement
 	| SectionBreakHeaderFooterCell;
+
+type GetTextChildrenOnlyTypes<T extends { type: string }> = T extends {
+	children: infer T2;
+}
+	? T2 extends CustomText[]
+		? T
+		: never
+	: never;
+
+/** @see {isElementNameThatOfTextChildrenOnlyElement} ts-auto-guard:type-guard */
+export type TextChildrenOnlyElementNames = GetTextChildrenOnlyTypes<CustomElement>["type"];
 
 export type ElementsWhoseTypesCannotBeChanged =
 	| ImageElement

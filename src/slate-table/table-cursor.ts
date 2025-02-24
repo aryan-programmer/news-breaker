@@ -1,7 +1,7 @@
 import { Editor, Element, Location, Node, NodeEntry, Operation, Path, Point, Range, Transforms } from "slate";
-import { EDITOR_TO_SELECTION, EDITOR_TO_SELECTION_SET, EDITOR_TO_WITH_TABLE_OPTIONS } from "./weak-maps";
-import { Edge, NodeEntryWithContext, SelectionMode } from "./utils/types";
 import { filledMatrix, isOfType, matrix } from "./utils";
+import { Edge, NodeEntryWithContext, SelectionMode } from "./utils/types";
+import { EDITOR_TO_SELECTION, EDITOR_TO_SELECTION_SET, EDITOR_TO_WITH_TABLE_OPTIONS } from "./weak-maps";
 
 export const TableCursor = {
 	/** @returns {boolean} `true` if the selection is inside a table, otherwise `false`. */
@@ -100,9 +100,11 @@ export const TableCursor = {
 		let indexY = 0;
 		outer: for (let x = 0; x < m.length; x++) {
 			for (indexY = 0; indexY < m[x].length; indexY++) {
-				const [[, path], { ltr: colSpan, btt: rowSpan }] = m[x][indexY];
+				// const [[, path], { ltr: colSpan, btt: rowSpan }] = m[x][indexY];
+				const [[, path], { ltr: colSpan }] = m[x][indexY];
 
-				if (rowSpan === 1 && Path.equals(path, tdPath)) {
+				// if (rowSpan === 1 && Path.equals(path, tdPath)) {
+				if (Path.equals(path, tdPath)) {
 					next = m[x + 1];
 					break outer;
 				}
@@ -366,9 +368,11 @@ export const TableCursor = {
 		for (let x = 0; matrix && x < matrix.length; x++) {
 			const cells: NodeEntry[] = [];
 			for (let y = 0; y < matrix[x].length; y++) {
-				const [entry, { ltr: colSpan, ttb }] = matrix[x][y];
+				const [entry, { ltr: colSpan }] = matrix[x][y];
+				//const [entry, { ltr: colSpan, ttb }] = matrix[x][y];
 
-				if (ttb === 1) cells.push(entry);
+				//if (ttb === 1)
+				cells.push(entry);
 
 				y += colSpan - 1;
 			}
@@ -391,12 +395,13 @@ export const TableCursor = {
 
 		for (let x = 0; x < matrix.length; x++) {
 			for (let y = 0; y < matrix[x].length; y++) {
-				const [[, path], { ltr: colSpan, ttb }] = matrix[x][y];
+				const [[, path], { ltr: colSpan }] = matrix[x][y];
+				// const [[, path], { ltr: colSpan, ttb }] = matrix[x][y];
 				y += colSpan - 1;
 
-				if (ttb > 1) {
-					continue;
-				}
+				// if (ttb > 1) {
+				// 	continue;
+				// }
 
 				// no-op since the paths are the same
 				const noop: Operation = {
