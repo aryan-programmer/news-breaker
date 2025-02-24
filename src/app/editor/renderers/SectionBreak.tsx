@@ -10,6 +10,7 @@ import { Transforms } from "slate";
 import { ReactEditor, useSlateStatic } from "slate-react";
 import {
 	CustomEditor,
+	PageNumberFormatType,
 	RenderElementAttributesProp,
 	SectionBreakElement,
 	SectionBreakHeaderFooterCell,
@@ -18,7 +19,7 @@ import {
 } from "../types";
 import { isPageNumberFormatType } from "../types.guard";
 
-export function generateDefaultSectionBreakElement(): SectionBreakElement {
+export function generateDefaultSectionBreakElement(pageNumberFormat?: PageNumberFormatType, resetPageNumbering?: boolean): SectionBreakElement {
 	return {
 		id: randomAddress(),
 		type: "section-break",
@@ -78,8 +79,8 @@ export function generateDefaultSectionBreakElement(): SectionBreakElement {
 				],
 			},
 		],
-		pageNumberFormat: "numeric",
-		resetPageNumbering: false,
+		pageNumberFormat: pageNumberFormat ?? "numeric",
+		resetPageNumbering: resetPageNumbering ?? false,
 	};
 }
 

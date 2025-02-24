@@ -2,7 +2,7 @@
  * Generated type guards for "types.ts".
  * WARNING: Do not manually change this file.
  */
-import { AlignType, PageNumberFormatType, TextChildrenOnlyElementNames, TypeNamesOfElementsWhoseTypesCannotBeChanged, CustomElementTypeStr, ListElementTypeStr } from "./types";
+import { AlignType, PageNumberFormatType, HeadingNElementTypeName, TextChildrenOnlyElementNames, TypeNamesOfElementsWhoseTypesCannotBeChanged, CustomElementTypeStr, ListElementTypeStr } from "./types";
 
 export function isAlignType(obj: unknown): obj is AlignType {
     const typedObj = obj as AlignType
@@ -25,15 +25,24 @@ export function isPageNumberFormatType(obj: unknown): obj is PageNumberFormatTyp
     )
 }
 
+export function isHeadingTypeName(obj: unknown): obj is HeadingNElementTypeName {
+    const typedObj = obj as HeadingNElementTypeName
+    return (
+        (typedObj === "heading-1" ||
+            typedObj === "heading-2" ||
+            typedObj === "heading-3")
+    )
+}
+
 export function isElementNameThatOfTextChildrenOnlyElement(obj: unknown): obj is TextChildrenOnlyElementNames {
     const typedObj = obj as TextChildrenOnlyElementNames
     return (
-        (typedObj === "paragraph" ||
-            typedObj === "block-quote" ||
-            typedObj === "list-item" ||
-            typedObj === "heading-1" ||
+        (typedObj === "heading-1" ||
             typedObj === "heading-2" ||
             typedObj === "heading-3" ||
+            typedObj === "paragraph" ||
+            typedObj === "block-quote" ||
+            typedObj === "list-item" ||
             typedObj === "image" ||
             typedObj === "auto-toc" ||
             typedObj === "page-break" ||
@@ -64,12 +73,12 @@ export function isElementNameThatOfElementWhoseTypeCannotBeChanged(obj: unknown)
 export function isCustomElementTypeStr(obj: unknown): obj is CustomElementTypeStr {
     const typedObj = obj as CustomElementTypeStr
     return (
-        (typedObj === "paragraph" ||
-            typedObj === "block-quote" ||
-            typedObj === "list-item" ||
-            typedObj === "heading-1" ||
+        (typedObj === "heading-1" ||
             typedObj === "heading-2" ||
             typedObj === "heading-3" ||
+            typedObj === "paragraph" ||
+            typedObj === "block-quote" ||
+            typedObj === "list-item" ||
             typedObj === "image" ||
             typedObj === "auto-toc" ||
             typedObj === "page-break" ||

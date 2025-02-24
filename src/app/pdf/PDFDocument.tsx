@@ -1,23 +1,174 @@
 import { getAddress } from "@/lib/uniq-address";
-import { Document, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { Document, Image, Link, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import { Style } from "@react-pdf/types";
-import { ReactNode, useContext, useMemo } from "react";
+import { ReactNode, useMemo } from "react";
+import { toRoman } from "roman-numerals";
 import { Descendant } from "slate";
 import { TableCellPercentageWidthsRecord } from "../editor/editor-data-store";
-import { CustomElement, CustomText, ListItemElement, TableCellElement, TableHeaderCellElement, TableRowElement } from "../editor/types";
-import { PDFDataContext } from "./PDFDataContext";
+import {
+	AutoTableOfContentsElement,
+	CustomElement,
+	CustomText,
+	FrontPageWithTextElement,
+	HeadingNElement,
+	ListItemElement,
+	PageNumberFormatType,
+	SectionBreakElement,
+	SectionBreakHeaderFooterEditorElement,
+	TableCellElement,
+	TableHeaderCellElement,
+	TableRowElement,
+} from "../editor/types";
+import { MultiPassRenderData, MultiPassRenderDataUpdaters, PreprocessedTreeData } from "./pdf-rendering-utils";
 import { PDFTable, PDFTableCell, PDFTableRow } from "./PDFTable";
 import "./registerFontsForPDF";
 import { monospacePDFFont, sansSerifPDFFont, serifPDFFont } from "./registerFontsForPDF";
 
 const styles = StyleSheet.create({
+	frontPageBody: {
+		padding: "0px",
+		fontFamily: sansSerifPDFFont,
+		fontSize: 16,
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "stretch",
+		justifyContent: "space-between",
+	},
+	frontPageHeaderWithLogo: {
+		justifySelf: "stretch",
+		padding: "4px",
+		display: "flex",
+		flexDirection: "row",
+		flexWrap: "nowrap",
+		alignItems: "flex-start",
+		justifyContent: "space-between",
+		width: "100%",
+	},
+	frontPageLogo: {
+		marginTop: "4px",
+		marginRight: "4px",
+		height: "3.5rem",
+		width: "auto",
+		aspectRatio: "auto",
+	},
+	frontPageMainImageHolder: {
+		maxWidth: "100%",
+		maxHeight: "100%",
+		minHeight: "0%",
+		minWidth: "0%",
+		display: "flex",
+		flexGrow: 1,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	frontPageMainImage: {
+		maxWidth: "100%",
+		maxHeight: "100%",
+		aspectRatio: "auto",
+		objectFit: "scale-down",
+	},
+
 	body: {
-		paddingTop: 35,
-		paddingBottom: 65,
+		paddingTop: 55,
+		paddingBottom: 60,
 		paddingHorizontal: 35,
 		fontFamily: sansSerifPDFFont,
 		fontSize: 12,
 	},
+	sectionedBodyPage: {
+		fontFamily: sansSerifPDFFont,
+		fontSize: 12,
+		paddingBottom: 60,
+		paddingTop: 55,
+	},
+	sectionedBody: {
+		paddingHorizontal: 35,
+		fontFamily: sansSerifPDFFont,
+		fontSize: 12,
+	},
+	fixedHeader: {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		right: 0,
+	},
+	fixedFooter: {
+		position: "absolute",
+		bottom: 0,
+		left: 0,
+		right: 0,
+	},
+	headerFooter: {
+		paddingVertical: 4,
+		paddingHorizontal: 35,
+		width: "100%",
+		display: "flex",
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		marginVertical: 15,
+	},
+	headerFooterLeft: {
+		flexBasis: 0,
+		flexGrow: 1,
+		flexShrink: 1,
+		display: "flex",
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "flex-start",
+	},
+	headerFooterCenter: {
+		flexBasis: 0,
+		flexGrow: 1,
+		flexShrink: 1,
+		display: "flex",
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	headerFooterRight: {
+		flexBasis: 0,
+		flexGrow: 1,
+		flexShrink: 1,
+		display: "flex",
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "flex-end",
+	},
+
+	tocContainer: { fontFamily: serifPDFFont, width: "100%", display: "flex", flexDirection: "column", alignItems: "stretch" },
+	tocFields: {
+		width: "100%",
+		display: "flex",
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		borderBottom: "1px dotted #ddd",
+	},
+	"tocField:heading-1": {
+		lineHeight: 1,
+		paddingTop: "18px",
+	},
+	"tocField:heading-2": {
+		lineHeight: 1,
+		paddingLeft: 10,
+		paddingTop: "8px",
+	},
+	"tocField:heading-3": {
+		lineHeight: 1,
+		paddingLeft: 20,
+		paddingTop: "4px",
+	},
+	"tocFieldText:heading-1": {
+		fontSize: "1.5rem",
+		fontWeight: "semibold",
+	},
+	"tocFieldText:heading-2": {
+		fontSize: "1.25rem",
+		fontWeight: "medium",
+	},
+	"tocFieldText:heading-3": {},
+
 	bold: {
 		fontWeight: "bold",
 	},
@@ -27,6 +178,9 @@ const styles = StyleSheet.create({
 	underline: {
 		textDecoration: "underline",
 		textDecorationStyle: "solid",
+	},
+	pageNumber: {
+		fontFamily: monospacePDFFont,
 	},
 	code: {
 		fontFamily: monospacePDFFont,
@@ -115,36 +269,107 @@ const styles = StyleSheet.create({
 	},
 });
 
-function TextStringPDFRenderer({ element }: { element: CustomText }) {
+export type PDFContextData = {
+	tableCellPercentageWidths: TableCellPercentageWidthsRecord;
+} & PreprocessedTreeData &
+	MultiPassRenderData &
+	MultiPassRenderDataUpdaters;
+
+type Ctx = {
+	pdfContext: PDFContextData;
+	section: SectionBreakElement | null;
+};
+
+const char_a = "a".charCodeAt(0);
+
+function toLowerAlpha(i: number) {
+	if (i <= 26) {
+		return String.fromCharCode(char_a + i - 1);
+	}
+	let res = "";
+	while (i > 0) {
+		const rem = i % 26;
+
+		if (rem === 0) {
+			res = "z" + res;
+			i = Math.floor(i / 26) - 1;
+		} else {
+			res = String.fromCharCode(rem - 1 + char_a) + res;
+			i = Math.floor(i / 26);
+		}
+	}
+	return res;
+}
+
+function formatPageNumber(page: number, sectionId: string, pageNumberFormatting: PageNumberFormatType, ctx: Ctx): string {
+	const normalizedPageNumber = page - (ctx.pdfContext.pageNumbers[ctx.pdfContext.effectiveSectionMap[sectionId]] ?? 1) + 1;
+	switch (pageNumberFormatting) {
+		case "numeric":
+			return normalizedPageNumber.toFixed(0);
+		case "lower":
+			return toLowerAlpha(normalizedPageNumber);
+		case "upper":
+			return toLowerAlpha(normalizedPageNumber).toUpperCase();
+		case "lower-roman":
+			return toRoman(normalizedPageNumber).toLowerCase();
+		case "upper-roman":
+			return toRoman(normalizedPageNumber).toUpperCase();
+	}
+}
+
+function PDFTextStringRenderer({ element, ctx }: { ctx: Ctx; element: CustomText }) {
 	let style: Style = {};
 	if (element.bold) style = { ...style, ...styles.bold };
 	if (element.italic) style = { ...style, ...styles.italic };
 	if (element.underline) style = { ...style, ...styles.underline };
 	if (element.code) style = { ...style, ...styles.code };
-	return <Text style={style}>{element.text}</Text>;
+	if (element.pageNumberOverride) {
+		style = { ...style, ...styles.pageNumber };
+		return (
+			<Text
+				style={style}
+				render={({ pageNumber }) =>
+					formatPageNumber(pageNumber, ctx.section?.id ?? ctx.pdfContext.first.id, ctx.section?.pageNumberFormat ?? "numeric", ctx)
+				}>
+				???
+			</Text>
+		);
+	} else {
+		return <Text style={style}>{element.text}</Text>;
+	}
 }
 
-function TextLikeElementRenderer({ style, childrenElements }: { style: Style; childrenElements: CustomText[] }) {
+function PDFTextLikeElementRenderer({ style, id, childrenElements, ctx }: { ctx: Ctx; style: Style; id: string; childrenElements: CustomText[] }) {
 	return (
-		<Text wrap style={style}>
+		<Text wrap style={style} id={id}>
 			{childrenElements.map((child) => (
-				<TextStringPDFRenderer element={child} key={getAddress(child)} />
+				<PDFTextStringRenderer element={child} key={getAddress(child)} ctx={ctx} />
 			))}
 		</Text>
 	);
 }
 
-function TableRowCommonRenderer({ elements, style }: { elements: (TableCellElement | TableHeaderCellElement)[]; style: Style }) {
-	const data = useContext(PDFDataContext)!;
+function PDFHeadingRenderer({ style, element, ctx }: { ctx: Ctx; style: Style; element: HeadingNElement }) {
+	return (
+		<Text wrap style={style} id={element.id}>
+			<Text
+				render={({ pageNumber }) => {
+					ctx.pdfContext.setPageNumber(element.id, pageNumber);
+					return "";
+				}}
+			/>
+			{element.children.map((child) => (
+				<PDFTextStringRenderer element={child} key={getAddress(child)} ctx={ctx} />
+			))}
+		</Text>
+	);
+}
+
+function PDFTableRowCommonRenderer({ elements, style, ctx }: { ctx: Ctx; elements: (TableCellElement | TableHeaderCellElement)[]; style: Style }) {
 	const res: ReactNode[] = [];
 	let totalWidth = 0;
-	const arr = elements.map((el) => +data.tableCellPercentageWidths[el.id]);
-	console.log(
-		arr,
-		arr.reduce((a, b) => a + b, 0),
-	);
 	for (const element of elements) {
-		let percentageWidth = +data.tableCellPercentageWidths[element.id];
+		let percentageWidth = +ctx.pdfContext.tableCellPercentageWidths[element.id];
 		totalWidth += percentageWidth;
 		if (totalWidth >= 100) {
 			percentageWidth -= totalWidth - 100;
@@ -157,39 +382,77 @@ function TableRowCommonRenderer({ elements, style }: { elements: (TableCellEleme
 					width: percentageWidth + "%",
 					...style,
 				}}>
-				{element.children.map(itemRenderer)}
+				{element.children.map((c, i) => itemRenderer(c, i, ctx))}
 			</PDFTableCell>,
 		);
 	}
 	return res;
 }
 
-function TableHeaderRowRenderer({ element, isLastRow }: { element: TableRowElement; isLastRow: boolean }) {
+function PDFTableHeaderRowRenderer({ element, isLastRow, ctx }: { ctx: Ctx; element: TableRowElement; isLastRow: boolean }) {
 	return (
 		<PDFTableRow style={isLastRow ? styles.tableHeaderRowLast : styles.tableHeaderRow}>
-			{TableRowCommonRenderer({ elements: element.children, style: {} })}
+			{PDFTableRowCommonRenderer({ elements: element.children, style: {}, ctx })}
 		</PDFTableRow>
 	);
 }
 
-function TableRowRenderer({ element }: { element: TableRowElement }) {
-	return <PDFTableRow>{TableRowCommonRenderer({ elements: element.children, style: {} })}</PDFTableRow>;
+function PDFTableRowRenderer({ element, ctx }: { ctx: Ctx; element: TableRowElement }) {
+	return <PDFTableRow>{PDFTableRowCommonRenderer({ elements: element.children, style: {}, ctx })}</PDFTableRow>;
 }
 
-function TableFooterRowRenderer({ element }: { element: TableRowElement }) {
-	return <PDFTableRow style={styles.tableFooterRow}>{TableRowCommonRenderer({ elements: element.children, style: {} })}</PDFTableRow>;
+function PDFTableFooterRowRenderer({ element, ctx }: { ctx: Ctx; element: TableRowElement }) {
+	return <PDFTableRow style={styles.tableFooterRow}>{PDFTableRowCommonRenderer({ elements: element.children, style: {}, ctx })}</PDFTableRow>;
 }
 
-function ElementPDFRenderer({ element, isFirstElementInView }: { element: CustomElement; isFirstElementInView: boolean }) {
+function PDFFrontPageRenderer({ element, ctx }: { ctx: Ctx; element: FrontPageWithTextElement }) {
+	return (
+		<Page
+			style={{
+				...styles.frontPageBody,
+				backgroundColor: element.textSectionBgColor ?? undefined,
+			}}>
+			<View style={styles.frontPageHeaderWithLogo}>
+				<View
+					style={{
+						flex: 1,
+						// Yes, this invisible border is necessary, otherwise the text overflows
+						border: `1px solid ${element.textSectionBgColor ?? "white"}`,
+					}}>
+					{element.children.map((c, i) => itemRenderer(c, i, ctx))}
+				</View>
+				{element.logoImageUrl != null ? (
+					/* eslint-disable-next-line jsx-a11y/alt-text */
+					<Image src={element.logoImageUrl} style={styles.frontPageLogo} />
+				) : null}
+			</View>
+			<View style={styles.frontPageMainImageHolder}>
+				{/* eslint-disable-next-line jsx-a11y/alt-text */}
+				<Image src={element.mainImageUrl} style={styles.frontPageMainImage} />
+			</View>
+		</Page>
+	);
+}
+
+function PDFElementRenderer({ element, isFirstElementInView, ctx }: { ctx: Ctx; element: CustomElement; isFirstElementInView: boolean }) {
 	const paragraphStyle = isFirstElementInView ? styles.firstParagraph : styles.paragraph;
 	switch (element.type) {
 		case "paragraph":
-			return <TextLikeElementRenderer childrenElements={element.children} style={{ ...paragraphStyle, textAlign: element.align ?? "left" }} />;
+			return (
+				<PDFTextLikeElementRenderer
+					id={element.id}
+					childrenElements={element.children}
+					style={{ ...paragraphStyle, textAlign: element.align ?? "left" }}
+					ctx={ctx}
+				/>
+			);
 		case "block-quote":
 			return (
-				<TextLikeElementRenderer
+				<PDFTextLikeElementRenderer
+					id={element.id}
 					childrenElements={element.children}
 					style={{ ...paragraphStyle, ...styles.blockquote, textAlign: element.align ?? "left" }}
+					ctx={ctx}
 				/>
 			);
 		case "bulleted-list":
@@ -201,7 +464,7 @@ function ElementPDFRenderer({ element, isFirstElementInView }: { element: Custom
 								<Text>{"\u2022" + " "}</Text>
 							</View>
 							<View style={styles.text}>
-								<ElementPDFRenderer element={child} isFirstElementInView={i === 0} />
+								<PDFElementRenderer element={child} isFirstElementInView={i === 0} ctx={ctx} />
 							</View>
 						</View>
 					))}
@@ -216,7 +479,7 @@ function ElementPDFRenderer({ element, isFirstElementInView }: { element: Custom
 								<Text>{i + 1}.</Text>
 							</View>
 							<View style={styles.text}>
-								<ElementPDFRenderer element={child} isFirstElementInView={i === 0} />
+								<PDFElementRenderer element={child} isFirstElementInView={i === 0} ctx={ctx} />
 							</View>
 						</View>
 					))}
@@ -224,32 +487,23 @@ function ElementPDFRenderer({ element, isFirstElementInView }: { element: Custom
 			);
 		case "list-item":
 			return (
-				<TextLikeElementRenderer
+				<PDFTextLikeElementRenderer
+					id={element.id}
 					childrenElements={element.children}
 					style={{ ...paragraphStyle, textAlign: element.align ?? "left", marginTop: 0 }}
+					ctx={ctx}
 				/>
 			);
 		case "heading-1":
 		case "heading-2":
 		case "heading-3":
 			return (
-				<TextLikeElementRenderer
-					childrenElements={element.children}
-					style={{ ...paragraphStyle, ...styles[element.type], textAlign: element.align ?? "left" }}
-				/>
+				<PDFHeadingRenderer element={element} style={{ ...paragraphStyle, ...styles[element.type], textAlign: element.align ?? "left" }} ctx={ctx} />
 			);
 		case "image":
 			return (
-				// <View
-				// 	style={{
-				// 		display: "flex",
-				// 		flexDirection: "row",
-				// 		alignItems: "center",
-				// 		justifyContent: value.align === "center" ? "center" : value.align === "right" ? "flex-end" : "flex-start",
-				// 	}}>
 				// eslint-disable-next-line jsx-a11y/alt-text
 				<Image src={element.srcUrl} style={{ width: "100%", height: "auto" }} />
-				// </View>
 			);
 		case "page-break":
 			return <Text break />;
@@ -261,17 +515,17 @@ function ElementPDFRenderer({ element, isFirstElementInView }: { element: Custom
 						borderColor: "#ddd",
 					}}>
 					{element.children.map((child, i) => (
-						<ElementPDFRenderer element={child} key={child.id} isFirstElementInView={i === 0} />
+						<PDFElementRenderer element={child} key={child.id} isFirstElementInView={i === 0} ctx={ctx} />
 					))}
 				</PDFTable>
 			);
 		case "table-cell-content":
-			return <View style={{ width: "100%" }}>{element.children.map(itemRenderer)}</View>;
+			return <View style={{ width: "100%" }}>{element.children.map((c, i) => itemRenderer(c, i, ctx))}</View>;
 		case "table-head":
 			return (
 				<>
 					{element.children.map((child, i, arr) => (
-						<TableHeaderRowRenderer element={child} key={child.id} isLastRow={i === arr.length - 1} />
+						<PDFTableHeaderRowRenderer element={child} key={child.id} isLastRow={i === arr.length - 1} ctx={ctx} />
 					))}
 				</>
 			);
@@ -279,12 +533,12 @@ function ElementPDFRenderer({ element, isFirstElementInView }: { element: Custom
 			return (
 				<>
 					{element.children.map((child) => (
-						<TableRowRenderer element={child} key={child.id} />
+						<PDFTableRowRenderer element={child} key={child.id} ctx={ctx} />
 					))}
 				</>
 			);
 		case "table-row":
-			return <TableRowRenderer element={element} />;
+			return <PDFTableRowRenderer element={element} ctx={ctx} />;
 		case "table-cell":
 		case "table-header-cell":
 			throw new Error(
@@ -294,40 +548,148 @@ function ElementPDFRenderer({ element, isFirstElementInView }: { element: Custom
 			return (
 				<>
 					{element.children.map((child) => (
-						<TableFooterRowRenderer element={child} key={child.id} />
+						<PDFTableFooterRowRenderer element={child} key={child.id} ctx={ctx} />
 					))}
 				</>
 			);
 		case "front-page-with-text":
-		case "auto-toc":
+			throw new Error(
+				"Trying to render front-page-with-text in ElementPDFRenderer, which is not allowed: The front page is to be rendered separately.",
+			);
+		case "section-break-header-footer-cell":
+			return (
+				<PDFTextLikeElementRenderer
+					id={element.id}
+					childrenElements={element.children}
+					style={{ ...paragraphStyle, textAlign: element.align ?? "left" }}
+					ctx={ctx}
+				/>
+			);
 		case "section-break":
 		case "section-break-header-footer-editor-element":
-		case "section-break-header-footer-cell":
-			return <></>;
+			throw new Error(
+				"Trying to render section-break & section-break-header-footer-editor-element in ElementPDFRenderer, which is not allowed, as these cases are separately handled in PDFSectionRenderer & PDFHeaderFooterRenderer.",
+			);
+		case "auto-toc":
+			return <PDFAutoTableOfContentsRenderer element={element} ctx={ctx} />;
 	}
 }
 
-function itemRenderer(item: Descendant, i: number) {
+function PDFAutoTableOfContentsRenderer({ element, ctx }: { element: AutoTableOfContentsElement; ctx: Ctx }) {
+	return (
+		<View style={styles.tocContainer}>
+			<Text style={{ ...styles["heading-1"], textAlign: "center", width: "100%", borderBottom: "2px dashed #faa" }}>Table of Contents</Text>
+			{ctx.pdfContext.headersList.map((header) => {
+				if (+header.type.split("-")[1] > element.includeHeaderLevelUpto) return null;
+				const pageNum = ctx.pdfContext.pageNumbers[header.id];
+				const parent = ctx.pdfContext.parentSectionMap[header.id];
+				const numFormat = "pageNumberFormat" in parent ? parent.pageNumberFormat : "numeric";
+				return (
+					<View style={{ ...styles.tocFields, ...styles[`tocField:${header.type}`] }} key={header.id}>
+						<Link href={`#${header.id}`} style={styles[`tocFieldText:${header.type}`]}>
+							<PDFTextLikeElementRenderer id={header.id} childrenElements={header.children} style={styles.firstParagraph} ctx={ctx} />
+						</Link>
+						<View>
+							<Text style={styles.pageNumber}>{pageNum == null ? "???" : formatPageNumber(pageNum, parent.id, numFormat, ctx)}</Text>
+						</View>
+					</View>
+				);
+			})}
+		</View>
+	);
+}
+
+function PDFHeaderFooterRenderer({ element, ctx }: { ctx: Ctx; element: SectionBreakHeaderFooterEditorElement; isHeader: boolean }) {
+	const [left, center, right] = element.children;
+	return (
+		<View style={{ ...styles.headerFooter, backgroundColor: element.bgColor }}>
+			<View style={styles.headerFooterLeft}>
+				<PDFElementRenderer element={left} isFirstElementInView ctx={ctx} />
+			</View>
+			<View style={styles.headerFooterCenter}>
+				<PDFElementRenderer element={center} isFirstElementInView ctx={ctx} />
+			</View>
+			<View style={styles.headerFooterRight}>
+				<PDFElementRenderer element={right} isFirstElementInView ctx={ctx} />
+			</View>
+		</View>
+	);
+}
+
+function PDFSectionRenderer({ section, elements, ctx: oldCtx }: { ctx: Ctx; section: SectionBreakElement; elements: Descendant[] }) {
+	const ctx = useMemo<Ctx>(
+		() => ({
+			pdfContext: oldCtx.pdfContext,
+			section: section,
+		}),
+		[oldCtx.pdfContext, section],
+	);
+	const [oddHeader, oddFooter, evenHeader, evenFooter] = section.children;
+	return (
+		<Page style={styles.sectionedBodyPage}>
+			<View
+				render={({ pageNumber }) => <PDFHeaderFooterRenderer element={pageNumber % 2 === 0 ? evenHeader : oddHeader} isHeader ctx={ctx} />}
+				fixed
+				style={styles.fixedHeader}
+			/>
+			<Text
+				style={styles.fixedHeader}
+				render={({ pageNumber }) => {
+					if (section.id === ctx.pdfContext.effectiveSectionMap[section.id]) {
+						ctx.pdfContext.setPageNumber(section.id, pageNumber);
+					}
+					return "";
+				}}
+			/>
+			<View style={styles.sectionedBody}>{elements.map((c, i) => itemRenderer(c, i, ctx))}</View>
+			<View
+				render={({ pageNumber }) => <PDFHeaderFooterRenderer element={pageNumber % 2 === 0 ? evenFooter : oddFooter} isHeader={false} ctx={ctx} />}
+				fixed
+				style={styles.fixedFooter}
+			/>
+		</Page>
+	);
+}
+
+function itemRenderer(item: Descendant, i: number, ctx: Ctx) {
 	return "id" in item ? (
-		<ElementPDFRenderer element={item} key={item.id} isFirstElementInView={i === 0} />
+		<PDFElementRenderer element={item} key={item.id} isFirstElementInView={i === 0} ctx={ctx} />
 	) : (
-		<TextStringPDFRenderer element={item} key={getAddress(item)} />
+		<PDFTextStringRenderer element={item} key={getAddress(item)} ctx={ctx} />
 	);
 }
 
 export function PDFDocument({
-	elements,
+	preprocessedData,
 	tableCellPercentageWidths,
+	renderData,
+	renderDataUpdaters,
 }: {
-	elements: Descendant[];
+	preprocessedData: PreprocessedTreeData;
 	tableCellPercentageWidths: TableCellPercentageWidthsRecord;
+	renderData: MultiPassRenderData;
+	renderDataUpdaters: MultiPassRenderDataUpdaters;
 }) {
-	const value = useMemo(() => ({ tableCellPercentageWidths }), [tableCellPercentageWidths]);
+	const value = useMemo(
+		() => ({ ...preprocessedData, tableCellPercentageWidths, ...renderData, ...renderDataUpdaters }),
+		[preprocessedData, renderData, renderDataUpdaters, tableCellPercentageWidths],
+	);
+	const { first, blanks, withSections } = value;
+	const ctx = useMemo<Ctx>(
+		() => ({
+			pdfContext: value,
+			section: null,
+		}),
+		[value],
+	);
+
 	return (
 		<Document>
-			<PDFDataContext.Provider value={value}>
-				<Page style={styles.body}>{elements.map(itemRenderer)}</Page>
-			</PDFDataContext.Provider>
+			<PDFFrontPageRenderer element={first} ctx={ctx} />
+			<Page style={styles.body}>{blanks.map((c, i) => itemRenderer(c, i, ctx))}</Page>
+			{withSections.map(({ section, elements }) => (
+				<PDFSectionRenderer section={section} elements={elements} key={section.id} ctx={ctx} />
+			))}
 		</Document>
 	);
 }

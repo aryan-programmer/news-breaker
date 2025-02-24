@@ -1,5 +1,5 @@
 "use client";
-import { randomAddress } from "@/lib/uniq-address";
+import { getAddress, randomAddress } from "@/lib/uniq-address";
 import { DEMO_IMAGE_URL } from "@/lib/utils";
 import { Descendant, Editor, Element, Node, Path, Point, Element as SlateElement, Transforms } from "slate";
 import { EditorNormalizeOptions } from "slate/dist/interfaces/editor";
@@ -69,8 +69,6 @@ export function toggleBlock(editor: CustomEditor, format: AlignType | CustomElem
 			match: (n) => !Editor.isEditor(n) && SlateElement.isElement(n) && isListElementTypeStr(n.type) && !isAlignTypeVal,
 			split: true,
 		});
-		// console.log(editor.selection, { isActive, format });
-		//let at: Path | undefined;
 		if (isAlignTypeVal) {
 			newProperties = {
 				align: isActive ? undefined : format,
@@ -96,7 +94,6 @@ export function toggleBlock(editor: CustomEditor, format: AlignType | CustomElem
 				if ("type" in curr && isElementNameThatOfElementWhoseTypeCannotBeChanged(curr.type)) return;
 			}
 		}
-		// console.log(newProperties);
 
 		Transforms.setNodes<SlateElement>(editor, newProperties);
 
@@ -107,7 +104,24 @@ export function toggleBlock(editor: CustomEditor, format: AlignType | CustomElem
 	});
 }
 
-export function withNormalizedParagraphs(editor: CustomEditor) {
+export function recursiveTraverse(nodesTree: Descendant[], fn?: (element: Descendant) => void): Set<string> {
+	const ids = new Set<string>();
+	const q = [...nodesTree];
+	while (q.length > 0) {
+		const last = q.pop();
+		if (last == null) continue;
+		const id = "id" in last ? last.id : getAddress(last);
+		if (ids.has(id)) continue;
+		fn?.(last);
+		ids.add(id);
+		if ("children" in last) {
+			q.push(...last.children);
+		}
+	}
+	return ids;
+}
+
+export function withNormalizedCustomElements(editor: CustomEditor) {
 	const { normalizeNode } = editor;
 
 	editor.normalizeNode = (entry) => {
@@ -120,6 +134,12 @@ export function withNormalizedParagraphs(editor: CustomEditor) {
 						Transforms.unwrapNodes(editor, { at: childPath });
 						return;
 					}
+				}
+			}
+			if (node.type === "section-break" || node.type === "page-break" || node.type === "auto-toc") {
+				if (path.length > 1) {
+					Transforms.moveNodes(editor, { at: path, to: [path[0]] });
+					return;
 				}
 			}
 			if (node.type === "section-break-header-footer-cell") {
@@ -147,7 +167,6 @@ export function withNormalizedParagraphs(editor: CustomEditor) {
 						},
 						{ at: Path.next(children[children.length - 1][1]) },
 					);
-					console.log(editor.children);
 					return;
 				}
 				if (children.length > 3) {

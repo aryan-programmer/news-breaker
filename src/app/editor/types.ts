@@ -153,6 +153,11 @@ export type CustomElement =
 	| SectionBreakHeaderFooterEditorElement
 	| SectionBreakHeaderFooterCell;
 
+export type HeadingNElement = Heading1Element | Heading2Element | Heading3Element;
+
+/** @see {isHeadingTypeName} ts-auto-guard:type-guard */
+export type HeadingNElementTypeName = HeadingNElement["type"];
+
 type GetTextChildrenOnlyTypes<T extends { type: string }> = T extends {
 	children: infer T2;
 }

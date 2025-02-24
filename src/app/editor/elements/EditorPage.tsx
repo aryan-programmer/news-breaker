@@ -1,18 +1,17 @@
 "use client";
 import isHotkey from "is-hotkey";
-import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useMemo, useRef } from "react";
 import { createEditor, Descendant } from "slate";
 import { withHistory } from "slate-history";
 import { Editable, Slate, withReact } from "slate-react";
 
-import { PDFDocument } from "@/app/pdf/PDFDocument";
+import { multiPassRender } from "@/app/pdf/pdf-rendering-utils";
 import { Button } from "@/components/ui/Button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/DropdownMenu";
 import { TooltipProvider } from "@/components/ui/Tooltip";
 import { useCallbackDropAsync } from "@/hooks/useCallbackDropAsync";
 import { useStoreAsIs } from "@/hooks/useStore";
-import { getAddress, randomAddress } from "@/lib/uniq-address";
+import { randomAddress } from "@/lib/uniq-address";
 import { DEMO_IMAGE_URL } from "@/lib/utils";
 import { TableCursor, TableEditor, withTable } from "@/slate-table";
 import {
@@ -42,14 +41,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Menubar } from "@radix-ui/react-menubar";
-import { PDFViewer } from "@react-pdf/renderer";
 import { useNavigationGuard } from "next-navigation-guard";
 import { useRouter } from "next/navigation";
 import { HeaderFooterIcon, PageBreakIcon, PageNumberIcon } from "../../../components/ui/SVGIcons";
 import { withSimpleCopyPaste } from "../custom-copy-paste";
 import { EditorStore, pruneTableCellPercentageWidths, useEditorStore } from "../editor-data-store";
 import { isTableCellPercentageWidthsRecord } from "../editor-data-store.guard";
-import { resetNodes, toggleMark, withNormalizedFrontPage, withNormalizedParagraphs } from "../editor-utils";
+import { resetNodes, toggleMark, withNormalizedCustomElements, withNormalizedFrontPage } from "../editor-utils";
 import { insertTableOfContents } from "../renderers/AutoTableOfContents";
 import { insertImage } from "../renderers/EditableImage";
 import ElementRenderer from "../renderers/ElementRenderer";
@@ -80,7 +78,6 @@ const NAVIGATION_HOTKEYS = {
 
 export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 	const router = useRouter();
-	const [dialogOpen, setDialogOpen] = useState(false);
 
 	useNavigationGuard({
 		enabled: process.env.NODE_ENV === "production",
@@ -92,7 +89,7 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 
 	const editor = useMemo(
-		() => withTable(withNormalizedFrontPage(withNormalizedParagraphs(withHistory(withSimpleCopyPaste(withReact(createEditor()))))), {}),
+		() => withTable(withNormalizedFrontPage(withNormalizedCustomElements(withHistory(withSimpleCopyPaste(withReact(createEditor()))))), {}),
 		[],
 	);
 
@@ -167,7 +164,10 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 		[editor, editorStore],
 	);
 
-	const onFileExportToPDF = useCallback(() => {}, []);
+	const onFileExportToPDF = useCallbackDropAsync(async () => {
+		const fileURL = URL.createObjectURL(await multiPassRender(editor.children, editorStore.tableCellPercentageWidths));
+		window.open(fileURL);
+	}, [editor.children, editorStore.tableCellPercentageWidths]);
 
 	const onFileReset = useCallback(() => {
 		// const value = get_demo_editor_value();
@@ -176,26 +176,8 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 		router.refresh();
 	}, [router]);
 
-	const tableCellPercentageWidths = editorStore.tableCellPercentageWidths;
-	console.log({ tableCellPercentageWidths, addr: getAddress(tableCellPercentageWidths) });
-
 	return (
-		<div className="max-w-[735px] mx-auto">
-			<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-				<DialogTrigger asChild>
-					<Button variant="outline">Share</Button>
-				</DialogTrigger>
-				<DialogContent className="max-w-screen h-screen max-h-[calc(100dvh)] overflow-auto !rounded-none grid grid-rows-[auto_1fr]">
-					<DialogHeader className="bg-white">
-						<DialogTitle>Previewing PDF</DialogTitle>
-					</DialogHeader>
-					<div className="">
-						<PDFViewer className="h-full">
-							<PDFDocument elements={editor.children} tableCellPercentageWidths={editorStore.tableCellPercentageWidths} />
-						</PDFViewer>
-					</div>
-				</DialogContent>
-			</Dialog>
+		<div className="w-full">
 			<Slate editor={editor} initialValue={initialValue} onChange={onEditorValueChange}>
 				<Menubar className="mb-2 sticky top-0 bg-white z-50 flex flex-row justify-between w-full">
 					<div className="">
@@ -296,7 +278,7 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 					</DropdownMenu>
 				</Menubar>
 				<Editable
-					className="w-full"
+					className="max-w-[735px] mx-auto"
 					renderElement={ElementRenderer}
 					renderLeaf={LeafRenderer}
 					placeholder="Enter some rich text…"

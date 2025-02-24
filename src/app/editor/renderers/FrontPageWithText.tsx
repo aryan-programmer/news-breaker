@@ -38,16 +38,16 @@ export function FrontPageWithText({ attributes, children, element }: FrontPageWi
 			<div
 				className="absolute top-0 left-0 w-full h-full border-indigo-400 border-2 flex flex-col items-stretch justify-stretch"
 				style={element.textSectionBgColor == null || element.textSectionBgColor === "" ? {} : { backgroundColor: element.textSectionBgColor }}>
-				<div className="p-1 justify-self-stretch">
-					{element.logoImageUrl == null || element.logoImageUrl === "" ? null : (
-						/* eslint-disable-next-line @next/next/no-img-element*/
-						<img src={element.logoImageUrl} alt="" className="aspect-auto max-h-14 float-right mt-1 mr-1" />
-					)}
+				<div className="p-1 justify-self-stretch flex flex-row flex-nowrap items-start justify-between">
 					<div className="z-10" onClick={blockClick} {...attributes}>
 						{children as any}
 					</div>
+					{element.logoImageUrl == null || element.logoImageUrl === "" ? null : (
+						/* eslint-disable-next-line @next/next/no-img-element*/
+						<img src={element.logoImageUrl} alt="" className="aspect-auto max-h-14 mt-1 mr-1" />
+					)}
 				</div>
-				<div className="max-w-full max-h-full min-h-0 min-w-0 grow flex items-center justify-center">
+				<div className="max-w-full max-h-full min-h-0 min-w-0 flex grow items-center justify-center">
 					{/* eslint-disable-next-line @next/next/no-img-element*/}
 					<img src={element.mainImageUrl} alt="" className="max-w-full max-h-full aspect-auto object-scale-down" />
 				</div>
