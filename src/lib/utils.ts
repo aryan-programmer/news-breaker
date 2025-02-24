@@ -29,3 +29,24 @@ export function colorValidator(val: string) {
 		return false;
 	}
 }
+
+const char_a = "a".charCodeAt(0);
+
+export function pageNumberToLowerAlpha(i: number) {
+	if (i <= 26) {
+		return String.fromCharCode(char_a + i - 1);
+	}
+	let res = "";
+	while (i > 0) {
+		const rem = i % 26;
+
+		if (rem === 0) {
+			res = "z" + res;
+			i = Math.floor(i / 26) - 1;
+		} else {
+			res = String.fromCharCode(rem - 1 + char_a) + res;
+			i = Math.floor(i / 26);
+		}
+	}
+	return res;
+}

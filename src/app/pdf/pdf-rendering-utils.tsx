@@ -1,11 +1,14 @@
+import { pageNumberToLowerAlpha } from "@/lib/utils";
 import { pdf } from "@react-pdf/renderer";
 import deepEqual from "deep-equal";
+import { toRoman } from "roman-numerals";
 import { Descendant } from "slate";
 import { TableCellPercentageWidthsRecord } from "../editor/editor-data-store";
 import { recursiveTraverse } from "../editor/editor-utils";
-import { FrontPageWithTextElement, HeadingNElement, SectionBreakElement } from "../editor/types";
+import { FrontPageWithTextElement, HeadingNElement, PageNumberFormatType, SectionBreakElement } from "../editor/types";
 import { isHeadingTypeName } from "../editor/types.guard";
-import { PDFDocument } from "./PDFDocument";
+import { Ctx } from "./PDFContextData";
+import { PDFDocument } from "./renderers/PDFDocument";
 
 export type PreprocessedTreeData = {
 	first: FrontPageWithTextElement;
@@ -130,5 +133,21 @@ export async function multiPassRender(elements: Descendant[], tableCellPercentag
 			currData = nextData;
 			nextData = { pageNumbers: {} };
 		}
+	}
+}
+
+export function formatPageNumber(page: number, sectionId: string, pageNumberFormatting: PageNumberFormatType, ctx: Ctx): string {
+	const normalizedPageNumber = page - (ctx.pdfContext.pageNumbers[ctx.pdfContext.effectiveSectionMap[sectionId]] ?? 1) + 1;
+	switch (pageNumberFormatting) {
+		case "numeric":
+			return normalizedPageNumber.toFixed(0);
+		case "lower":
+			return pageNumberToLowerAlpha(normalizedPageNumber);
+		case "upper":
+			return pageNumberToLowerAlpha(normalizedPageNumber).toUpperCase();
+		case "lower-roman":
+			return toRoman(normalizedPageNumber).toLowerCase();
+		case "upper-roman":
+			return toRoman(normalizedPageNumber).toUpperCase();
 	}
 }
