@@ -9,8 +9,8 @@ import { styles } from "./styles";
 import { PDFTableFooterRowRenderer, PDFTableHeaderRowRenderer, PDFTableRowRenderer } from "./tableLikeRenderers";
 import { PDFHeadingRenderer, PDFTextLikeElementRenderer, PDFTextStringRenderer } from "./textLikeRenderers";
 
-export function PDFElementRenderer({ element, isFirstElementInView, ctx }: { ctx: Ctx; element: CustomElement; isFirstElementInView: boolean }) {
-	const paragraphStyle = isFirstElementInView ? styles.firstParagraph : styles.paragraph;
+export function PDFElementRenderer({ element, isLastElementInView, ctx }: { ctx: Ctx; element: CustomElement; isLastElementInView: boolean }) {
+	const paragraphStyle = isLastElementInView ? styles.lastParagraph : styles.paragraph;
 	switch (element.type) {
 		case "paragraph":
 			return (
@@ -33,13 +33,13 @@ export function PDFElementRenderer({ element, isFirstElementInView, ctx }: { ctx
 		case "bulleted-list":
 			return (
 				<View style={{ ...paragraphStyle, ...styles.list, textAlign: element.align ?? "left" }}>
-					{element.children.map((child: ListItemElement, i) => (
+					{element.children.map((child: ListItemElement, i, arr) => (
 						<View style={styles.listItem} key={child.id}>
 							<View style={styles.bullet}>
 								<Text>{"\u2022" + " "}</Text>
 							</View>
 							<View style={styles.text}>
-								<PDFElementRenderer element={child} isFirstElementInView={i === 0} ctx={ctx} />
+								<PDFElementRenderer element={child} isLastElementInView={i === arr.length - 1} ctx={ctx} />
 							</View>
 						</View>
 					))}
@@ -48,13 +48,13 @@ export function PDFElementRenderer({ element, isFirstElementInView, ctx }: { ctx
 		case "numbered-list":
 			return (
 				<View style={{ ...paragraphStyle, ...styles.list, textAlign: element.align ?? "left" }}>
-					{element.children.map((child: ListItemElement, i: number) => (
+					{element.children.map((child: ListItemElement, i: number, arr) => (
 						<View style={styles.listItem} key={child.id}>
 							<View style={styles.bullet}>
 								<Text>{i + 1}.</Text>
 							</View>
 							<View style={styles.text}>
-								<PDFElementRenderer element={child} isFirstElementInView={i === 0} ctx={ctx} />
+								<PDFElementRenderer element={child} isLastElementInView={i === arr.length - 1} ctx={ctx} />
 							</View>
 						</View>
 					))}
@@ -65,7 +65,7 @@ export function PDFElementRenderer({ element, isFirstElementInView, ctx }: { ctx
 				<PDFTextLikeElementRenderer
 					id={element.id}
 					childrenElements={element.children}
-					style={{ ...paragraphStyle, textAlign: element.align ?? "left", marginTop: 0 }}
+					style={{ ...paragraphStyle, textAlign: element.align ?? "left", marginBottom: 0 }}
 					ctx={ctx}
 				/>
 			);
@@ -73,7 +73,11 @@ export function PDFElementRenderer({ element, isFirstElementInView, ctx }: { ctx
 		case "heading-2":
 		case "heading-3":
 			return (
-				<PDFHeadingRenderer element={element} style={{ ...paragraphStyle, ...styles[element.type], textAlign: element.align ?? "left" }} ctx={ctx} />
+				<PDFHeadingRenderer
+					element={element}
+					style={{ ...paragraphStyle, ...styles[element.type], textAlign: element.align ?? "left", width: "100%" }}
+					ctx={ctx}
+				/>
 			);
 		case "image":
 			return (
@@ -89,13 +93,13 @@ export function PDFElementRenderer({ element, isFirstElementInView, ctx }: { ctx
 						borderWidth: "2px",
 						borderColor: "#ddd",
 					}}>
-					{element.children.map((child, i) => (
-						<PDFElementRenderer element={child} key={child.id} isFirstElementInView={i === 0} ctx={ctx} />
+					{element.children.map((child, i, arr) => (
+						<PDFElementRenderer element={child} key={child.id} isLastElementInView={i === arr.length - 1} ctx={ctx} />
 					))}
 				</PDFTable>
 			);
 		case "table-cell-content":
-			return <View style={{ width: "100%" }}>{element.children.map((c, i) => itemRenderer(c, i, ctx))}</View>;
+			return <View style={{ width: "100%" }}>{element.children.map((c, i, arr) => itemRenderer(c, i === arr.length - 1, ctx))}</View>;
 		case "table-head":
 			return (
 				<>
@@ -150,9 +154,9 @@ export function PDFElementRenderer({ element, isFirstElementInView, ctx }: { ctx
 	}
 }
 
-export function itemRenderer(item: Descendant, i: number, ctx: Ctx) {
+export function itemRenderer(item: Descendant, isLastElementInView: boolean, ctx: Ctx) {
 	return "id" in item ? (
-		<PDFElementRenderer element={item} key={item.id} isFirstElementInView={i === 0} ctx={ctx} />
+		<PDFElementRenderer element={item} key={item.id} isLastElementInView={isLastElementInView} ctx={ctx} />
 	) : (
 		<PDFTextStringRenderer element={item} key={getAddress(item)} ctx={ctx} />
 	);

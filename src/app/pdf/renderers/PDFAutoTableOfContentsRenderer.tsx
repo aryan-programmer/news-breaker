@@ -17,7 +17,7 @@ export function PDFAutoTableOfContentsRenderer({ element, ctx }: { element: Auto
 				return (
 					<View style={{ ...styles.tocFields, ...styles[`tocField:${header.type}`] }} key={header.id}>
 						<Link href={`#${header.id}`} style={styles[`tocFieldText:${header.type}`]}>
-							<PDFTextLikeElementRenderer id={header.id} childrenElements={header.children} style={styles.firstParagraph} ctx={ctx} />
+							<PDFTextLikeElementRenderer id={header.id} childrenElements={header.children} style={styles.lastParagraph} ctx={ctx} />
 						</Link>
 						<View>
 							<Text style={styles.pageNumber}>{pageNum == null ? "???" : formatPageNumber(pageNum, parent.id, numFormat, ctx)}</Text>

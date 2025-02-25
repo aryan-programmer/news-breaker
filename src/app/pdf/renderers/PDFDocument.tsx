@@ -36,7 +36,7 @@ export function PDFDocument({
 	return (
 		<Document>
 			<PDFFrontPageRenderer element={first} ctx={ctx} />
-			<Page style={styles.body}>{blanks.map((c, i) => itemRenderer(c, i, ctx))}</Page>
+			<Page style={styles.body}>{blanks.map((c, i, arr) => itemRenderer(c, i === arr.length - 1, ctx))}</Page>
 			{withSections.map(({ section, elements }) => (
 				<PDFSectionRenderer section={section} elements={elements} key={section.id} ctx={ctx} />
 			))}

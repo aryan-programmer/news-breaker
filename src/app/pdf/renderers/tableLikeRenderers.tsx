@@ -31,7 +31,7 @@ export function PDFTableRowCommonRenderer({
 					width: percentageWidth + "%",
 					...style,
 				}}>
-				{element.children.map((c, i) => itemRenderer(c, i, ctx))}
+				{element.children.map((c, i, arr) => itemRenderer(c, i === arr.length - 1, ctx))}
 			</PDFTableCell>,
 		);
 	}

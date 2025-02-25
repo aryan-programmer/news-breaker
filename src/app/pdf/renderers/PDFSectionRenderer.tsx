@@ -11,13 +11,13 @@ function PDFHeaderFooterRenderer({ element, ctx }: { ctx: Ctx; element: SectionB
 	return (
 		<View style={{ ...styles.headerFooter, backgroundColor: element.bgColor }}>
 			<View style={styles.headerFooterLeft}>
-				<PDFElementRenderer element={left} isFirstElementInView ctx={ctx} />
+				<PDFElementRenderer element={left} isLastElementInView ctx={ctx} />
 			</View>
 			<View style={styles.headerFooterCenter}>
-				<PDFElementRenderer element={center} isFirstElementInView ctx={ctx} />
+				<PDFElementRenderer element={center} isLastElementInView ctx={ctx} />
 			</View>
 			<View style={styles.headerFooterRight}>
-				<PDFElementRenderer element={right} isFirstElementInView ctx={ctx} />
+				<PDFElementRenderer element={right} isLastElementInView ctx={ctx} />
 			</View>
 		</View>
 	);
@@ -48,7 +48,7 @@ export function PDFSectionRenderer({ section, elements, ctx: oldCtx }: { ctx: Ct
 					return "";
 				}}
 			/>
-			<View style={styles.sectionedBody}>{elements.map((c, i) => itemRenderer(c, i, ctx))}</View>
+			<View style={styles.sectionedBody}>{elements.map((c, i, arr) => itemRenderer(c, i === arr.length - 1, ctx))}</View>
 			<View
 				render={({ pageNumber }) => <PDFHeaderFooterRenderer element={pageNumber % 2 === 0 ? evenFooter : oddFooter} isHeader={false} ctx={ctx} />}
 				fixed

@@ -11,7 +11,7 @@ export function get_demo_editor_value(): Descendant[] {
 	return [
 		{
 			type: "front-page-with-text",
-			mainImageUrl: "https://upload.wikimedia.org/wikipedia/commons/0/06/LHC_quadrupole_magnets.jpg",
+			mainImageUrl: "https://upload.wikimedia.org/wikipedia/commons/c/c7/View_inside_detector_at_the_CMS_cavern_LHC_CERN.jpg", //"https://upload.wikimedia.org/wikipedia/commons/0/06/LHC_quadrupole_magnets.jpg",
 			logoImageUrl: "https://upload.wikimedia.org/wikipedia/en/thumb/8/80/Wikipedia-logo-v2.svg/2244px-Wikipedia-logo-v2.svg.png",
 			children: [
 				{ id: randomAddress(), type: "heading-1", children: [{ text: "Heading 1 lorem ipsum dolor sit amet", italic: true }] },
@@ -245,7 +245,19 @@ export function get_demo_editor_value(): Descendant[] {
 			children: [
 				{ id: randomAddress(), type: "list-item", children: [{ text: "Or, add" }] },
 				{ id: randomAddress(), type: "list-item", children: [{ text: "an unordered list of", bold: true }] },
-				{ id: randomAddress(), type: "list-item", children: [{ text: "several elements", italic: true, bold: true, underline: true, code: true }] },
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [
+						{
+							text: "several elements",
+							italic: true,
+							bold: true,
+							underline: true,
+							code: true,
+						},
+					],
+				},
 			],
 		},
 		{
@@ -255,7 +267,16 @@ export function get_demo_editor_value(): Descendant[] {
 				{ id: randomAddress(), type: "list-item", children: [{ text: "And add" }] },
 				{ id: randomAddress(), type: "list-item", children: [{ text: "a ordered list of", bold: true }] },
 				{ id: randomAddress(), type: "list-item", children: [{ text: "elements,", italic: true, bold: true, underline: true, code: true }] },
-				{ id: randomAddress(), type: "list-item", children: [{ text: "like so" }] },
+				{
+					id: randomAddress(),
+					type: "list-item",
+					align: "justify",
+					children: [
+						{
+							text: "like so: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut iaculis eget lectus nec sagittis. Donec et venenatis nisi. Proin tempor feugiat diam ac suscipit. Cras fringilla justo quis elementum imperdiet. Proin aliquet purus purus, quis ultrices urna elementum sed. Mauris gravida id purus at congue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ligula purus, vestibulum eget dui vel, bibendum posuere leo. Ut posuere nunc eget turpis convallis pretium. Vestibulum mollis tempor est at posuere. Vestibulum iaculis sapien ac tincidunt consectetur. Aliquam ornare ante id enim ultrices vehicula. Quisque gravida eros ut rhoncus lacinia. ",
+						},
+					],
+				},
 			],
 		},
 		{
@@ -280,6 +301,7 @@ export function get_demo_editor_value(): Descendant[] {
 		{
 			id: randomAddress(),
 			type: "paragraph",
+			align: "justify",
 			children: [
 				{
 					text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
@@ -290,6 +312,7 @@ export function get_demo_editor_value(): Descendant[] {
 		{
 			id: randomAddress(),
 			type: "paragraph",
+			align: "justify",
 			children: [
 				{
 					text: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).",
@@ -301,6 +324,7 @@ export function get_demo_editor_value(): Descendant[] {
 		{
 			id: randomAddress(),
 			type: "paragraph",
+			align: "justify",
 			children: [
 				{
 					text: 'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.',
@@ -310,6 +334,7 @@ export function get_demo_editor_value(): Descendant[] {
 		{
 			id: randomAddress(),
 			type: "paragraph",
+			align: "justify",
 			children: [
 				{
 					text: 'The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.',
@@ -320,6 +345,7 @@ export function get_demo_editor_value(): Descendant[] {
 		{
 			id: randomAddress(),
 			type: "paragraph",
+			align: "justify",
 			children: [
 				{
 					text: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.",
@@ -330,6 +356,7 @@ export function get_demo_editor_value(): Descendant[] {
 		{
 			id: randomAddress(),
 			type: "paragraph",
+			align: "left",
 			children: [
 				{
 					text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut iaculis eget lectus nec sagittis. Donec et venenatis nisi. Proin tempor feugiat diam ac suscipit. Cras fringilla justo quis elementum imperdiet. Proin aliquet purus purus, quis ultrices urna elementum sed. Mauris gravida id purus at congue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ligula purus, vestibulum eget dui vel, bibendum posuere leo. Ut posuere nunc eget turpis convallis pretium. Vestibulum mollis tempor est at posuere. Vestibulum iaculis sapien ac tincidunt consectetur. Aliquam ornare ante id enim ultrices vehicula. Quisque gravida eros ut rhoncus lacinia. ",
@@ -339,6 +366,7 @@ export function get_demo_editor_value(): Descendant[] {
 		{
 			id: randomAddress(),
 			type: "paragraph",
+			align: "center",
 			children: [
 				{
 					text: "Aliquam velit leo, venenatis ut magna sed, mattis tempus nisi. Suspendisse feugiat nulla at ligula consequat feugiat. Sed in vestibulum lacus, ut tincidunt sem. Aliquam libero quam, volutpat sed justo et, ultrices eleifend ipsum. Morbi vitae pharetra mauris. Maecenas ullamcorper, sem at condimentum accumsan, velit lectus efficitur tortor, pretium eleifend justo tellus non ipsum. Morbi lacinia ex non lectus consectetur, sit amet pulvinar tellus rutrum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris commodo, sem vel aliquam pellentesque, est risus mattis nunc, sit amet aliquam nisl eros quis purus. In venenatis eget felis non consectetur. Duis vehicula finibus nisl in malesuada. Quisque nec aliquet nisl. Nam non augue id tortor dignissim malesuada. Integer sed maximus augue. ",
@@ -348,6 +376,7 @@ export function get_demo_editor_value(): Descendant[] {
 		{
 			id: randomAddress(),
 			type: "paragraph",
+			align: "right",
 			children: [
 				{
 					text: "Suspendisse sit amet ante egestas, molestie nisl in, lobortis odio. Donec vitae fringilla eros. Suspendisse lorem massa, gravida eget augue a, ultrices rhoncus lacus. Suspendisse potenti. In vehicula, ante id venenatis egestas, nisi lorem auctor turpis, quis lobortis diam augue id purus. Praesent mauris dolor, egestas vitae ex nec, mollis fermentum felis. Nulla rhoncus sed lorem ac euismod. Nunc mattis gravida ante, quis volutpat nulla. Duis eu ullamcorper tortor, eu vestibulum nisi. Aliquam non eleifend arcu. Pellentesque tincidunt, nisi non tristique porttitor, justo ante imperdiet risus, ut posuere ipsum purus nec lectus. Quisque erat justo, tristique eget tortor et, semper tristique sapien. ",
@@ -357,6 +386,7 @@ export function get_demo_editor_value(): Descendant[] {
 		{
 			id: randomAddress(),
 			type: "paragraph",
+			align: "justify",
 			children: [
 				{
 					text: "Pellentesque laoreet, mi a dignissim pretium, felis tellus rhoncus massa, condimentum laoreet dolor sem nec odio. Donec finibus interdum nunc, eu vehicula leo rhoncus fringilla. Nullam vel elit consequat, suscipit ex eget, pretium felis. In condimentum enim et justo molestie mattis. Proin porta eros quis elit malesuada, vitae hendrerit mauris volutpat. Suspendisse ultricies bibendum iaculis. Vivamus pharetra pharetra justo, in malesuada mi efficitur sit amet. Nullam ut quam at nisi volutpat gravida. Sed euismod sapien quis finibus blandit. In non erat ante. Cras sollicitudin pulvinar laoreet. ",
@@ -366,6 +396,7 @@ export function get_demo_editor_value(): Descendant[] {
 		{
 			id: randomAddress(),
 			type: "paragraph",
+			align: "justify",
 			children: [
 				{
 					text: "Morbi pretium diam sed sapien iaculis suscipit. Nunc dictum justo eu risus euismod posuere. Nunc volutpat malesuada porttitor. Sed blandit odio nunc, cursus gravida risus malesuada at. Pellentesque tristique dui magna, quis condimentum nisl maximus vel. Maecenas dictum sem sed iaculis elementum. Duis blandit, nulla non pharetra laoreet, elit erat mollis leo, pulvinar tincidunt metus mi et neque. In hac habitasse platea dictumst. Nullam malesuada nisi eu quam vestibulum tincidunt. Sed lectus ligula, viverra eget neque eu, imperdiet interdum est. Mauris interdum sollicitudin volutpat. ",

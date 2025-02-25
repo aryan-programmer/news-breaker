@@ -409,6 +409,9 @@ function registerFontsForPDF() {
 		format: "png",
 		url: "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/",
 	});
+
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+	Font.registerHyphenationCallback((word: string) => [word]);
 }
 
 export const sansSerifPDFFont = "Nunito";

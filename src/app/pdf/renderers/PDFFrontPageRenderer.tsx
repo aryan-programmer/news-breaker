@@ -14,21 +14,20 @@ export function PDFFrontPageRenderer({ element, ctx }: { ctx: Ctx; element: Fron
 			<View style={styles.frontPageHeaderWithLogo}>
 				<View
 					style={{
-						flex: 1,
-						// Yes, this invisible border is necessary, otherwise the text overflows
-						border: `1px solid ${element.textSectionBgColor ?? "white"}`,
+						flexGrow: 1,
+						flexBasis: 0,
 					}}>
-					{element.children.map((c, i) => itemRenderer(c, i, ctx))}
+					{element.children.map((c, i, arr) => itemRenderer(c, i === arr.length - 1, ctx))}
 				</View>
-				{element.logoImageUrl != null ? (
-					/* eslint-disable-next-line jsx-a11y/alt-text */
-					<Image src={element.logoImageUrl} style={styles.frontPageLogo} />
-				) : null}
 			</View>
 			<View style={styles.frontPageMainImageHolder}>
 				{/* eslint-disable-next-line jsx-a11y/alt-text */}
 				<Image src={element.mainImageUrl} style={styles.frontPageMainImage} />
 			</View>
+			{element.logoImageUrl != null ? (
+				/* eslint-disable-next-line jsx-a11y/alt-text */
+				<Image src={element.logoImageUrl} style={styles.frontPageLogo} />
+			) : null}
 		</Page>
 	);
 }
