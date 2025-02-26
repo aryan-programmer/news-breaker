@@ -17,12 +17,20 @@ export type CommonElement = {
 	align?: AlignType;
 };
 
+export type ImageSizeAndPositionType = {
+	stretch?: boolean;
+	anchorX?: "left" | "center" | "right";
+	anchorY?: "top" | "center" | "bottom";
+};
+
 export type FrontPageWithTextElement = CommonElement & {
 	type: "front-page-with-text";
 	children: Descendant[];
-	mainImageUrl: string;
+	mainImageUrl?: string | null | undefined;
 	logoImageUrl?: string | null | undefined;
 	textSectionBgColor?: string | null | undefined;
+	useMainImageAsBg?: boolean;
+	mainImageSizeAndPosition?: ImageSizeAndPositionType;
 };
 export type AutoTableOfContentsElement = CommonElement & {
 	type: "auto-toc";
@@ -245,7 +253,9 @@ export type CustomText = {
 	underline?: true;
 	code?: true;
 	pageNumberOverride?: true;
+	color?: string;
 };
+
 export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
 
 export type TextMarkTypes = keyof Omit<CustomText, "text">;

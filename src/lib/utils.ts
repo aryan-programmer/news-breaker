@@ -6,7 +6,8 @@ import { twMerge } from "tailwind-merge";
 export const DATA_GIF_URL =
 	"data:image/gif;base64,R0lGODlhEAAQAMQAAORHHOVSKudfOulrSOp3WOyDZu6QdvCchPGolfO0o/XBs/fNwfjZ0frl3/zy7////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAkAABAALAAAAAAQABAAAAVVICSOZGlCQAosJ6mu7fiyZeKqNKToQGDsM8hBADgUXoGAiqhSvp5QAnQKGIgUhwFUYLCVDFCrKUE1lBavAViFIDlTImbKC5Gm2hB0SlBCBMQiB0UjIQA7";
 
-export const DEMO_IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Standard_Model_of_Elementary_Particles.svg/2140px-Standard_Model_of_Elementary_Particles.svg.png";
+export const DEMO_IMAGE_URL =
+	"https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Standard_Model_of_Elementary_Particles.svg/2140px-Standard_Model_of_Elementary_Particles.svg.png";
 
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
@@ -49,4 +50,36 @@ export function pageNumberToLowerAlpha(i: number) {
 		}
 	}
 	return res;
+}
+
+export function isNonNullAndNonEmpty(v: string | null | undefined): v is string {
+	return !(v == null || v.length === 0);
+}
+
+export function anchorXToJustifyContent(anchorX: "left" | "right" | "center" | null | undefined) {
+	switch (anchorX) {
+		case "left":
+			return "justify-start";
+		case "right":
+			return "justify-end";
+		case "center":
+		case undefined:
+		case null:
+		default:
+			return "justify-center";
+	}
+}
+
+export function anchorYToAlignItems(anchorX: "top" | "bottom" | "center" | null | undefined) {
+	switch (anchorX) {
+		case "top":
+			return "items-start";
+		case "bottom":
+			return "items-end";
+		case "center":
+		case undefined:
+		case null:
+		default:
+			return "items-center";
+	}
 }

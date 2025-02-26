@@ -31,9 +31,25 @@ export function toggleMark(editor: CustomEditor, format: TextMarkTypes) {
 		Editor.addMark(editor, format, true);
 	}
 }
+
 export function isMarkActive(editor: CustomEditor, format: TextMarkTypes) {
 	const marks = Editor.marks(editor);
 	return marks ? marks[format] === true : false;
+}
+
+export function setColorMark(editor: CustomEditor, color: string) {
+	console.log({ color });
+	if (color === "#000" || color === "#000000") {
+		Editor.removeMark(editor, "color");
+	} else {
+		Editor.addMark(editor, "color", color);
+	}
+}
+
+export function getColorMark(editor: CustomEditor) {
+	const marks = Editor.marks(editor);
+	console.log({ marks });
+	return marks?.color ?? "#000";
 }
 
 export function isBlockActive(editor: CustomEditor, format: AlignType | CustomElementTypeStr) {

@@ -1,8 +1,9 @@
 "use client";
+import { ColorPicker } from "@/components/ui/ColorPicker";
 import { ToolbarIconToggle } from "@/components/ui/Toolbar";
 import { ReactNode } from "react";
 import { useSlate } from "slate-react";
-import { isMarkActive, toggleMark } from "../editor-utils";
+import { getColorMark, isMarkActive, setColorMark, toggleMark } from "../editor-utils";
 import { TextMarkTypes } from "../types";
 
 export function MarkButton({ format, hoverText, children }: { format: TextMarkTypes; hoverText: string; children: ReactNode }) {
@@ -19,4 +20,9 @@ export function MarkButton({ format, hoverText, children }: { format: TextMarkTy
 			{children}
 		</ToolbarIconToggle>
 	);
+}
+
+export function MarkColorPicker() {
+	const editor = useSlate();
+	return <ColorPicker className="inline-flex mx-1" onChange={(v: string) => setColorMark(editor, v)} value={getColorMark(editor)} />;
 }

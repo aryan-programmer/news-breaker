@@ -9,7 +9,7 @@ const ButtonGroup = React.forwardRef<
 	React.ComponentRef<typeof RadioGroupPrimitive.Root>,
 	React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
 >(({ className, ...props }, ref) => {
-	return <RadioGroupPrimitive.Root className={cn("flex gap-5", className)} {...props} ref={ref} />;
+	return <RadioGroupPrimitive.Root className={cn("flex gap-2", className)} {...props} ref={ref} />;
 });
 ButtonGroup.displayName = RadioGroupPrimitive.Root.displayName;
 
@@ -24,14 +24,14 @@ const ButtonGroupItem = React.forwardRef<
 		<RadioGroupPrimitive.Item
 			ref={ref}
 			className={cn(
-				"border data-[state=checked]:bg-background text-center h-[125px] w-[125px] rounded-md focus:outline-none 2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+				"bg-transparent basis-0 flex-grow flex-shrink border text-center rounded-md hover:bg-muted hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:shadow data-[state=checked]:hover:bg-primary/90",
 				className,
 			)}
 			{...props}>
 			<RadioGroupPrimitive.RadioGroupIndicator className="relative">
 				<div className="relative">
-					<div className="absolute -ml-2 -mt-[30px] ">
-						<CheckCircle className="text-primary" />
+					<div className="absolute -ml-[5px] -mt-[5px] ">
+						<CheckCircle className="text-white mix-blend-difference" width={15} height={15} />
 					</div>
 				</div>
 			</RadioGroupPrimitive.RadioGroupIndicator>

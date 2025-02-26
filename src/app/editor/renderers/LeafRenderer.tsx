@@ -1,4 +1,5 @@
 "use client";
+import { isNonNullAndNonEmpty } from "@/lib/utils";
 import { RenderLeafProps } from "slate-react";
 
 export function LeafRenderer({ attributes, children, leaf }: RenderLeafProps) {
@@ -16,6 +17,10 @@ export function LeafRenderer({ attributes, children, leaf }: RenderLeafProps) {
 
 	if (leaf.underline) {
 		children = <u>{children}</u>;
+	}
+
+	if (isNonNullAndNonEmpty(leaf.color)) {
+		children = <span style={{ color: leaf.color }}>{children}</span>;
 	}
 
 	if (leaf.pageNumberOverride) {

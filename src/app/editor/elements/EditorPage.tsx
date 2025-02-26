@@ -57,7 +57,7 @@ import { insertSectionBreak } from "../renderers/SectionBreak";
 import { TextMarkTypes } from "../types";
 import { BlockButton } from "./BlockButton";
 import { ElementSettingsSidebarProvider, useElementSettingsSidebarStore } from "./ElementSettingsSidebar";
-import { MarkButton } from "./MarkButton";
+import { MarkButton, MarkColorPicker } from "./MarkButton";
 import { TableDropDownMenu } from "./TableDropDownMenu";
 
 const FORMATTING_HOTKEYS: { [key: string]: TextMarkTypes } = {
@@ -198,6 +198,7 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 						<MarkButton hoverText="Code" format="code">
 							<FontAwesomeIcon icon={faCode} />
 						</MarkButton>
+						<MarkColorPicker />
 						<BlockButton hoverText="Heading 1" format="heading-1">
 							<FontAwesomeIcon icon={fa1} />
 						</BlockButton>

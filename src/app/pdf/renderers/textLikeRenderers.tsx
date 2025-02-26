@@ -13,6 +13,7 @@ export function PDFTextStringRenderer({ element, ctx }: { ctx: Ctx; element: Cus
 	if (element.italic) style = { ...style, ...styles.italic };
 	if (element.underline) style = { ...style, ...styles.underline };
 	if (element.code) style = { ...style, ...styles.code };
+	if (element.color != null) style = { ...style, color: element.color };
 	if (element.pageNumberOverride) {
 		style = { ...style, ...styles.pageNumber };
 		return (

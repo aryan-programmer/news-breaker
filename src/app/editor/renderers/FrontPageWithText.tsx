@@ -1,9 +1,13 @@
 import { Button } from "@/components/ui/Button";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { ColorPicker } from "@/components/ui/ColorPicker";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
+import { ButtonGroup, ButtonGroupItem } from "@/components/ui/IconRadioGroup";
 import { Input } from "@/components/ui/Input";
 import { useStoreAsIs } from "@/hooks/useStore";
-import { colorValidator, forwardFnDropAsync } from "@/lib/utils";
+import { anchorXToJustifyContent, anchorYToAlignItems, colorValidator, forwardFnDropAsync, isNonNullAndNonEmpty } from "@/lib/utils";
+import { faAlignCenter, faAlignLeft, faAlignRight } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
@@ -41,15 +45,27 @@ export function FrontPageWithText({ attributes, children, element }: FrontPageWi
 			<div
 				className="absolute top-0 left-0 w-full h-full border-indigo-400 border-2 flex flex-col items-stretch justify-stretch"
 				style={element.textSectionBgColor == null || element.textSectionBgColor === "" ? {} : { backgroundColor: element.textSectionBgColor }}>
-				<div className="p-1 w-100">{children as any}</div>
-				<div className="max-w-full max-h-full min-h-0 min-w-0 flex grow items-center justify-center">
-					{/* eslint-disable-next-line @next/next/no-img-element*/}
-					<img src={element.mainImageUrl} alt="" className="max-w-full max-h-full aspect-auto object-scale-down" />
-				</div>
-				{element.logoImageUrl == null || element.logoImageUrl === "" ? null : (
+				<div className="p-1 w-full z-10">{children as any}</div>
+				{isNonNullAndNonEmpty(element.mainImageUrl) ? (
+					<div
+						className={`max-w-full max-h-full min-h-0 min-w-0 flex grow ${anchorXToJustifyContent(
+							element.mainImageSizeAndPosition?.anchorX,
+						)} ${anchorYToAlignItems(element.mainImageSizeAndPosition?.anchorY)}
+						${element.useMainImageAsBg === true ? "absolute bottom-0 top-0 right-0 left-0" : ""}`}>
+						{/* eslint-disable-next-line @next/next/no-img-element*/}
+						<img
+							src={element.mainImageUrl}
+							alt=""
+							className={`max-w-full max-h-full ${
+								element.mainImageSizeAndPosition?.stretch === true ? "w-full h-full" : "aspect-auto object-scale-down"
+							}`}
+						/>
+					</div>
+				) : null}
+				{isNonNullAndNonEmpty(element.logoImageUrl) ? (
 					/* eslint-disable-next-line @next/next/no-img-element*/
 					<img src={element.logoImageUrl} alt="" className="aspect-auto max-h-14 mb-1 mr-1 absolute bottom-0 right-0" />
-				)}
+				) : null}
 			</div>
 		</div>
 	);
@@ -59,6 +75,10 @@ const formSchema = z.object({
 	mainImageUrl: z.string().nonempty().url("Enter a valid URL"),
 	logoImageUrl: z.string().url("Enter a valid URL or keep it blank"),
 	bgColor: z.string().refine(colorValidator, "Enter a valid color or keep it blank"),
+	useMainImageAsBg: z.boolean(),
+	stretch: z.boolean(),
+	anchorX: z.enum(["left", "center", "right"]),
+	anchorY: z.enum(["top", "center", "bottom"]),
 });
 
 export function FrontPageWithTextSidebarSettings({
@@ -69,11 +89,17 @@ export function FrontPageWithTextSidebarSettings({
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			mainImageUrl: element.mainImageUrl,
+			mainImageUrl: element.mainImageUrl ?? "",
 			logoImageUrl: element.logoImageUrl ?? "",
 			bgColor: element.textSectionBgColor ?? "",
+			useMainImageAsBg: element.useMainImageAsBg ?? false,
+			stretch: element.mainImageSizeAndPosition?.stretch ?? false,
+			anchorX: element.mainImageSizeAndPosition?.anchorX ?? "center",
+			anchorY: element.mainImageSizeAndPosition?.anchorY ?? "center",
 		},
 	});
+
+	const stretch = form.watch("stretch");
 
 	// 2. Define a submit handler.
 	function onSubmit(values: z.infer<typeof formSchema>) {
@@ -83,6 +109,14 @@ export function FrontPageWithTextSidebarSettings({
 				mainImageUrl: values.mainImageUrl,
 				logoImageUrl: values.logoImageUrl,
 				textSectionBgColor: values.bgColor,
+				useMainImageAsBg: values.useMainImageAsBg,
+				mainImageSizeAndPosition: values.stretch
+					? { stretch: true }
+					: {
+							stretch: false,
+							anchorX: values.anchorX ?? "center",
+							anchorY: values.anchorY ?? "center",
+					  },
 			},
 			{ at },
 		);
@@ -105,9 +139,71 @@ export function FrontPageWithTextSidebarSettings({
 				/>
 				<FormField
 					control={form.control}
+					name="useMainImageAsBg"
+					render={({ field }) => (
+						<FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-1">
+							<FormControl>
+								<Checkbox checked={field.value} onCheckedChange={field.onChange} />
+							</FormControl>
+							<div className="space-y-1 leading-none">
+								<FormLabel>Use the main image as the background</FormLabel>
+							</div>
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="stretch"
+					render={({ field }) => (
+						<FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-1">
+							<FormControl>
+								<Checkbox checked={field.value} onCheckedChange={field.onChange} />
+							</FormControl>
+							<div className="space-y-1 leading-none">
+								<FormLabel>Stretch main image</FormLabel>
+							</div>
+						</FormItem>
+					)}
+				/>
+				{stretch ? null : (
+					<>
+						<FormField
+							control={form.control}
+							name="anchorX"
+							render={({ field }) => (
+								<FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-1">
+									<FormControl>
+										<ButtonGroup className="w-full mt-3" value={field.value} onValueChange={field.onChange}>
+											<ButtonGroupItem value="left" label="Left" icon={<FontAwesomeIcon icon={faAlignLeft} />} />
+											<ButtonGroupItem value="center" label="Center" icon={<FontAwesomeIcon icon={faAlignCenter} />} />
+											<ButtonGroupItem value="right" label="Right" icon={<FontAwesomeIcon icon={faAlignRight} />} />
+										</ButtonGroup>
+									</FormControl>
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="anchorY"
+							render={({ field }) => (
+								<FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-1">
+									<FormControl>
+										<ButtonGroup className="w-full mt-3" value={field.value} onValueChange={field.onChange}>
+											<ButtonGroupItem value="top" label="Top" icon={<FontAwesomeIcon icon={faAlignLeft} transform={{ rotate: 90 }} />} />
+											<ButtonGroupItem value="center" label="Center" icon={<FontAwesomeIcon icon={faAlignCenter} transform={{ rotate: 90 }} />} />
+											<ButtonGroupItem value="bottom" label="Bottom" icon={<FontAwesomeIcon icon={faAlignRight} transform={{ rotate: 90 }} />} />
+										</ButtonGroup>
+									</FormControl>
+								</FormItem>
+							)}
+						/>
+					</>
+				)}
+				<FormField
+					control={form.control}
 					name="logoImageUrl"
 					render={({ field }) => (
-						<FormItem>
+						<FormItem className="mt-1">
 							<FormLabel>Logo Image</FormLabel>
 							<FormControl>
 								<Input placeholder="https://example.com/image.png" {...field} type="url" />
