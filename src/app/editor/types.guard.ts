@@ -2,7 +2,7 @@
  * Generated type guards for "types.ts".
  * WARNING: Do not manually change this file.
  */
-import { AlignType, PageNumberFormatType, HeadingNElementTypeName, TextChildrenOnlyElementNames, TypeNamesOfElementsWhoseTypesCannotBeChanged, CustomElementTypeStr, ListElementTypeStr } from "./types";
+import { AlignType, PageNumberFormatType, FlexboxAlignContent, FlexboxAlignItems, FlexboxAlignSelf, FlexboxFlexDirection, FlexboxFlexWrap, FlexboxJustifyContent, HeadingNElementTypeName, TextChildrenOnlyElementNames, TypeNamesOfElementsWhoseTypesCannotBeChanged, CustomElementTypeStr, ListElementTypeStr } from "./types";
 
 export function isAlignType(obj: unknown): obj is AlignType {
     const typedObj = obj as AlignType
@@ -22,6 +22,73 @@ export function isPageNumberFormatType(obj: unknown): obj is PageNumberFormatTyp
             typedObj === "upper" ||
             typedObj === "lower-roman" ||
             typedObj === "upper-roman")
+    )
+}
+
+export function isFlexboxAlignContent(obj: unknown): obj is FlexboxAlignContent {
+    const typedObj = obj as FlexboxAlignContent
+    return (
+        (typedObj === "center" ||
+            typedObj === "flex-start" ||
+            typedObj === "flex-end" ||
+            typedObj === "stretch" ||
+            typedObj === "space-between" ||
+            typedObj === "space-around" ||
+            typedObj === "space-evenly")
+    )
+}
+
+export function isFlexboxAlignItems(obj: unknown): obj is FlexboxAlignItems {
+    const typedObj = obj as FlexboxAlignItems
+    return (
+        (typedObj === "center" ||
+            typedObj === "flex-start" ||
+            typedObj === "flex-end" ||
+            typedObj === "stretch" ||
+            typedObj === "baseline")
+    )
+}
+
+export function isFlexboxAlignSelf(obj: unknown): obj is FlexboxAlignSelf {
+    const typedObj = obj as FlexboxAlignSelf
+    return (
+        (typedObj === "center" ||
+            typedObj === "flex-start" ||
+            typedObj === "flex-end" ||
+            typedObj === "stretch" ||
+            typedObj === "baseline" ||
+            typedObj === "auto")
+    )
+}
+
+export function isFlexboxFlexDirection(obj: unknown): obj is FlexboxFlexDirection {
+    const typedObj = obj as FlexboxFlexDirection
+    return (
+        (typedObj === "row" ||
+            typedObj === "row-reverse" ||
+            typedObj === "column" ||
+            typedObj === "column-reverse")
+    )
+}
+
+export function isFlexboxFlexWrap(obj: unknown): obj is FlexboxFlexWrap {
+    const typedObj = obj as FlexboxFlexWrap
+    return (
+        (typedObj === "nowrap" ||
+            typedObj === "wrap" ||
+            typedObj === "wrap-reverse")
+    )
+}
+
+export function isFlexboxJustifyContent(obj: unknown): obj is FlexboxJustifyContent {
+    const typedObj = obj as FlexboxJustifyContent
+    return (
+        (typedObj === "center" ||
+            typedObj === "flex-start" ||
+            typedObj === "flex-end" ||
+            typedObj === "space-between" ||
+            typedObj === "space-around" ||
+            typedObj === "space-evenly")
     )
 }
 
@@ -95,7 +162,8 @@ export function isCustomElementTypeStr(obj: unknown): obj is CustomElementTypeSt
             typedObj === "section-break-header-footer-editor-element" ||
             typedObj === "bulleted-list" ||
             typedObj === "numbered-list" ||
-            typedObj === "table-cell-content")
+            typedObj === "table-cell-content" ||
+            typedObj === "flexbox")
     )
 }
 

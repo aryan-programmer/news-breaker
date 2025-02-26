@@ -2,6 +2,7 @@ import { TableBody, TableFooter, TableHeader, TableRow } from "@/components/ui/T
 import { RenderElementProps } from "slate-react";
 import { AutoTableOfContents } from "./AutoTableOfContents";
 import EditableImage from "./EditableImage";
+import { FlexboxRenderer } from "./FlexboxRenderer";
 import { FrontPageWithText } from "./FrontPageWithText";
 import { PageBreak } from "./PageBreak";
 import { SectionBreak, SectionBreakHeaderFooterCellRenderer, SectionBreakHeaderFooterEditorElementRenderer } from "./SectionBreak";
@@ -21,7 +22,7 @@ export default function ElementRenderer(props: RenderElementProps) {
 				);
 			case "bulleted-list":
 				return (
-					<ul className="max-w-md space-y-1 list-disc list-inside" style={style} {...attributes}>
+					<ul className="space-y-1 list-disc list-inside" style={style} {...attributes}>
 						{children}
 					</ul>
 				);
@@ -51,7 +52,7 @@ export default function ElementRenderer(props: RenderElementProps) {
 				);
 			case "numbered-list":
 				return (
-					<ol className="max-w-md space-y-1 list-decimal list-inside" style={style} {...attributes}>
+					<ol className="space-y-1 list-decimal list-inside" style={style} {...attributes}>
 						{children}
 					</ol>
 				);
@@ -145,6 +146,12 @@ export default function ElementRenderer(props: RenderElementProps) {
 					<SectionBreakHeaderFooterCellRenderer element={element} attributes={attributes}>
 						{children}
 					</SectionBreakHeaderFooterCellRenderer>
+				);
+			case "flexbox":
+				return (
+					<FlexboxRenderer element={element} attributes={attributes}>
+						{children}
+					</FlexboxRenderer>
 				);
 		}
 	} else {

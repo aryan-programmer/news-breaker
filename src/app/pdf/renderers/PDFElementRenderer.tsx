@@ -1,6 +1,7 @@
 import { CustomElement, ListItemElement } from "@/app/editor/types";
 import { getAddress } from "@/lib/uniq-address";
 import { Image, Text, View } from "@react-pdf/renderer";
+import { Style } from "@react-pdf/stylesheet";
 import { Descendant } from "slate";
 import { PDFTable } from "../base-tables";
 import { Ctx } from "../PDFContextData";
@@ -73,16 +74,12 @@ export function PDFElementRenderer({ element, isLastElementInView, ctx }: { ctx:
 		case "heading-2":
 		case "heading-3":
 			return (
-				<PDFHeadingRenderer
-					element={element}
-					style={{ ...paragraphStyle, ...styles[element.type], textAlign: element.align ?? "left", width: "100%" }}
-					ctx={ctx}
-				/>
+				<PDFHeadingRenderer element={element} style={{ ...paragraphStyle, ...styles[element.type], textAlign: element.align ?? "left" }} ctx={ctx} />
 			);
 		case "image":
 			return (
 				// eslint-disable-next-line jsx-a11y/alt-text
-				<Image src={element.srcUrl} style={{ width: "100%", height: "auto" }} />
+				<Image src={element.srcUrl} style={{ width: "100%", height: "auto", maxHeight: "100%", objectFit: "scale-down" }} />
 			);
 		case "page-break":
 			return <Text break />;
@@ -151,6 +148,22 @@ export function PDFElementRenderer({ element, isLastElementInView, ctx }: { ctx:
 			);
 		case "auto-toc":
 			return <PDFAutoTableOfContentsRenderer element={element} ctx={ctx} />;
+		case "flexbox":
+			const t = {
+				display: "flex",
+				alignContent: element.alignContent ?? "flex-start",
+				alignItems: element.alignItems ?? "flex-start",
+				flexDirection: element.flexDirection ?? "row",
+				flexWrap: element.flexWrap ?? "nowrap",
+				justifyContent: element.justifyContent ?? "flex-start",
+				alignSelf: element.alignSelf,
+				flexGrow: element.flexGrow,
+				flexShrink: element.flexShrink,
+				flexBasis: element.flexBasis,
+				width: element.width,
+			} as const satisfies Style;
+			console.log(t);
+			return <View style={t}>{element.children.map((child, i, arr) => itemRenderer(child, i === arr.length - 1, ctx))}</View>;
 	}
 }
 

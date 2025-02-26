@@ -29,7 +29,6 @@ import {
 	faFileCircleXmark,
 	faFilePdf,
 	faFileUpload,
-	faImage,
 	faItalic,
 	faListAlt,
 	faListOl,
@@ -43,7 +42,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Menubar } from "@radix-ui/react-menubar";
 import { useNavigationGuard } from "next-navigation-guard";
 import { useRouter } from "next/navigation";
-import { HeaderFooterIcon, PageBreakIcon, PageNumberIcon } from "../../../components/ui/SVGIcons";
+import { EyeIcon, EyeSlashIcon, FlexboxIcon, HeaderFooterIcon, ImageAddIcon, PageBreakIcon, PageNumberIcon } from "../../../components/ui/SVGIcons";
 import { withSimpleCopyPaste } from "../custom-copy-paste";
 import { EditorStore, pruneTableCellPercentageWidths, useEditorStore } from "../editor-data-store";
 import { isTableCellPercentageWidthsRecord } from "../editor-data-store.guard";
@@ -51,12 +50,13 @@ import { resetNodes, toggleMark, withNormalizedCustomElements, withNormalizedFro
 import { insertTableOfContents } from "../renderers/AutoTableOfContents";
 import { insertImage } from "../renderers/EditableImage";
 import ElementRenderer from "../renderers/ElementRenderer";
+import { insertFlexbox } from "../renderers/FlexboxRenderer";
 import { LeafRenderer } from "../renderers/LeafRenderer";
 import { insertPageBreak } from "../renderers/PageBreak";
 import { insertSectionBreak } from "../renderers/SectionBreak";
 import { TextMarkTypes } from "../types";
 import { BlockButton } from "./BlockButton";
-import { ElementSettingsSidebarProvider } from "./ElementSettingsSidebar";
+import { ElementSettingsSidebarProvider, useElementSettingsSidebarStore } from "./ElementSettingsSidebar";
 import { MarkButton } from "./MarkButton";
 import { TableDropDownMenu } from "./TableDropDownMenu";
 
@@ -77,6 +77,8 @@ const NAVIGATION_HOTKEYS = {
 };
 
 export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
+	const settingsSidebarStore = useStoreAsIs(useElementSettingsSidebarStore);
+
 	const router = useRouter();
 
 	useNavigationGuard({
@@ -110,7 +112,10 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 	const onInsertTableOfContents = useCallback(() => insertTableOfContents(editor), [editor]);
 	const onInsertTable = useCallback(() => TableEditor.insertTable(editor, { rows: 3, cols: 3 }), [editor]);
 	const onInsertSectionBreak = useCallback(() => insertSectionBreak(editor), [editor]);
+	const onInsertFlexbox = useCallback(() => insertFlexbox(editor, settingsSidebarStore), [editor, settingsSidebarStore]);
 	const onAddPageNumber = useCallback(() => toggleMark(editor, "pageNumberOverride"), [editor]);
+
+	const onFlexboxVisibilitySwitch = useCallback(() => editorStore.setIsFlexboxVisiblityOn(!editorStore.isFlexboxVisiblityOn), [editorStore]);
 
 	const onFileDownload = useCallback(() => {
 		const element = document.createElement("a");
@@ -231,14 +236,14 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 							</DropdownMenuTrigger>
 							<DropdownMenuContent className="w-56">
 								<DropdownMenuItem onSelect={onInsertImage}>
-									<FontAwesomeIcon icon={faImage} />
+									<ImageAddIcon width={20} height={20} />
 									Image
 								</DropdownMenuItem>
 								<DropdownMenuItem onSelect={onInsertPageBreak}>
 									<PageBreakIcon width={20} height={20} /> Page Break
 								</DropdownMenuItem>
 								<DropdownMenuItem onSelect={onInsertSectionBreak}>
-									<HeaderFooterIcon width={20} height={20} /> Section Break (with Header & Footer)
+									<HeaderFooterIcon width={20} height={20} /> Section Break
 								</DropdownMenuItem>
 								<DropdownMenuItem onSelect={onInsertTableOfContents}>
 									<FontAwesomeIcon icon={faListAlt} transform={{ flipX: true }} /> Table of Contents
@@ -246,6 +251,14 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 								<DropdownMenuItem onSelect={onInsertTable}>
 									<FontAwesomeIcon icon={faTable} /> Table
 								</DropdownMenuItem>
+								<div className="flex flex-row w-full">
+									<DropdownMenuItem onSelect={onInsertFlexbox} className="flex-grow">
+										<FlexboxIcon width={20} height={20} /> Flexbox
+									</DropdownMenuItem>
+									<DropdownMenuItem onSelect={onFlexboxVisibilitySwitch}>
+										{editorStore.isFlexboxVisiblityOn ? <EyeIcon width={20} height={20} /> : <EyeSlashIcon width={20} height={20} />}
+									</DropdownMenuItem>
+								</div>
 								<DropdownMenuItem onSelect={onAddPageNumber}>
 									<PageNumberIcon /> Page Number
 								</DropdownMenuItem>

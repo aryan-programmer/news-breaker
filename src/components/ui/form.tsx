@@ -60,11 +60,26 @@ const FormItem = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
 
 	return (
 		<FormItemContext.Provider value={{ id }}>
-			<div ref={ref} className={cn("space-y-2", className)} {...props} />
+			<div ref={ref} className={className} {...props} />
 		</FormItemContext.Provider>
 	);
 });
 FormItem.displayName = "FormItem";
+
+const FormItemCustom = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & { name: string }>(
+	({ className, name, ...props }, ref) => {
+		const id = React.useId();
+
+		return (
+			<FormItemContext.Provider value={{ id }}>
+				<FormFieldContext.Provider value={{ name }}>
+					<div ref={ref} className={cn("space-y-2", className)} {...props} />
+				</FormFieldContext.Provider>
+			</FormItemContext.Provider>
+		);
+	},
+);
+FormItemCustom.displayName = "FormItemCustom";
 
 const FormLabel = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>, React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>>(
 	({ className, ...props }, ref) => {
@@ -113,4 +128,4 @@ const FormMessage = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<
 });
 FormMessage.displayName = "FormMessage";
 
-export { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, useFormField };
+export { Form, FormControl, FormDescription, FormField, FormItem, FormItemCustom, FormLabel, FormMessage, useFormField };

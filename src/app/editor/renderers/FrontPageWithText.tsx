@@ -3,7 +3,7 @@ import { ColorPicker } from "@/components/ui/ColorPicker";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { useStoreAsIs } from "@/hooks/useStore";
-import { blockClick, colorValidator, forwardFnDropAsync } from "@/lib/utils";
+import { colorValidator, forwardFnDropAsync } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
@@ -25,12 +25,15 @@ export function FrontPageWithText({ attributes, children, element }: FrontPageWi
 	const settingsSidebarStore = useStoreAsIs(useElementSettingsSidebarStore);
 	const select = useCallback(() => {
 		if (settingsSidebarStore == null) return;
-		if (settingsSidebarStore.data?.id !== element.id) {
+		if (settingsSidebarStore.data?.element?.id !== element.id) {
 			settingsSidebarStore.setData({
-				name: "Image",
-				element: <FrontPageWithTextSidebarSettings attributes={attributes} element={element} editor={editor} at={path} />,
-				id: element.id,
+				name: "Front Page",
+				sidebarContent: <FrontPageWithTextSidebarSettings attributes={attributes} element={element} editor={editor} at={path} />,
+				element,
+				path,
 			});
+		} else {
+			settingsSidebarStore.updateElementData(element);
 		}
 	}, [settingsSidebarStore, element, attributes, editor, path]);
 	return (
@@ -38,19 +41,15 @@ export function FrontPageWithText({ attributes, children, element }: FrontPageWi
 			<div
 				className="absolute top-0 left-0 w-full h-full border-indigo-400 border-2 flex flex-col items-stretch justify-stretch"
 				style={element.textSectionBgColor == null || element.textSectionBgColor === "" ? {} : { backgroundColor: element.textSectionBgColor }}>
-				<div className="p-1 justify-self-stretch flex flex-row flex-nowrap items-start justify-between">
-					<div className="z-10" onClick={blockClick} {...attributes}>
-						{children as any}
-					</div>
-					{element.logoImageUrl == null || element.logoImageUrl === "" ? null : (
-						/* eslint-disable-next-line @next/next/no-img-element*/
-						<img src={element.logoImageUrl} alt="" className="aspect-auto max-h-14 mt-1 mr-1" />
-					)}
-				</div>
+				<div className="p-1 w-100">{children as any}</div>
 				<div className="max-w-full max-h-full min-h-0 min-w-0 flex grow items-center justify-center">
 					{/* eslint-disable-next-line @next/next/no-img-element*/}
 					<img src={element.mainImageUrl} alt="" className="max-w-full max-h-full aspect-auto object-scale-down" />
 				</div>
+				{element.logoImageUrl == null || element.logoImageUrl === "" ? null : (
+					/* eslint-disable-next-line @next/next/no-img-element*/
+					<img src={element.logoImageUrl} alt="" className="aspect-auto max-h-14 mb-1 mr-1 absolute bottom-0 right-0" />
+				)}
 			</div>
 		</div>
 	);
@@ -62,7 +61,7 @@ const formSchema = z.object({
 	bgColor: z.string().refine(colorValidator, "Enter a valid color or keep it blank"),
 });
 
-function FrontPageWithTextSidebarSettings({
+export function FrontPageWithTextSidebarSettings({
 	element,
 	editor,
 	at,

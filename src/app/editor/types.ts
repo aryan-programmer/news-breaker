@@ -128,6 +128,53 @@ export type SectionBreakElement = CommonElement & {
 	];
 };
 
+/** @see {isFlexboxAlignContent} ts-auto-guard:type-guard */ export type FlexboxAlignContent =
+	| "flex-start"
+	| "flex-end"
+	| "center"
+	| "stretch"
+	| "space-between"
+	| "space-around"
+	| "space-evenly";
+/** @see {isFlexboxAlignItems} ts-auto-guard:type-guard */ export type FlexboxAlignItems =
+	| "flex-start"
+	| "flex-end"
+	| "center"
+	| "stretch"
+	| "baseline";
+/** @see {isFlexboxAlignSelf} ts-auto-guard:type-guard */ export type FlexboxAlignSelf =
+	| "auto"
+	| "flex-start"
+	| "flex-end"
+	| "center"
+	| "baseline"
+	| "stretch";
+/** @see {isFlexboxFlexDirection} ts-auto-guard:type-guard */ export type FlexboxFlexDirection = "row" | "row-reverse" | "column" | "column-reverse";
+/** @see {isFlexboxFlexWrap} ts-auto-guard:type-guard */ export type FlexboxFlexWrap = "nowrap" | "wrap" | "wrap-reverse";
+/** @see {isFlexboxJustifyContent} ts-auto-guard:type-guard */ export type FlexboxJustifyContent =
+	| "flex-start"
+	| "flex-end"
+	| "center"
+	| "space-around"
+	| "space-between"
+	| "space-evenly";
+
+export type FlexboxElement = CommonElement & {
+	type: "flexbox";
+	children: Descendant[];
+	alignContent?: FlexboxAlignContent;
+	alignItems?: FlexboxAlignItems;
+	alignSelf?: FlexboxAlignSelf;
+	flexDirection?: FlexboxFlexDirection;
+	flexWrap?: FlexboxFlexWrap;
+	flexGrow?: number;
+	flexShrink?: number;
+	flexBasis?: number | string;
+	width?: number | string;
+	height?: number | string;
+	justifyContent?: FlexboxJustifyContent;
+};
+
 export type CustomElement =
 	| ParagraphElement
 	| BlockQuoteElement
@@ -151,7 +198,8 @@ export type CustomElement =
 	| TableCellContentElement
 	| SectionBreakElement
 	| SectionBreakHeaderFooterEditorElement
-	| SectionBreakHeaderFooterCell;
+	| SectionBreakHeaderFooterCell
+	| FlexboxElement;
 
 export type HeadingNElement = Heading1Element | Heading2Element | Heading3Element;
 

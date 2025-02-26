@@ -280,16 +280,64 @@ export function get_demo_editor_value(): Descendant[] {
 			],
 		},
 		{
-			type: "image",
-			srcUrl: DEMO_IMAGE_URL,
-			children: [{ text: "" }],
-			id: randomAddress(),
-			align: "center",
-		},
-		{
 			id: randomAddress(),
 			type: "page-break",
 			children: [{ text: "" }],
+		},
+		{ id: randomAddress(), type: "paragraph", children: [{ text: "" }] },
+		{
+			id: randomAddress(),
+			type: "flexbox",
+			alignItems: "center",
+			children: [
+				{
+					id: randomAddress(),
+					type: "flexbox",
+					flexBasis: 0,
+					flexGrow: 1,
+					children: [
+						{
+							id: randomAddress(),
+							type: "paragraph",
+							children: [
+								{
+									text: "The Standard Model: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut iaculis eget lectus nec sagittis. Donec et venenatis nisi. Proin tempor feugiat diam ac suscipit. Cras fringilla justo quis elementum imperdiet. Proin aliquet purus purus, quis ultrices urna elementum sed. Mauris gravida id purus at congue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ligula purus, vestibulum eget dui vel, bibendum posuere leo. Ut posuere nunc eget turpis convallis pretium. Vestibulum mollis tempor est at posuere. Vestibulum iaculis sapien ac tincidunt consectetur. Aliquam ornare ante id enim ultrices vehicula. Quisque gravida eros ut rhoncus lacinia.",
+								},
+							],
+						},
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "flexbox",
+					alignSelf: "center",
+					alignItems: "center",
+					flexDirection: "column",
+					flexBasis: 0,
+					flexGrow: 2,
+					children: [
+						{
+							id: randomAddress(),
+							type: "flexbox",
+							children: [{ id: randomAddress(), type: "heading-3", children: [{ text: "The Standard Model" }] }],
+						},
+						{
+							id: randomAddress(),
+							type: "flexbox",
+							alignSelf: "center",
+							children: [
+								{
+									type: "image",
+									srcUrl: DEMO_IMAGE_URL,
+									children: [{ text: "" }],
+									id: randomAddress(),
+									align: "center",
+								},
+							],
+						},
+					],
+				},
+			],
 		},
 		{
 			id: randomAddress(),
@@ -420,11 +468,14 @@ export type EditorStore = {
 	overwriteTableCellPercentageWidths(tableCellPercentageWidths: TableCellPercentageWidthsRecord): void;
 	children: Descendant[];
 	setChildren(data: Descendant[]): void;
+	isFlexboxVisiblityOn: boolean;
+	setIsFlexboxVisiblityOn(isFlexboxVisiblityOn: boolean): void;
 };
 
 export const useEditorStore = create<EditorStore>()(
 	// persist<EditorStore>(
 	(set, get) => ({
+		isFlexboxVisiblityOn: true,
 		children: get_demo_editor_value(),
 		tableCellPercentageWidths: {},
 		setChildren(value: Descendant[]) {
@@ -437,6 +488,9 @@ export const useEditorStore = create<EditorStore>()(
 		},
 		overwriteTableCellPercentageWidths(tableCellPercentageWidths: TableCellPercentageWidthsRecord) {
 			set({ tableCellPercentageWidths });
+		},
+		setIsFlexboxVisiblityOn(isFlexboxVisiblityOn) {
+			set({ isFlexboxVisiblityOn });
 		},
 	}),
 	// 	{

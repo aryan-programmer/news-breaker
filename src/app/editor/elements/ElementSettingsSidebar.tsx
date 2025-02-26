@@ -1,27 +1,37 @@
 "use client";
 import { Button } from "@/components/ui/Button";
-import { Sidebar, SidebarHeader, SidebarProvider } from "@/components/ui/Sidebar";
+import { Sidebar, SidebarContent, SidebarHeader, SidebarProvider } from "@/components/ui/Sidebar";
 import { useStoreAsIs } from "@/hooks/useStore";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useCallback } from "react";
+import { Path } from "slate";
 import { create } from "zustand";
+import { CustomElement } from "../types";
 
 export type ElementSettingsSidebarData = {
 	name: string;
-	element: ReactNode;
-	id: string;
+	sidebarContent: ReactNode;
+	element: CustomElement;
+	path: Path;
 };
 
 export type ElementSettingsSidebarStore = {
 	data: ElementSettingsSidebarData | null;
 	setData(data: ElementSettingsSidebarData | null): void;
+	updateElementData(element: CustomElement): void;
 };
 
-export const useElementSettingsSidebarStore = create<ElementSettingsSidebarStore>((set) => ({
+export const useElementSettingsSidebarStore = create<ElementSettingsSidebarStore>((set, get) => ({
 	data: null,
 	setData(data: ElementSettingsSidebarData) {
 		set({ data });
+	},
+	updateElementData(element) {
+		const v = get();
+		if (v.data != null && element.id === v.data.element.id) {
+			set({ data: { ...v.data, element } });
+		}
 	},
 }));
 
@@ -31,7 +41,7 @@ export function ElementSettingsSidebarProvider(props: { children: any }) {
 	return (
 		<SidebarProvider open={store?.data != null}>
 			{props.children}
-			<Sidebar side="right" variant="floating" collapsible="offcanvas">
+			<Sidebar side="right" variant="floating" collapsible="offcanvas" key={store?.data?.element?.id}>
 				<SidebarHeader>
 					<div className="flex justify-between items-center flex-row">
 						<span>Settings for {store?.data?.name}</span>
@@ -40,7 +50,7 @@ export function ElementSettingsSidebarProvider(props: { children: any }) {
 						</Button>
 					</div>
 				</SidebarHeader>
-				{store?.data?.element}
+				<SidebarContent>{store?.data?.sidebarContent}</SidebarContent>
 			</Sidebar>
 		</SidebarProvider>
 	);

@@ -35,12 +35,15 @@ export default function EditableImage({ attributes, element, children }: Editabl
 	const settingsSidebarStore = useStoreAsIs(useElementSettingsSidebarStore);
 	const select = useCallback(() => {
 		if (settingsSidebarStore == null) return;
-		if (settingsSidebarStore.data?.id !== element.id) {
+		if (settingsSidebarStore.data?.element?.id !== element.id) {
 			settingsSidebarStore.setData({
 				name: "Image",
-				element: <EditableImageSidebarSettings attributes={attributes} element={element} editor={editor} at={path} />,
-				id: element.id,
+				sidebarContent: <EditableImageSidebarSettings attributes={attributes} element={element} editor={editor} at={path} />,
+				path,
+				element,
 			});
+		} else {
+			settingsSidebarStore.updateElementData(element);
 		}
 	}, [settingsSidebarStore, element, attributes, editor, path]);
 	return (
@@ -48,14 +51,14 @@ export default function EditableImage({ attributes, element, children }: Editabl
 			<div className="h-0 text-transparent outline-0 outline-none absolute w-0" style={{ fontSize: 0 }}>
 				{children as any}
 			</div>
-			<div contentEditable={false} className="w-full">
+			<div contentEditable={false} className="w-full h-full">
 				{/* eslint-disable-next-line @next/next/no-img-element*/}
 				<img
 					alt=""
 					src={element.srcUrl}
-					className="block max-w-full max-h-none shadow-none data-[selected=on]:drop-shadow-lg data-[selected=on]:shadow-foreground"
+					className="block max-w-full max-h-full shadow-none data-[selected=on]:drop-shadow-lg data-[selected=on]:shadow-foreground"
 					onClick={select}
-					data-selected={settingsSidebarStore?.data?.id === element.id ? "on" : "off"}
+					data-selected={settingsSidebarStore?.data?.element?.id === element.id ? "on" : "off"}
 				/>
 			</div>
 		</div>
