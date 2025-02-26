@@ -5,17 +5,17 @@ import { toRoman } from "roman-numerals";
 import { Descendant } from "slate";
 import { TableCellPercentageWidthsRecord } from "../editor/editor-data-store";
 import { recursiveTraverse } from "../editor/editor-utils";
-import { FrontPageWithTextElement, HeadingNElement, PageNumberFormatType, SectionBreakElement } from "../editor/types";
+import { FrontPageWithTextElement, HeadingNElement, PageBreakElement, PageNumberFormatType, SectionBreakElement } from "../editor/types";
 import { isHeadingTypeName } from "../editor/types.guard";
 import { Ctx } from "./PDFContextData";
 import { PDFDocument } from "./renderers/PDFDocument";
 
 export type PreprocessedTreeData = {
 	first: FrontPageWithTextElement;
-	blanks: Descendant[];
-	withSections: { section: SectionBreakElement; elements: Descendant[] }[];
+	blanks: Descendant[][];
+	withSections: { section: SectionBreakElement; elements: Descendant[]; isFirst: boolean }[];
 	headersList: HeadingNElement[];
-	parentSectionMap: Record<string, SectionBreakElement | FrontPageWithTextElement>;
+	parentSectionMap: Record<string, SectionBreakElement | FrontPageWithTextElement | PageBreakElement>;
 	effectiveSectionMap: Record<string, string>;
 };
 
@@ -36,48 +36,61 @@ export function preprocessTree(elements: Descendant[]): PreprocessedTreeData {
 	const effectiveSectionMap: Record<string, string> = {
 		[first.id]: first.id,
 	};
-	let isFirst = true;
-	let blanks: Descendant[] = [];
+	let isFirstElement = true;
+	const blanks: Descendant[][] = [];
 	const withSections: PreprocessedTreeData["withSections"] = [];
 	let lastElementWithReset = first.id;
 	let lastSectionBreak: SectionBreakElement | null = null;
+	let isFirstBreak = true;
 	let sectionedElements: Descendant[] = [];
 	for (const element of rest) {
 		if (
-			isFirst &&
+			isFirstElement &&
 			"type" in element &&
 			element.type === "paragraph" &&
 			(element.children.length === 0 || (element.children.length === 1 && element.children[0].text === ""))
 		) {
-			isFirst = false;
+			isFirstElement = false;
 			continue;
 		}
-		isFirst = false;
+		isFirstElement = false;
 
 		if ("type" in element && element.type === "section-break") {
 			if (lastSectionBreak == null) {
-				blanks = sectionedElements;
+				blanks.push(sectionedElements);
 			} else {
 				effectiveSectionMap[lastSectionBreak.id] = lastElementWithReset;
-				withSections.push({ section: lastSectionBreak, elements: sectionedElements });
+				withSections.push({ section: lastSectionBreak, elements: sectionedElements, isFirst: isFirstBreak });
 			}
+			isFirstBreak = true;
 			sectionedElements = [];
 			lastSectionBreak = element;
 			if (element.resetPageNumbering) lastElementWithReset = element.id;
+		} else if ("type" in element && element.type === "page-break") {
+			if (lastSectionBreak == null) {
+				blanks.push(sectionedElements);
+			} else {
+				effectiveSectionMap[lastSectionBreak.id] = lastElementWithReset;
+				withSections.push({ section: lastSectionBreak, elements: sectionedElements, isFirst: isFirstBreak });
+			}
+			isFirstBreak = false;
+			sectionedElements = [];
 		} else {
 			sectionedElements.push(element);
 		}
 	}
 	if (lastSectionBreak == null) {
-		blanks = sectionedElements;
+		blanks.push(sectionedElements);
 	} else {
 		effectiveSectionMap[lastSectionBreak.id] = lastElementWithReset;
-		withSections.push({ section: lastSectionBreak, elements: sectionedElements });
+		withSections.push({ section: lastSectionBreak, elements: sectionedElements, isFirst: isFirstBreak });
 	}
 
-	const parentSectionMap: Record<string, SectionBreakElement | FrontPageWithTextElement> = {};
-	for (const id of recursiveTraverse(blanks)) {
-		parentSectionMap[id] = first;
+	const parentSectionMap: Record<string, SectionBreakElement | FrontPageWithTextElement | PageBreakElement> = {};
+	for (const blank of blanks) {
+		for (const id of recursiveTraverse(blank)) {
+			parentSectionMap[id] = first;
+		}
 	}
 	for (const { section, elements } of withSections) {
 		for (const id of recursiveTraverse(elements)) {
@@ -118,14 +131,15 @@ export async function multiPassRender(elements: Descendant[], tableCellPercentag
 	};
 
 	while (true) {
-		const res = await pdf(
+		const pdfData = pdf(
 			<PDFDocument
 				preprocessedData={preprocessedData}
 				renderData={currData}
 				renderDataUpdaters={nextUpdaters}
 				tableCellPercentageWidths={tableCellPercentageWidths}
 			/>,
-		).toBlob();
+		);
+		const res = await pdfData.toBlob();
 		console.log({ currData, nextData });
 		if (deepEqual(currData, nextData)) {
 			return res;

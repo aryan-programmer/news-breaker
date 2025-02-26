@@ -1,6 +1,7 @@
 import { TableBody, TableFooter, TableHeader, TableRow } from "@/components/ui/Table";
 import { RenderElementProps } from "slate-react";
 import { AutoTableOfContents } from "./AutoTableOfContents";
+import { CardRenderer } from "./CardRenderer";
 import EditableImage from "./EditableImage";
 import { FlexboxRenderer } from "./FlexboxRenderer";
 import { FrontPageWithText } from "./FrontPageWithText";
@@ -152,6 +153,12 @@ export default function ElementRenderer(props: RenderElementProps) {
 					<FlexboxRenderer element={element} attributes={attributes}>
 						{children}
 					</FlexboxRenderer>
+				);
+			case "card":
+				return (
+					<CardRenderer element={element} attributes={attributes}>
+						{children}
+					</CardRenderer>
 				);
 		}
 	} else {

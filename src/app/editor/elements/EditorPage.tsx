@@ -42,12 +42,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Menubar } from "@radix-ui/react-menubar";
 import { useNavigationGuard } from "next-navigation-guard";
 import { useRouter } from "next/navigation";
-import { EyeIcon, EyeSlashIcon, FlexboxIcon, HeaderFooterIcon, ImageAddIcon, PageBreakIcon, PageNumberIcon } from "../../../components/ui/SVGIcons";
+import {
+	CardIcon,
+	EyeIcon,
+	EyeSlashIcon,
+	FlexboxIcon,
+	HeaderFooterIcon,
+	ImageAddIcon,
+	PageBreakIcon,
+	PageNumberIcon,
+} from "../../../components/ui/SVGIcons";
 import { withSimpleCopyPaste } from "../custom-copy-paste";
 import { EditorStore, pruneTableCellPercentageWidths, useEditorStore } from "../editor-data-store";
 import { isTableCellPercentageWidthsRecord } from "../editor-data-store.guard";
 import { resetNodes, toggleMark, withNormalizedCustomElements, withNormalizedFrontPage } from "../editor-utils";
 import { insertTableOfContents } from "../renderers/AutoTableOfContents";
+import { insertCard } from "../renderers/CardRenderer";
 import { insertImage } from "../renderers/EditableImage";
 import ElementRenderer from "../renderers/ElementRenderer";
 import { insertFlexbox } from "../renderers/FlexboxRenderer";
@@ -114,6 +124,7 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 	const onInsertSectionBreak = useCallback(() => insertSectionBreak(editor), [editor]);
 	const onInsertFlexbox = useCallback(() => insertFlexbox(editor, settingsSidebarStore), [editor, settingsSidebarStore]);
 	const onAddPageNumber = useCallback(() => toggleMark(editor, "pageNumberOverride"), [editor]);
+	const onInsertCard = useCallback(() => insertCard(editor, settingsSidebarStore), [editor, settingsSidebarStore]);
 
 	const onFlexboxVisibilitySwitch = useCallback(() => editorStore.setIsFlexboxVisiblityOn(!editorStore.isFlexboxVisiblityOn), [editorStore]);
 
@@ -260,6 +271,9 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 										{editorStore.isFlexboxVisiblityOn ? <EyeIcon width={20} height={20} /> : <EyeSlashIcon width={20} height={20} />}
 									</DropdownMenuItem>
 								</div>
+								<DropdownMenuItem onSelect={onInsertCard}>
+									<CardIcon width={20} height={20} /> Card
+								</DropdownMenuItem>
 								<DropdownMenuItem onSelect={onAddPageNumber}>
 									<PageNumberIcon /> Page Number
 								</DropdownMenuItem>

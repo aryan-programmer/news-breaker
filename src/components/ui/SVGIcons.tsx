@@ -683,3 +683,11 @@ export function EyeSlashIcon({ height = 24, width = 24 }: IconProps) {
 		</svg>
 	);
 }
+
+export function CardIcon({ height = 24, width = 24 }: IconProps) {
+	return (
+		<svg width={width} height={height} fill="#000000" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+			<path d="M4,21H20a3,3,0,0,0,3-3V6a3,3,0,0,0-3-3H4A3,3,0,0,0,1,6V18A3,3,0,0,0,4,21ZM3,6A1,1,0,0,1,4,5H20a1,1,0,0,1,1,1V18a1,1,0,0,1-1,1H4a1,1,0,0,1-1-1ZM5,16a1,1,0,0,1,1-1H9a1,1,0,0,1,0,2H6A1,1,0,0,1,5,16Zm0-3a1,1,0,0,1,1-1h6a1,1,0,0,1,0,2H6A1,1,0,0,1,5,13Z" />
+		</svg>
+	);
+}

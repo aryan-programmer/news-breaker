@@ -323,26 +323,244 @@ export function get_demo_editor_value(): Descendant[] {
 					type: "flexbox",
 					alignSelf: "center",
 					alignItems: "center",
-					flexDirection: "column",
+					flexDirection: "row",
 					flexBasis: 0,
 					flexGrow: 2,
 					children: [
 						{
 							id: randomAddress(),
-							type: "flexbox",
-							children: [{ id: randomAddress(), type: "heading-3", children: [{ text: "The Standard Model" }] }],
+							type: "card",
+							imageUrl: DEMO_IMAGE_URL,
+							borderAroundImage: true,
+							bgColor: "#fff",
+							shadowColor: "#000",
+							borderColor: "#ddd",
+							layoutImagePos: "top",
+							imageSizeAndPosition: {},
+							children: [
+								{ id: randomAddress(), type: "heading-3", children: [{ text: "The Standard Model" }] },
+								{
+									id: randomAddress(),
+									type: "paragraph",
+									children: [
+										{
+											text: "The Standard Model of particle physics is the theory describing three of the four known fundamental forces in the universe and classifying all known elementary particles.",
+										},
+									],
+								},
+							],
 						},
+					],
+				},
+			],
+		},
+		{
+			id: randomAddress(),
+			type: "page-break",
+			children: [{ text: "" }],
+		},
+		{
+			id: randomAddress(),
+			type: "card",
+			imageUrl: DEMO_IMAGE_URL,
+			borderAroundImage: false,
+			bgColor: "#ffa",
+			shadowColor: "#aaf",
+			borderColor: "#000",
+			layoutImagePos: "right",
+			imageSizeAndPosition: {},
+			children: [
+				{ id: randomAddress(), type: "heading-3", children: [{ text: "The Standard Model" }] },
+				{
+					id: randomAddress(),
+					type: "paragraph",
+					children: [
+						{
+							text: "Interactions in the Standard Model",
+						},
+					],
+				},
+			],
+		},
+		{
+			id: randomAddress(),
+			type: "card",
+			imageUrl: DEMO_IMAGE_URL,
+			borderAroundImage: true,
+			bgColor: "#fff",
+			shadowColor: "#000",
+			borderColor: "#ddd",
+			layoutImagePos: "left",
+			imageSizeAndPosition: {},
+			children: [
+				{
+					id: randomAddress(),
+					type: "paragraph",
+					children: [
+						{
+							text: "It was developed in stages throughout the latter half of the 20th century.",
+						},
+					],
+				},
+			],
+		},
+		{
+			id: randomAddress(),
+			type: "page-break",
+			children: [{ text: "" }],
+		},
+		{
+			id: randomAddress(),
+			type: "flexbox",
+			justifyContent: "center",
+			alignItems: "stretch",
+			flexDirection: "row",
+			children: [
+				{
+					id: randomAddress(),
+					type: "flexbox",
+					alignSelf: "center",
+					alignItems: "center",
+					flexDirection: "row",
+					flexBasis: 0,
+					flexGrow: 1,
+					flexShrink: 1,
+					children: [
 						{
 							id: randomAddress(),
-							type: "flexbox",
-							alignSelf: "center",
+							type: "card",
+							imageUrl: "https://upload.wikimedia.org/wikipedia/commons/0/06/LHC_quadrupole_magnets.jpg",
+							borderAroundImage: false,
+							bgColor: "#faf",
+							shadowColor: "#afa",
+							borderColor: "#ddd",
+							layoutImagePos: "top",
+							imageSizeAndPosition: {},
+							children: [
+								{ id: randomAddress(), type: "heading-3", children: [{ text: "Interactions in the Standard Model" }] },
+								{
+									id: randomAddress(),
+									type: "paragraph",
+									children: [
+										{
+											text: "All Feynman diagrams in the model are built from combinations of these vertices. q is any quark, g is a gluon, X is any charged particle, γ is a photon, f is any fermion, m is any particle with mass (with the possible exception of the neutrinos), mB is any boson with mass.",
+										},
+									],
+								},
+							],
+						},
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "flexbox",
+					alignSelf: "center",
+					alignItems: "center",
+					flexDirection: "row",
+					flexBasis: 0,
+					flexGrow: 1,
+					flexShrink: 1,
+					children: [
+						{
+							id: randomAddress(),
+							type: "card",
+							imageUrl: DEMO_IMAGE_URL,
+							borderAroundImage: true,
+							bgColor: "#00000000",
+							shadowColor: "#00000000",
+							borderColor: "#00000000",
+							layoutImagePos: "bottom",
+							imageSizeAndPosition: {},
+							children: [
+								{ id: randomAddress(), type: "heading-3", children: [{ text: "The Standard Model" }] },
+								{
+									id: randomAddress(),
+									type: "paragraph",
+									children: [
+										{
+											text: "It was developed in stages throughout the latter half of the 20th century, through the work of many scientists worldwide, with the current formulation being finalized in the mid-1970s upon experimental confirmation of the existence of quarks. ",
+										},
+									],
+								},
+							],
+						},
+					],
+				},
+			],
+		},
+		{
+			id: randomAddress(),
+			type: "flexbox",
+			justifyContent: "center",
+			alignItems: "stretch",
+			flexDirection: "row",
+			children: [
+				{
+					id: randomAddress(),
+					type: "flexbox",
+					alignItems: "stretch",
+					alignSelf: "stretch",
+					height: "100%",
+					flexDirection: "row",
+					flexBasis: 0,
+					flexGrow: 1,
+					flexShrink: 1,
+					children: [
+						{
+							id: randomAddress(),
+							type: "card",
+							imageUrl: "https://upload.wikimedia.org/wikipedia/commons/0/06/LHC_quadrupole_magnets.jpg",
+							borderAroundImage: true,
+							bgColor: "#aff",
+							shadowColor: "#faa",
+							borderColor: "#000",
+							layoutImagePos: "back",
+							imageSizeAndPosition: { stretch: true },
 							children: [
 								{
-									type: "image",
-									srcUrl: DEMO_IMAGE_URL,
-									children: [{ text: "" }],
 									id: randomAddress(),
-									align: "center",
+									type: "paragraph",
+									children: [
+										{
+											text: "In diagrams with multiple particle labels separated by '/', one particle label is chosen. In diagrams with particle labels separated by '|', the labels must be chosen in the same order. For example, in the four boson electroweak case the valid diagrams are WWWW, WWZZ, WWγγ, WWZγ. The conjugate of each listed vertex (reversing the direction of arrows) is also allowed.",
+											color: "#fff",
+										},
+									],
+								},
+							],
+						},
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "flexbox",
+					alignItems: "stretch",
+					alignSelf: "stretch",
+					flexDirection: "row",
+					flexBasis: 0,
+					flexGrow: 1,
+					flexShrink: 1,
+					children: [
+						{
+							id: randomAddress(),
+							type: "card",
+							imageUrl:
+								"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Weinberg_angle_%28relation_between_coupling_constants%29.svg/2560px-Weinberg_angle_%28relation_between_coupling_constants%29.svg.png",
+							borderAroundImage: false,
+							bgColor: "#00000000",
+							shadowColor: "#00000000",
+							borderColor: "#000",
+							layoutImagePos: "back",
+							imageSizeAndPosition: {},
+							children: [
+								{
+									id: randomAddress(),
+									type: "paragraph",
+									children: [
+										{
+											text: "Weinberg's weak mixing angle θW, and relation between coupling constants g, g′, and e.",
+										},
+									],
 								},
 							],
 						},
@@ -356,14 +574,27 @@ export function get_demo_editor_value(): Descendant[] {
 			align: "center",
 			children: [{ text: "Try it out for yourself!" }],
 		},
+		generateDefaultSectionBreakElement("upper-roman", true),
 		{ id: randomAddress(), type: "heading-1", children: [{ text: "What is Lorem Ipsum?" }] },
 		{
 			id: randomAddress(),
-			type: "paragraph",
-			align: "justify",
+			type: "card",
+			borderAroundImage: false,
+			bgColor: "#ffa",
+			shadowColor: "#aaf",
+			borderColor: "#000",
+			layoutImagePos: "right",
+			imageSizeAndPosition: {},
 			children: [
 				{
-					text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+					id: randomAddress(),
+					type: "paragraph",
+					align: "justify",
+					children: [
+						{
+							text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+						},
+					],
 				},
 			],
 		},
@@ -378,7 +609,6 @@ export function get_demo_editor_value(): Descendant[] {
 				},
 			],
 		},
-		generateDefaultSectionBreakElement("upper-roman", true),
 		{ id: randomAddress(), type: "heading-2", children: [{ text: "Where does it come from?" }] },
 		{
 			id: randomAddress(),

@@ -5,7 +5,7 @@ import { useStoreAsIs } from "@/hooks/useStore";
 import { randomAddress } from "@/lib/uniq-address";
 import { forwardFnDropAsync } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useCallback } from "react";
+import React, { MouseEvent, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { Location, Transforms } from "slate";
 import { ReactEditor, useSlateStatic } from "slate-react";
@@ -33,19 +33,23 @@ export default function EditableImage({ attributes, element, children }: Editabl
 	const editor = useSlateStatic();
 	const path = ReactEditor.findPath(editor, element);
 	const settingsSidebarStore = useStoreAsIs(useElementSettingsSidebarStore);
-	const select = useCallback(() => {
-		if (settingsSidebarStore == null) return;
-		if (settingsSidebarStore.data?.element?.id !== element.id) {
-			settingsSidebarStore.setData({
-				name: "Image",
-				sidebarContent: <EditableImageSidebarSettings attributes={attributes} element={element} editor={editor} at={path} />,
-				path,
-				element,
-			});
-		} else {
-			settingsSidebarStore.updateElementData(element);
-		}
-	}, [settingsSidebarStore, element, attributes, editor, path]);
+	const select = useCallback(
+		(ev: MouseEvent) => {
+			ev.stopPropagation();
+			if (settingsSidebarStore == null) return;
+			if (settingsSidebarStore.data?.element?.id !== element.id) {
+				settingsSidebarStore.setData({
+					name: "Image",
+					sidebarContent: <EditableImageSidebarSettings attributes={attributes} element={element} editor={editor} at={path} />,
+					path,
+					element,
+				});
+			} else {
+				settingsSidebarStore.updateElementData(element);
+			}
+		},
+		[settingsSidebarStore, element, attributes, editor, path],
+	);
 	return (
 		<div {...attributes}>
 			<div className="h-0 text-transparent outline-0 outline-none absolute w-0" style={{ fontSize: 0 }}>

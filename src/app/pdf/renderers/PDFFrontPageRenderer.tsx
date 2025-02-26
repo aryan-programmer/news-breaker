@@ -1,3 +1,4 @@
+import { coreceEmptyToUndef, isNonNullAndNonEmpty } from "@/lib/utils";
 import { Image, Page, View } from "@react-pdf/renderer";
 import { FrontPageWithTextElement } from "../../editor/types";
 import { Ctx } from "../PDFContextData";
@@ -9,10 +10,10 @@ export function PDFFrontPageRenderer({ element, ctx }: { ctx: Ctx; element: Fron
 		<Page
 			style={{
 				...styles.frontPageBody,
-				backgroundColor: element.textSectionBgColor ?? undefined,
+				backgroundColor: coreceEmptyToUndef(element.textSectionBgColor),
 			}}>
 			<View style={styles.frontPageHeaderWithLogo}>
-				{element.mainImageUrl == null ? null : (
+				{isNonNullAndNonEmpty(element.mainImageUrl) ? (
 					<View
 						style={[
 							styles.frontPageMainImageHolder,
@@ -39,7 +40,7 @@ export function PDFFrontPageRenderer({ element, ctx }: { ctx: Ctx; element: Fron
 							]}
 						/>
 					</View>
-				)}
+				) : null}
 				<View
 					style={{
 						flexGrow: 0,
@@ -48,7 +49,7 @@ export function PDFFrontPageRenderer({ element, ctx }: { ctx: Ctx; element: Fron
 					{element.children.map((c, i, arr) => itemRenderer(c, i === arr.length - 1, ctx))}
 				</View>
 			</View>
-			{element.logoImageUrl != null ? (
+			{isNonNullAndNonEmpty(element.logoImageUrl) ? (
 				/* eslint-disable-next-line jsx-a11y/alt-text */
 				<Image src={element.logoImageUrl} style={styles.frontPageLogo} />
 			) : null}

@@ -6,6 +6,7 @@ import { Descendant } from "slate";
 import { PDFTable } from "../base-tables";
 import { Ctx } from "../PDFContextData";
 import { PDFAutoTableOfContentsRenderer } from "./PDFAutoTableOfContentsRenderer";
+import { PDFCardRenderer } from "./PDFCardRenderer";
 import { styles } from "./styles";
 import { PDFTableFooterRowRenderer, PDFTableHeaderRowRenderer, PDFTableRowRenderer } from "./tableLikeRenderers";
 import { PDFHeadingRenderer, PDFTextLikeElementRenderer, PDFTextStringRenderer } from "./textLikeRenderers";
@@ -33,7 +34,7 @@ export function PDFElementRenderer({ element, isLastElementInView, ctx }: { ctx:
 			);
 		case "bulleted-list":
 			return (
-				<View style={{ ...paragraphStyle, ...styles.list, textAlign: element.align ?? "left" }}>
+				<View wrap style={{ ...paragraphStyle, ...styles.list, textAlign: element.align ?? "left" }}>
 					{element.children.map((child: ListItemElement, i, arr) => (
 						<View style={styles.listItem} key={child.id}>
 							<View style={styles.bullet}>
@@ -48,7 +49,7 @@ export function PDFElementRenderer({ element, isLastElementInView, ctx }: { ctx:
 			);
 		case "numbered-list":
 			return (
-				<View style={{ ...paragraphStyle, ...styles.list, textAlign: element.align ?? "left" }}>
+				<View wrap style={{ ...paragraphStyle, ...styles.list, textAlign: element.align ?? "left" }}>
 					{element.children.map((child: ListItemElement, i: number, arr) => (
 						<View style={styles.listItem} key={child.id}>
 							<View style={styles.bullet}>
@@ -82,7 +83,7 @@ export function PDFElementRenderer({ element, isLastElementInView, ctx }: { ctx:
 				<Image src={element.srcUrl} style={{ width: "100%", height: "auto", maxHeight: "100%", objectFit: "scale-down" }} />
 			);
 		case "page-break":
-			return <Text break />;
+			return <Text wrap break />;
 		case "table":
 			return (
 				<PDFTable
@@ -148,22 +149,29 @@ export function PDFElementRenderer({ element, isLastElementInView, ctx }: { ctx:
 			);
 		case "auto-toc":
 			return <PDFAutoTableOfContentsRenderer element={element} ctx={ctx} />;
-		case "flexbox":
+		case "flexbox": {
 			const t = {
 				display: "flex",
-				alignContent: element.alignContent ?? "flex-start",
+				alignContent: element.alignContent,
 				alignItems: element.alignItems ?? "flex-start",
 				flexDirection: element.flexDirection ?? "row",
-				flexWrap: element.flexWrap ?? "nowrap",
+				flexWrap: element.flexWrap ?? "wrap",
 				justifyContent: element.justifyContent ?? "flex-start",
 				alignSelf: element.alignSelf,
-				flexGrow: element.flexGrow,
-				flexShrink: element.flexShrink,
-				flexBasis: element.flexBasis,
-				width: element.width,
+				flexGrow: element.flexGrow ?? 0,
+				flexShrink: element.flexShrink ?? 0,
+				flexBasis: element.flexBasis ?? "auto",
+				width: element.width ?? "auto",
+				height: element.height ?? "auto",
 			} as const satisfies Style;
-			console.log(t);
-			return <View style={t}>{element.children.map((child, i, arr) => itemRenderer(child, i === arr.length - 1, ctx))}</View>;
+			return (
+				<View style={t} wrap={false}>
+					{element.children.map((child, i, arr) => itemRenderer(child, i === arr.length - 1, ctx))}
+				</View>
+			);
+		}
+		case "card":
+			return <PDFCardRenderer element={element} ctx={ctx} />;
 	}
 }
 

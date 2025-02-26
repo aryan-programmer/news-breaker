@@ -18,6 +18,7 @@ export function PDFTextStringRenderer({ element, ctx }: { ctx: Ctx; element: Cus
 		style = { ...style, ...styles.pageNumber };
 		return (
 			<Text
+				wrap
 				style={style}
 				render={({ pageNumber }) =>
 					formatPageNumber(pageNumber, ctx.section?.id ?? ctx.pdfContext.first.id, ctx.section?.pageNumberFormat ?? "numeric", ctx)
@@ -26,7 +27,11 @@ export function PDFTextStringRenderer({ element, ctx }: { ctx: Ctx; element: Cus
 			</Text>
 		);
 	} else {
-		return <Text style={style}>{element.text}</Text>;
+		return (
+			<Text wrap style={style}>
+				{element.text}
+			</Text>
+		);
 	}
 }
 

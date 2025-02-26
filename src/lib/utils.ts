@@ -56,6 +56,14 @@ export function isNonNullAndNonEmpty(v: string | null | undefined): v is string 
 	return !(v == null || v.length === 0);
 }
 
+export function coreceEmptyToUndef(v: string | null | undefined): string | undefined {
+	return v == null || v.length === 0 ? undefined : v;
+}
+
+export function coreceEmptyOrTransparentToUndef(v: string | null | undefined): string | undefined {
+	return v == null || v.length === 0 || v === "#00000000" ? undefined : v;
+}
+
 export function anchorXToJustifyContent(anchorX: "left" | "right" | "center" | null | undefined) {
 	switch (anchorX) {
 		case "left":

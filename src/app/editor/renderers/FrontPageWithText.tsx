@@ -5,7 +5,15 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { ButtonGroup, ButtonGroupItem } from "@/components/ui/IconRadioGroup";
 import { Input } from "@/components/ui/Input";
 import { useStoreAsIs } from "@/hooks/useStore";
-import { anchorXToJustifyContent, anchorYToAlignItems, colorValidator, forwardFnDropAsync, isNonNullAndNonEmpty } from "@/lib/utils";
+import {
+	anchorXToJustifyContent,
+	anchorYToAlignItems,
+	colorValidator,
+	coreceEmptyOrTransparentToUndef,
+	coreceEmptyToUndef,
+	forwardFnDropAsync,
+	isNonNullAndNonEmpty,
+} from "@/lib/utils";
 import { faAlignCenter, faAlignLeft, faAlignRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -45,7 +53,9 @@ export function FrontPageWithText({ attributes, children, element }: FrontPageWi
 			<div
 				className="absolute top-0 left-0 w-full h-full border-indigo-400 border-2 flex flex-col items-stretch justify-stretch"
 				style={element.textSectionBgColor == null || element.textSectionBgColor === "" ? {} : { backgroundColor: element.textSectionBgColor }}>
-				<div className="p-1 w-full z-10">{children as any}</div>
+				<div className="p-1 w-full z-10" {...attributes}>
+					{children as any}
+				</div>
 				{isNonNullAndNonEmpty(element.mainImageUrl) ? (
 					<div
 						className={`max-w-full max-h-full min-h-0 min-w-0 flex grow ${anchorXToJustifyContent(
@@ -101,14 +111,13 @@ export function FrontPageWithTextSidebarSettings({
 
 	const stretch = form.watch("stretch");
 
-	// 2. Define a submit handler.
 	function onSubmit(values: z.infer<typeof formSchema>) {
 		Transforms.setNodes<FrontPageWithTextElement>(
 			editor,
 			{
 				mainImageUrl: values.mainImageUrl,
-				logoImageUrl: values.logoImageUrl,
-				textSectionBgColor: values.bgColor,
+				logoImageUrl: coreceEmptyToUndef(values.logoImageUrl),
+				textSectionBgColor: coreceEmptyOrTransparentToUndef(values.bgColor),
 				useMainImageAsBg: values.useMainImageAsBg,
 				mainImageSizeAndPosition: values.stretch
 					? { stretch: true }
@@ -219,7 +228,7 @@ export function FrontPageWithTextSidebarSettings({
 						<FormItem>
 							<FormLabel>Background Color</FormLabel>
 							<FormControl>
-								<ColorPicker {...field} />
+								<ColorPicker {...field} useAlpha />
 							</FormControl>
 							<FormMessage className="w-100" />
 						</FormItem>

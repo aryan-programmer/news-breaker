@@ -7,7 +7,7 @@ import { PDFTextLikeElementRenderer } from "./textLikeRenderers";
 
 export function PDFAutoTableOfContentsRenderer({ element, ctx }: { element: AutoTableOfContentsElement; ctx: Ctx }) {
 	return (
-		<View style={styles.tocContainer}>
+		<View wrap style={styles.tocContainer}>
 			<Text style={{ ...styles["heading-1"], textAlign: "center", width: "100%", borderBottom: "2px dashed #faa" }}>Table of Contents</Text>
 			{ctx.pdfContext.headersList.map((header) => {
 				if (+header.type.split("-")[1] > element.includeHeaderLevelUpto) return null;

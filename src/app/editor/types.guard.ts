@@ -163,7 +163,8 @@ export function isCustomElementTypeStr(obj: unknown): obj is CustomElementTypeSt
             typedObj === "bulleted-list" ||
             typedObj === "numbered-list" ||
             typedObj === "table-cell-content" ||
-            typedObj === "flexbox")
+            typedObj === "flexbox" ||
+            typedObj === "card")
     )
 }
 

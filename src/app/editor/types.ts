@@ -136,6 +136,20 @@ export type SectionBreakElement = CommonElement & {
 	];
 };
 
+export type CardLayoutImagePos = "top" | "bottom" | "left" | "right" | "back";
+
+export type CardElement = CommonElement & {
+	type: "card";
+	children: Descendant[];
+	imageUrl?: string | null | undefined;
+	bgColor?: string | null | undefined;
+	borderColor?: string | null | undefined;
+	shadowColor?: string | null | undefined;
+	borderAroundImage: boolean;
+	layoutImagePos: CardLayoutImagePos;
+	imageSizeAndPosition: ImageSizeAndPositionType;
+};
+
 /** @see {isFlexboxAlignContent} ts-auto-guard:type-guard */ export type FlexboxAlignContent =
 	| "flex-start"
 	| "flex-end"
@@ -207,7 +221,8 @@ export type CustomElement =
 	| SectionBreakElement
 	| SectionBreakHeaderFooterEditorElement
 	| SectionBreakHeaderFooterCell
-	| FlexboxElement;
+	| FlexboxElement
+	| CardElement;
 
 export type HeadingNElement = Heading1Element | Heading2Element | Heading3Element;
 

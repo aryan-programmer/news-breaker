@@ -98,7 +98,6 @@ export function FlexboxRenderer({ attributes, element, children }: FlexboxRender
 			justifyContent: element.justifyContent,
 			width: element.width,
 			height: element.height,
-			margin: "0px",
 			...(enableSelfProps
 				? {
 						alignSelf: element.alignSelf,
@@ -110,12 +109,14 @@ export function FlexboxRenderer({ attributes, element, children }: FlexboxRender
 			...(editorStore.isFlexboxVisiblityOn
 				? {
 						minHeight: "100px",
-						padding: "15px",
+						padding: "10px",
+						margin: "5px",
 						backgroundColor: "#afa",
 						border: "3px dashed #44f",
 				  }
 				: {
-						padding: "0px",
+						padding: "unset",
+						margin: "0px",
 				  }),
 			...(settingsSidebarStore?.data?.element?.id === element.id
 				? editorStore.isFlexboxVisiblityOn
@@ -150,7 +151,8 @@ export function FlexboxRenderer({ attributes, element, children }: FlexboxRender
 			style={style}
 			onClick={select}
 			className="flex shadow-none data-[selected=on]:drop-shadow-lg data-[selected=on]:shadow-foreground"
-			data-selected={settingsSidebarStore?.data?.element?.id === element.id ? "on" : undefined}>
+			data-selected={settingsSidebarStore?.data?.element?.id === element.id ? "on" : undefined}
+			{...attributes}>
 			{children as any}
 		</div>
 	);

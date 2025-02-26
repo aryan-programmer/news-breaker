@@ -71,7 +71,7 @@ export function PDFTable({ children, style: styleProps, ...rest }: PDFTableProps
 
 	return (
 		<PDFTableContext.Provider value={tableCtx}>
-			<View {...rest} style={style}>
+			<View {...rest} wrap style={style}>
 				{rows}
 			</View>
 		</PDFTableContext.Provider>

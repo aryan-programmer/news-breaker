@@ -23,7 +23,17 @@ function PDFHeaderFooterRenderer({ element, ctx }: { ctx: Ctx; element: SectionB
 	);
 }
 
-export function PDFSectionRenderer({ section, elements, ctx: oldCtx }: { ctx: Ctx; section: SectionBreakElement; elements: Descendant[] }) {
+export function PDFSectionRenderer({
+	section,
+	elements,
+	isFirst,
+	ctx: oldCtx,
+}: {
+	ctx: Ctx;
+	section: SectionBreakElement;
+	elements: Descendant[];
+	isFirst: boolean;
+}) {
 	const ctx = useMemo<Ctx>(
 		() => ({
 			pdfContext: oldCtx.pdfContext,
@@ -39,15 +49,17 @@ export function PDFSectionRenderer({ section, elements, ctx: oldCtx }: { ctx: Ct
 				fixed
 				style={styles.fixedHeader}
 			/>
-			<Text
-				style={styles.fixedHeader}
-				render={({ pageNumber }) => {
-					if (section.id === ctx.pdfContext.effectiveSectionMap[section.id]) {
-						ctx.pdfContext.setPageNumber(section.id, pageNumber);
-					}
-					return "";
-				}}
-			/>
+			{isFirst ? (
+				<Text
+					style={styles.fixedHeader}
+					render={({ pageNumber }) => {
+						if (isFirst && section.id === ctx.pdfContext.effectiveSectionMap[section.id]) {
+							ctx.pdfContext.setPageNumber(section.id, pageNumber);
+						}
+						return "";
+					}}
+				/>
+			) : null}
 			<View style={styles.sectionedBody}>{elements.map((c, i, arr) => itemRenderer(c, i === arr.length - 1, ctx))}</View>
 			<View
 				render={({ pageNumber }) => <PDFHeaderFooterRenderer element={pageNumber % 2 === 0 ? evenFooter : oddFooter} isHeader={false} ctx={ctx} />}
