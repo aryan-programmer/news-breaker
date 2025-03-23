@@ -1,5 +1,5 @@
-import { CustomEditor } from "./types";
 import * as Slate from "slate";
+import { CustomEditor } from "./types";
 
 function clipboardEncode(data) {
 	return window.btoa(encodeURIComponent(JSON.stringify(data)));
@@ -10,6 +10,7 @@ function clipboardDecode(str: string) {
 }
 
 export function withSimpleCopyPaste(editor: CustomEditor) {
+	const { insertData } = editor;
 	editor.setFragmentData = (data) => {
 		if (!editor.selection || Slate.Range.isCollapsed(editor.selection)) return;
 
@@ -40,7 +41,9 @@ export function withSimpleCopyPaste(editor: CustomEditor) {
 		if (encoded !== "") {
 			// We avoid insertFragment - it's really hairy
 			Slate.Transforms.insertNodes(editor, clipboardDecode(encoded) as Slate.Node[]);
+			return;
 		}
+		insertData(data);
 	};
 
 	return editor;

@@ -10,6 +10,7 @@ import { Transforms } from "slate";
 import { ReactEditor, useSlateStatic } from "slate-react";
 import {
 	CustomEditor,
+	CustomText,
 	PageNumberFormatType,
 	RenderElementAttributesProp,
 	SectionBreakElement,
@@ -20,6 +21,23 @@ import {
 import { isPageNumberFormatType } from "../types.guard";
 
 export function generateDefaultSectionBreakElement(pageNumberFormat?: PageNumberFormatType, resetPageNumbering?: boolean): SectionBreakElement {
+	return generateSpecificSectionBreakElement(pageNumberFormat ?? "numeric", resetPageNumbering ?? false, {
+		top: [[{ text: "Left" }], [{ text: "Center" }], [{ text: "Right" }]],
+		bottomNotPage: [{ text: "Not Page" }],
+		bottomCenter: [{ text: "Center" }],
+	});
+}
+
+export function generateSpecificSectionBreakElement(
+	pageNumberFormat: PageNumberFormatType,
+	resetPageNumbering: boolean,
+	data: {
+		top: [CustomText[], CustomText[], CustomText[]];
+		bottomCenter: CustomText[];
+		bottomNotPage: CustomText[];
+		bottomPage?: CustomText[];
+	},
+): SectionBreakElement {
 	return {
 		id: randomAddress(),
 		type: "section-break",
@@ -28,26 +46,26 @@ export function generateDefaultSectionBreakElement(pageNumberFormat?: PageNumber
 				id: randomAddress(),
 				type: "section-break-header-footer-editor-element",
 				elementType: "odd-header",
-				bgColor: "#aaf",
+				bgColor: "#a7f3d0",
 				children: [
-					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "left", children: [{ text: "Left" }] },
-					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
-					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "right", children: [{ text: "Right" }] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "left", children: data.top[0] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "center", children: data.top[1] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "right", children: data.top[2] },
 				],
 			},
 			{
 				id: randomAddress(),
 				type: "section-break-header-footer-editor-element",
 				elementType: "odd-footer",
-				bgColor: "#aaf",
+				bgColor: "#f9c780",
 				children: [
-					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "left", children: [{ text: "Left" }] },
-					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "left", children: data.bottomNotPage },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "center", children: data.bottomCenter },
 					{
 						id: randomAddress(),
 						type: "section-break-header-footer-cell",
 						elementType: "right",
-						children: [{ text: "Pg. " }, { text: "PAGE", pageNumberOverride: true }],
+						children: data.bottomPage ?? [{ text: "Pg. " }, { text: "PAGE", pageNumberOverride: true }],
 					},
 				],
 			},
@@ -55,32 +73,32 @@ export function generateDefaultSectionBreakElement(pageNumberFormat?: PageNumber
 				id: randomAddress(),
 				type: "section-break-header-footer-editor-element",
 				elementType: "even-header",
-				bgColor: "#aaf",
+				bgColor: "#a7f3d0",
 				children: [
-					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "left", children: [{ text: "Left" }] },
-					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
-					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "right", children: [{ text: "Right" }] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "left", children: data.top[0] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "center", children: data.top[1] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "right", children: data.top[2] },
 				],
 			},
 			{
 				id: randomAddress(),
 				type: "section-break-header-footer-editor-element",
 				elementType: "even-footer",
-				bgColor: "#aaf",
+				bgColor: "#f9c780",
 				children: [
 					{
 						id: randomAddress(),
 						type: "section-break-header-footer-cell",
 						elementType: "left",
-						children: [{ text: "Pg. " }, { text: "PAGE", pageNumberOverride: true }],
+						children: data.bottomPage ?? [{ text: "Pg. " }, { text: "PAGE", pageNumberOverride: true }],
 					},
-					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "center", children: [{ text: "Center" }] },
-					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "right", children: [{ text: "Right" }] },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "center", children: data.bottomCenter },
+					{ id: randomAddress(), type: "section-break-header-footer-cell", elementType: "right", children: data.bottomNotPage },
 				],
 			},
 		],
-		pageNumberFormat: pageNumberFormat ?? "numeric",
-		resetPageNumbering: resetPageNumbering ?? false,
+		pageNumberFormat: pageNumberFormat,
+		resetPageNumbering: resetPageNumbering,
 	};
 }
 

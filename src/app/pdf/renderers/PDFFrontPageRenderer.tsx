@@ -44,7 +44,7 @@ export function PDFFrontPageRenderer({ element, ctx }: { ctx: Ctx; element: Fron
 				<View
 					style={{
 						flexGrow: 0,
-						padding: "4px",
+						padding: 25,
 					}}>
 					{element.children.map((c, i, arr) => itemRenderer(c, i === arr.length - 1, ctx))}
 				</View>

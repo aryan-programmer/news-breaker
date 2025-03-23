@@ -1,7 +1,7 @@
 import { TableCellElement, TableHeaderCellElement, TableRowElement } from "@/app/editor/types";
 import { Style } from "@react-pdf/stylesheet";
-import { ReactNode } from "react";
-import { PDFTableCell, PDFTableRow } from "../base-tables";
+import { ReactNode, useContext } from "react";
+import { PDFTableCell, PDFTableContext, PDFTableRow } from "../base-tables";
 import { Ctx } from "../PDFContextData";
 import { itemRenderer } from "./PDFElementRenderer";
 import { styles } from "./styles";
@@ -15,6 +15,7 @@ export function PDFTableRowCommonRenderer({
 	elements: (TableCellElement | TableHeaderCellElement)[];
 	style: Style;
 }) {
+	const tableCtx = useContext(PDFTableContext);
 	const res: ReactNode[] = [];
 	let totalWidth = 0;
 	for (const element of elements) {
@@ -27,7 +28,8 @@ export function PDFTableRowCommonRenderer({
 			<PDFTableCell
 				key={element.id}
 				style={{
-					...styles.tableCell,
+					// TODO: Fix
+					padding: tableCtx.borderWidth !== "0px" ? "4px" : "0px",
 					width: percentageWidth + "%",
 					...style,
 				}}>

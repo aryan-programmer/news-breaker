@@ -1,10 +1,21 @@
-import { ControlGroup, ControlGroupItem } from "@/components/ui/ControlGroup";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+	joinNumberAndUnit,
+	splitUnits,
+	UnitFieldEditor,
+	units,
+} from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { useStoreAsIs } from "@/hooks/useStore";
 import { randomAddress } from "@/lib/uniq-address";
-import { forwardFnDropAsync } from "@/lib/utils";
+import { isNumeric } from "@/lib/utils";
+import { css } from "@emotion/css";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { MouseEvent, useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -19,19 +30,11 @@ import {
 	FlexboxAlignItems,
 	FlexboxAlignSelf,
 	FlexboxElement,
-	FlexboxFlexDirection,
 	FlexboxFlexWrap,
 	FlexboxJustifyContent,
 	RenderElementAttributesProp,
 } from "../types";
-import {
-	isFlexboxAlignContent,
-	isFlexboxAlignItems,
-	isFlexboxAlignSelf,
-	isFlexboxFlexDirection,
-	isFlexboxFlexWrap,
-	isFlexboxJustifyContent,
-} from "../types.guard";
+import { isFlexboxAlignContent, isFlexboxAlignItems, isFlexboxAlignSelf, isFlexboxFlexWrap, isFlexboxJustifyContent } from "../types.guard";
 
 export function insertFlexbox(editor: CustomEditor, settingsSidebarStore: ElementSettingsSidebarStore | null | undefined) {
 	const elem: FlexboxElement = {
@@ -89,15 +92,32 @@ export function FlexboxRenderer({ attributes, element, children }: FlexboxRender
 		[settingsSidebarStore, element, attributes, editor, path, enableSelfProps],
 	);
 	const editorStore = useEditorStore();
+	const columnChildrenCss = useMemo(() => {
+		if (element.fixChildrenWidthRatios != null && element.fixChildrenWidthRatios.length !== 0) {
+			const total = element.fixChildrenWidthRatios.reduce((a, b) => a + b, 0);
+			return css`
+				${element.fixChildrenWidthRatios.map(
+					(v, i, arr) => `
+						& > * {
+							${editorStore.isFlexboxVisiblityOn ? "border: 1px solid #f44" : ""}
+						}
+						& > :nth-child(${arr.length}n${i === arr.length - 1 ? `` : ` + ${i + 1}`}){
+							width: ${(v / total) * 100}%;
+						}`,
+				)}
+			`;
+		} else {
+			return "";
+		}
+	}, [editorStore.isFlexboxVisiblityOn, element.fixChildrenWidthRatios]);
 	const style: React.CSSProperties = useMemo(
 		() => ({
 			alignContent: element.alignContent,
 			alignItems: element.alignItems,
-			flexDirection: element.flexDirection,
-			flexWrap: element.flexWrap,
 			justifyContent: element.justifyContent,
 			width: element.width,
 			height: element.height,
+			flexWrap: element.flexWrap,
 			...(enableSelfProps
 				? {
 						alignSelf: element.alignSelf,
@@ -129,20 +149,19 @@ export function FlexboxRenderer({ attributes, element, children }: FlexboxRender
 				: {}),
 		}),
 		[
-			editorStore.isFlexboxVisiblityOn,
 			element.alignContent,
 			element.alignItems,
-			element.alignSelf,
-			element.flexBasis,
-			element.flexDirection,
-			element.flexGrow,
-			element.flexShrink,
-			element.flexWrap,
-			element.height,
-			element.id,
 			element.justifyContent,
 			element.width,
+			element.height,
+			element.flexWrap,
+			element.alignSelf,
+			element.flexGrow,
+			element.flexShrink,
+			element.flexBasis,
+			element.id,
 			enableSelfProps,
+			editorStore.isFlexboxVisiblityOn,
 			settingsSidebarStore?.data?.element?.id,
 		],
 	);
@@ -150,7 +169,7 @@ export function FlexboxRenderer({ attributes, element, children }: FlexboxRender
 		<div
 			style={style}
 			onClick={select}
-			className="flex shadow-none data-[selected=on]:drop-shadow-lg data-[selected=on]:shadow-foreground"
+			className={`flex flex-row shadow-none data-[selected=on]:drop-shadow-lg data-[selected=on]:shadow-foreground ${columnChildrenCss}`}
 			data-selected={settingsSidebarStore?.data?.element?.id === element.id ? "on" : undefined}
 			{...attributes}>
 			{children as any}
@@ -185,13 +204,13 @@ const FlexboxAlignSelfOptions: [FlexboxAlignSelf | "undef", string][] = [
 	["stretch", "Stretch"],
 	["baseline", "Baseline"],
 ];
-const FlexboxFlexDirectionOptions: [FlexboxFlexDirection | "undef", string][] = [
-	["undef", "Default"],
-	["row", "Row"],
-	["row-reverse", "Row Reverse"],
-	["column", "Column"],
-	["column-reverse", "Column Reverse"],
-];
+// const FlexboxFlexDirectionOptions: [FlexboxFlexDirection | "undef", string][] = [
+// 	["undef", "Default"],
+// 	["row", "Row"],
+// 	["row-reverse", "Row Reverse"],
+// 	// ["column", "Column"],
+// 	// ["column-reverse", "Column Reverse"],
+// ];
 const FlexboxFlexWrapOptions: [FlexboxFlexWrap | "undef", string][] = [
 	["undef", "Default"],
 	["nowrap", "No wrap"],
@@ -208,59 +227,32 @@ const FlexboxJustifyContentOptions: [FlexboxJustifyContent | "undef", string][] 
 	["space-evenly", "Space Evenly"],
 ];
 
-const units = ["px", "%", "-", "unset"] as const satisfies string[];
-type Unit = "px" | "%" | "-" | "unset";
-
-const FormSchema = z.object({
+export const FormSchema = z.object({
 	alignContent: z.enum(FlexboxAlignContentOptions.map((x) => x[0]) as [string, ...string[]], { invalid_type_error: "Enter a valid AlignContent" }),
 	alignItems: z.enum(FlexboxAlignItemsOptions.map((x) => x[0]) as [string, ...string[]], { invalid_type_error: "Enter a valid AlignItems" }),
 	alignSelf: z.enum(FlexboxAlignSelfOptions.map((x) => x[0]) as [string, ...string[]], { invalid_type_error: "Enter a valid AlignSelf" }),
-	flexDirection: z.enum(FlexboxFlexDirectionOptions.map((x) => x[0]) as [string, ...string[]], { invalid_type_error: "Enter a valid FlexDirection" }),
+	// flexDirection: z.enum(FlexboxFlexDirectionOptions.map((x) => x[0]) as [string, ...string[]], { invalid_type_error: "Enter a valid FlexDirection" }),
 	flexWrap: z.enum(FlexboxFlexWrapOptions.map((x) => x[0]) as [string, ...string[]], { invalid_type_error: "Enter a valid FlexWrap" }),
 	justifyContent: z.enum(FlexboxJustifyContentOptions.map((x) => x[0]) as [string, ...string[]], {
 		invalid_type_error: "Enter a valid JustifyContent",
 	}),
-	flexGrow: z
-		.number({ invalid_type_error: "Enter a valid value for flexGrow" })
-		.min(0, { message: "flexGrow can not be less than 0" })
-		.refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
-	flexShrink: z
-		.number({ invalid_type_error: "Enter a valid value for flexShrink" })
-		.min(0, { message: "flexShrink can not be less than 0" })
-		.refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
-	flexBasis: z
-		.number({ invalid_type_error: "Enter a valid value for flexBasis" })
-		.min(0, { message: "flexBasis can not be less than 0" })
-		.refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
+	flexGrow: z.number({ invalid_type_error: "Enter a valid value for flexGrow" }).min(0, { message: "flexGrow can not be less than 0" }),
+	// .refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
+	flexShrink: z.number({ invalid_type_error: "Enter a valid value for flexShrink" }).min(0, { message: "flexShrink can not be less than 0" }),
+	// .refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
+	flexBasis: z.number({ invalid_type_error: "Enter a valid value for flexBasis" }).min(0, { message: "flexBasis can not be less than 0" }),
+	// .refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
 	flexBasisUnit: z.enum(units, { invalid_type_error: "Enter a valid unit for flexBasis" }),
-	width: z
-		.number({ invalid_type_error: "Enter a valid value for width" })
-		.min(0, { message: "width can not be less than 0" })
-		.refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
+	width: z.number({ invalid_type_error: "Enter a valid value for width" }).min(0, { message: "width can not be less than 0" }),
+	// .refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
 	widthUnit: z.enum(units, { invalid_type_error: "Enter a valid unit for width" }),
-	height: z
-		.number({ invalid_type_error: "Enter a valid value for height" })
-		.min(0, { message: "height can not be less than 0" })
-		.refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
+	height: z.number({ invalid_type_error: "Enter a valid value for height" }).min(0, { message: "height can not be less than 0" }),
+	// .refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
 	heightUnit: z.enum(units, { invalid_type_error: "Enter a valid unit for height" }),
+	fixChildrenWidthRatios: z
+		.string()
+		.refine((v) => v.split(",").reduce((a, b) => a && isNumeric(b), true), "Enter a list of numbers separated by commas, no spaces."),
 });
-
-function splitUnits(v: string | number | undefined): [number, Unit] {
-	if (v === undefined) return [0, "unset"];
-	if (typeof v === "number") return [v, "-"];
-	const match = v.match(/^(\d+(?:\.\d+)?)\s?([a-zA-Z\%]*)?$/);
-	if (match == null) return [0, "unset"];
-	if (match[2] != null && units.includes(match[2])) {
-		return [+match[1], match[2] as Unit];
-	} else {
-		return [+match[1], "-"];
-	}
-}
-function joinNumberAndUnit([v, unit]: [number, Unit]): string | number | undefined {
-	if (unit === "unset") return undefined;
-	if (unit === "-") return v;
-	return v + unit;
-}
 
 export function FlexboxSidebarSettings({
 	element,
@@ -277,7 +269,7 @@ export function FlexboxSidebarSettings({
 			alignContent: element.alignContent ?? "undef",
 			alignItems: element.alignItems ?? "undef",
 			alignSelf: element.alignSelf ?? "undef",
-			flexDirection: element.flexDirection ?? "undef",
+			// flexDirection: element.flexDirection ?? "undef",
 			flexWrap: element.flexWrap ?? "undef",
 			justifyContent: element.justifyContent ?? "undef",
 			flexGrow: element.flexGrow ?? 0,
@@ -288,6 +280,7 @@ export function FlexboxSidebarSettings({
 			widthUnit: defaultWidth[1],
 			height: defaultHeight[0],
 			heightUnit: defaultHeight[1],
+			fixChildrenWidthRatios: element.fixChildrenWidthRatios?.join(","),
 		},
 	});
 
@@ -295,7 +288,7 @@ export function FlexboxSidebarSettings({
 		alignContent,
 		alignItems,
 		alignSelf,
-		flexDirection,
+		// flexDirection,
 		flexWrap,
 		justifyContent,
 		flexBasisUnit,
@@ -306,6 +299,7 @@ export function FlexboxSidebarSettings({
 		flexGrow,
 		flexShrink,
 		flexBasis,
+		fixChildrenWidthRatios,
 	} = form.watch();
 
 	useEffect(() => {
@@ -314,11 +308,12 @@ export function FlexboxSidebarSettings({
 			{
 				alignContent: isFlexboxAlignContent(alignContent) ? alignContent : undefined,
 				alignItems: isFlexboxAlignItems(alignItems) ? alignItems : undefined,
-				flexDirection: isFlexboxFlexDirection(flexDirection) ? flexDirection : undefined,
+				// flexDirection: isFlexboxFlexDirection(flexDirection) ? flexDirection : undefined,
 				flexWrap: isFlexboxFlexWrap(flexWrap) ? flexWrap : undefined,
 				justifyContent: isFlexboxJustifyContent(justifyContent) ? justifyContent : undefined,
 				width: joinNumberAndUnit([width, widthUnit]),
 				height: joinNumberAndUnit([height, heightUnit]),
+				fixChildrenWidthRatios: fixChildrenWidthRatios === "" ? undefined : fixChildrenWidthRatios.split(",").map((r) => +r),
 				...(enableSelfProps
 					? {
 							alignSelf: isFlexboxAlignSelf(alignSelf) ? alignSelf : undefined,
@@ -342,9 +337,9 @@ export function FlexboxSidebarSettings({
 		at,
 		editor,
 		enableSelfProps,
+		fixChildrenWidthRatios,
 		flexBasis,
 		flexBasisUnit,
-		flexDirection,
 		flexGrow,
 		flexShrink,
 		flexWrap,
@@ -355,40 +350,15 @@ export function FlexboxSidebarSettings({
 		widthUnit,
 	]);
 
-	function onSubmit(data: z.infer<typeof FormSchema>) {
-		console.log(data);
-		Transforms.setNodes<FlexboxElement>(
-			editor,
-			{
-				alignContent: isFlexboxAlignContent(data.alignContent) ? data.alignContent : undefined,
-				alignItems: isFlexboxAlignItems(data.alignItems) ? data.alignItems : undefined,
-				flexDirection: isFlexboxFlexDirection(data.flexDirection) ? data.flexDirection : undefined,
-				flexWrap: isFlexboxFlexWrap(data.flexWrap) ? data.flexWrap : undefined,
-				justifyContent: isFlexboxJustifyContent(data.justifyContent) ? data.justifyContent : undefined,
-				width: joinNumberAndUnit([data.width, data.widthUnit]),
-				height: joinNumberAndUnit([data.height, data.heightUnit]),
-				...(enableSelfProps
-					? {
-							alignSelf: isFlexboxAlignSelf(data.alignSelf) ? data.alignSelf : undefined,
-							flexGrow: data.flexGrow,
-							flexBasis: joinNumberAndUnit([data.flexBasis, data.flexBasisUnit]),
-							flexShrink: data.flexShrink,
-					  }
-					: {
-							alignSelf: undefined,
-							flexGrow: undefined,
-							flexBasis: undefined,
-							flexShrink: undefined,
-					  }),
-			},
-			{ at },
-		);
-	}
-
+	// function onSubmit(data: z.infer<typeof FormSchema>) {
+	// 	console.log(data);
+	// 	// effectFn();
+	// }
+	//onSubmit={forwardFnDropAsync(form.handleSubmit(onSubmit))}
 	return (
 		<Form {...form}>
-			<form onSubmit={forwardFnDropAsync(form.handleSubmit(onSubmit))} className="pb-4 px-2 space-y-1">
-				<FormField
+			<form className="pb-4 px-2 space-y-1">
+				{/* <FormField
 					control={form.control}
 					name="flexDirection"
 					render={({ field }) => (
@@ -408,6 +378,20 @@ export function FlexboxSidebarSettings({
 									))}
 								</SelectContent>
 							</Select>
+							<FormMessage />
+						</FormItem>
+					)}
+				/> */}
+
+				<FormField
+					control={form.control}
+					name="fixChildrenWidthRatios"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Columns (keep blank if none)</FormLabel>
+							<FormControl>
+								<Input placeholder="Columns" {...field} />
+							</FormControl>
 							<FormMessage />
 						</FormItem>
 					)}
@@ -488,81 +472,8 @@ export function FlexboxSidebarSettings({
 					)}
 				/>
 
-				<FormField
-					control={form.control}
-					name="width"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Width</FormLabel>
-							<ControlGroup>
-								<ControlGroupItem>
-									<Input placeholder="Width" {...field} disabled={widthUnit === "unset"} />
-								</ControlGroupItem>
-								<FormField
-									control={form.control}
-									name="widthUnit"
-									render={({ field }) => (
-										<Select onValueChange={field.onChange} defaultValue={field.value}>
-											<ControlGroupItem>
-												<FormControl>
-													<SelectTrigger className="h-auto -me-0 rounded-e-full w-min">
-														<SelectValue placeholder="Select..." />
-													</SelectTrigger>
-												</FormControl>
-											</ControlGroupItem>
-											<SelectContent>
-												{units.map((k) => (
-													<SelectItem key={k} value={k}>
-														{k}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-									)}
-								/>
-							</ControlGroup>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
-				<FormField
-					control={form.control}
-					name="height"
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Height</FormLabel>
-							<ControlGroup>
-								<ControlGroupItem>
-									<Input placeholder="Height" {...field} disabled={heightUnit === "unset"} />
-								</ControlGroupItem>
-								<FormField
-									control={form.control}
-									name="heightUnit"
-									render={({ field }) => (
-										<Select onValueChange={field.onChange} defaultValue={field.value}>
-											<ControlGroupItem>
-												<FormControl>
-													<SelectTrigger className="h-auto -me-0 rounded-e-full w-min">
-														<SelectValue placeholder="Select..." />
-													</SelectTrigger>
-												</FormControl>
-											</ControlGroupItem>
-											<SelectContent>
-												{units.map((k) => (
-													<SelectItem key={k} value={k}>
-														{k}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-									)}
-								/>
-							</ControlGroup>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
+				<UnitFieldEditor form={form} label="Width" valueField="width" unitField="widthUnit" />
+				<UnitFieldEditor form={form} label="Height" valueField="height" unitField="heightUnit" />
 
 				<FormField
 					control={form.control}
@@ -615,43 +526,8 @@ export function FlexboxSidebarSettings({
 								</FormItem>
 							)}
 						/>
-						<FormField
-							control={form.control}
-							name="flexBasis"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Flex Basis</FormLabel>
-									<ControlGroup>
-										<ControlGroupItem>
-											<Input placeholder="Flex Basis" {...field} disabled={flexBasisUnit === "unset"} />
-										</ControlGroupItem>
-										<FormField
-											control={form.control}
-											name="flexBasisUnit"
-											render={({ field }) => (
-												<Select onValueChange={field.onChange} defaultValue={field.value}>
-													<ControlGroupItem>
-														<FormControl>
-															<SelectTrigger className="h-auto -me-0 rounded-e-full w-min">
-																<SelectValue placeholder="Select..." />
-															</SelectTrigger>
-														</FormControl>
-													</ControlGroupItem>
-													<SelectContent>
-														{units.map((k) => (
-															<SelectItem key={k} value={k}>
-																{k}
-															</SelectItem>
-														))}
-													</SelectContent>
-												</Select>
-											)}
-										/>
-									</ControlGroup>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
+						<UnitFieldEditor form={form} label="Flex Basis" valueField="flexBasis" unitField="flexBasisUnit" />
+
 						<FormField
 							control={form.control}
 							name="flexGrow"

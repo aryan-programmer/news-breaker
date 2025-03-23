@@ -1,29 +1,42 @@
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { ColorPicker } from "@/components/ui/ColorPicker";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+	joinNumberAndUnit,
+	splitUnits,
+	UnitFieldEditor,
+	units,
+} from "@/components/ui/Form";
 import { ButtonGroup, ButtonGroupItem } from "@/components/ui/IconRadioGroup";
 import { Input } from "@/components/ui/Input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { useStoreAsIs } from "@/hooks/useStore";
 import { randomAddress } from "@/lib/uniq-address";
 import {
-	anchorXToJustifyContent,
-	anchorYToAlignItems,
+	anchorXToJustifyContentClass,
+	anchorYToAlignItemsClass,
 	colorValidator,
 	coreceEmptyOrTransparentToUndef,
 	coreceEmptyToUndef,
 	forwardFnDropAsync,
 	isNonNullAndNonEmpty,
+	prefixUrlWithSiteNameIfNecessary,
 } from "@/lib/utils";
 import { faAlignCenter, faAlignLeft, faAlignRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { MouseEvent, useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { Location, Path, Transforms } from "slate";
+import { Location, Transforms } from "slate";
 import { ReactEditor, useSlateStatic } from "slate-react";
 import { z } from "zod";
+import { insertNodeSpecial } from "../editor-utils";
 import { ElementSettingsSidebarStore, useElementSettingsSidebarStore } from "../elements/ElementSettingsSidebar";
 import { CardElement, CustomEditor, RenderElementAttributesProp } from "../types";
 
@@ -47,20 +60,7 @@ export function insertCard(editor: CustomEditor, settingsSidebarStore: ElementSe
 		imageSizeAndPosition: {},
 		children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "" }] }],
 	};
-	const selectionData = settingsSidebarStore?.data;
-	console.log(selectionData);
-	if (selectionData != null && selectionData.element.type === "card") {
-		Transforms.insertNodes(editor, elem, { at: Path.next(selectionData.path) });
-	} else {
-		Transforms.insertNodes(editor, [
-			elem,
-			{
-				id: randomAddress(),
-				type: "paragraph",
-				children: [{ text: "" }],
-			},
-		]);
-	}
+	insertNodeSpecial(editor, elem, settingsSidebarStore);
 }
 
 export type CardRendererProps = {
@@ -91,50 +91,55 @@ export function CardRenderer({ attributes, children, element }: CardRendererProp
 		[settingsSidebarStore, element, attributes, editor, path],
 	);
 	return (
-		<div
-			className="w-full h-full p-1 m-1 shadow-none data-[selected=on]:border-[3px] data-[selected=on]:border-dotted data-[selected=on]:border-pink-500 data-[selected=on]:drop-shadow-lg data-[selected=on]:shadow-foreground"
-			onClick={select}
-			data-selected={settingsSidebarStore?.data?.element?.id === element.id ? "on" : undefined}>
+		<div className="w-full h-full p-1 shadow-none">
 			<div
-				className={`w-full h-full rounded-xl ${isNonNullAndNonEmpty(element.shadowColor) ? "pb-1" : ""}`}
-				style={{ backgroundColor: coreceEmptyToUndef(element.shadowColor) }}>
+				className="w-full h-full p-1 shadow-none data-[selected=on]:border-[3px] data-[selected=on]:border-dotted data-[selected=on]:border-pink-500 data-[selected=on]:drop-shadow-lg data-[selected=on]:shadow-foreground"
+				onClick={select}
+				data-selected={settingsSidebarStore?.data?.element?.id === element.id ? "on" : undefined}>
 				<div
-					className={`rounded-xl border border-solid relative w-full h-full flex items-stretch ${
-						cardImageLayoutPosToFlexDirectionClass[element.layoutImagePos]
-					}`}
-					style={{
-						backgroundColor: coreceEmptyToUndef(element.bgColor),
-						borderColor: coreceEmptyToUndef(element.borderColor),
-						// boxShadow: isNonNullAndNonEmpty(element.shadowColor)
-						// 	? `rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, ${element.shadowColor} 4px 4px 0px 0px`
-						// 	: undefined,
-					}}>
-					{isNonNullAndNonEmpty(element.imageUrl) ? (
-						<div
-							className={`rounded-xl max-w-full max-h-full min-h-0 min-w-0 flex grow ${anchorXToJustifyContent(
-								element.imageSizeAndPosition?.anchorX,
-							)} ${anchorYToAlignItems(element.imageSizeAndPosition?.anchorY)} ${
-								element.layoutImagePos === "back"
-									? "absolute bottom-0 top-0 right-0 left-0"
-									: element.borderAroundImage && isNonNullAndNonEmpty(element.borderColor)
-									? "m-1 border border-solid"
-									: ""
-							}`}
-							style={{
-								borderColor: coreceEmptyToUndef(element.borderColor),
-							}}>
-							{/* eslint-disable-next-line @next/next/no-img-element*/}
-							<img
-								src={element.imageUrl}
-								alt=""
-								className={`rounded-xl max-w-full max-h-full ${
-									element.imageSizeAndPosition?.stretch === true ? "w-full h-full" : "aspect-auto object-scale-down"
-								}`}
-							/>
+					className={`w-full h-full rounded-xl ${isNonNullAndNonEmpty(element.shadowColor) ? "pb-1" : ""}`}
+					style={{ backgroundColor: coreceEmptyToUndef(element.shadowColor) }}>
+					<div
+						className={`rounded-xl border border-solid relative w-full h-full flex items-stretch ${
+							cardImageLayoutPosToFlexDirectionClass[element.layoutImagePos]
+						}`}
+						style={{
+							backgroundColor: coreceEmptyToUndef(element.bgColor),
+							borderColor: coreceEmptyToUndef(element.borderColor),
+							// boxShadow: isNonNullAndNonEmpty(element.shadowColor)
+							// 	? `rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, ${element.shadowColor} 4px 4px 0px 0px`
+							// 	: undefined,
+						}}>
+						{isNonNullAndNonEmpty(element.imageUrl) ? (
+							<div
+								className={`rounded-xl max-w-full max-h-full min-h-0 min-w-0 flex grow shrink ${anchorXToJustifyContentClass(
+									element.imageSizeAndPosition?.anchorX,
+								)} ${anchorYToAlignItemsClass(element.imageSizeAndPosition?.anchorY)}`}
+								style={{
+									borderColor: coreceEmptyToUndef(element.borderColor),
+								}}>
+								{/* eslint-disable-next-line @next/next/no-img-element*/}
+								<img
+									src={element.imageUrl}
+									style={{
+										width: element.imageWidth,
+									}}
+									alt=""
+									className={`rounded-xl max-w-full max-h-full ${
+										element.imageSizeAndPosition?.stretch === true ? "w-full h-full" : "aspect-auto object-scale-down"
+									} ${
+										element.layoutImagePos === "back"
+											? "absolute bottom-0 top-0 right-0 left-0 "
+											: element.borderAroundImage === true && isNonNullAndNonEmpty(element.borderColor)
+											? "m-1 border border-solid p-1"
+											: ""
+									}`}
+								/>
+							</div>
+						) : null}
+						<div className="p-2 flex-basis-0 grow z-10" {...attributes}>
+							{children as any}
 						</div>
-					) : null}
-					<div className="p-2 flex-basis-0 flex-grow flex-shrink z-10" {...attributes}>
-						{children as any}
 					</div>
 				</div>
 			</div>
@@ -160,6 +165,9 @@ const formSchema = z.object({
 	anchorX: z.enum(["left", "center", "right"]),
 	anchorY: z.enum(["top", "center", "bottom"]),
 	layoutImagePos: z.enum(CardLayoutImagePosOpts.map((v) => v[0]) as ["top", "bottom", "left", "right", "back"]),
+	imageWidth: z.number({ invalid_type_error: "Enter a valid value for Image Width" }).min(0, { message: "Image Width can not be less than 0" }),
+	// .refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
+	imageWidthUnit: z.enum(units, { invalid_type_error: "Enter a valid unit for Image Width" }),
 });
 
 export function CardSidebarSettings({
@@ -167,10 +175,11 @@ export function CardSidebarSettings({
 	editor,
 	at,
 }: Omit<CardRendererProps, "children"> & { editor: CustomEditor; at: Location }): React.ReactNode {
+	const defaultImageWidth = splitUnits(element.imageWidth);
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			imageUrl: element.imageUrl ?? "",
+			imageUrl: prefixUrlWithSiteNameIfNecessary(element.imageUrl) ?? "",
 			bgColor: element.bgColor ?? undefined,
 			borderColor: element.borderColor ?? undefined,
 			shadowColor: element.shadowColor ?? undefined,
@@ -179,6 +188,8 @@ export function CardSidebarSettings({
 			anchorX: element.imageSizeAndPosition?.anchorX ?? "center",
 			anchorY: element.imageSizeAndPosition?.anchorY ?? "center",
 			layoutImagePos: element.layoutImagePos,
+			imageWidth: defaultImageWidth[0],
+			imageWidthUnit: defaultImageWidth[1],
 		},
 	});
 
@@ -202,10 +213,12 @@ export function CardSidebarSettings({
 							anchorX: values.anchorX ?? "center",
 							anchorY: values.anchorY ?? "center",
 					  },
+				imageWidth: joinNumberAndUnit([values.imageWidth, values.imageWidthUnit]),
 			},
 			{ at },
 		);
 	}
+	console.log(form.getFieldState("imageWidth"));
 	return (
 		<Form {...form}>
 			<form onSubmit={forwardFnDropAsync(form.handleSubmit(onSubmit))} className="pb-4 px-2">
@@ -247,22 +260,25 @@ export function CardSidebarSettings({
 						</FormItem>
 					)}
 				/>
+				<UnitFieldEditor form={form} valueField="imageWidth" unitField="imageWidthUnit" label="Image Width" />
 
 				{layoutImagePos === "back" ? null : (
-					<FormField
-						control={form.control}
-						name="borderAroundImage"
-						render={({ field }) => (
-							<FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-1">
-								<FormControl>
-									<Checkbox checked={field.value} onCheckedChange={field.onChange} />
-								</FormControl>
-								<div className="space-y-1 leading-none">
-									<FormLabel>Show border around image?</FormLabel>
-								</div>
-							</FormItem>
-						)}
-					/>
+					<>
+						<FormField
+							control={form.control}
+							name="borderAroundImage"
+							render={({ field }) => (
+								<FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-1">
+									<FormControl>
+										<Checkbox checked={field.value} onCheckedChange={field.onChange} />
+									</FormControl>
+									<div className="space-y-1 leading-none">
+										<FormLabel>Show border around image?</FormLabel>
+									</div>
+								</FormItem>
+							)}
+						/>
+					</>
 				)}
 
 				<FormField

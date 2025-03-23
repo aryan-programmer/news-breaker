@@ -32,10 +32,20 @@ export type FrontPageWithTextElement = CommonElement & {
 	useMainImageAsBg?: boolean;
 	mainImageSizeAndPosition?: ImageSizeAndPositionType;
 };
+
+type HeaderLevelsParseInt<T extends `heading-${number}`> = T extends any
+	? T extends `heading-${infer Digit extends number}`
+		? Digit
+		: never
+	: never;
+
+/** @see {isHeaderLevelNumber} ts-auto-guard:type-guard */
+export type HeaderLevels = HeaderLevelsParseInt<HeadingNElement["type"]>;
+
 export type AutoTableOfContentsElement = CommonElement & {
 	type: "auto-toc";
 	children: [CustomText];
-	includeHeaderLevelUpto: 1 | 2 | 3;
+	includeHeaderLevelUpto: HeaderLevels;
 };
 export type PageBreakElement = CommonElement & {
 	type: "page-break";
@@ -69,6 +79,18 @@ export type Heading3Element = CommonElement & {
 	type: "heading-3";
 	children: CustomText[];
 };
+export type Heading4Element = CommonElement & {
+	type: "heading-4";
+	children: CustomText[];
+};
+export type Heading5Element = CommonElement & {
+	type: "heading-5";
+	children: CustomText[];
+};
+export type Heading6Element = CommonElement & {
+	type: "heading-6";
+	children: CustomText[];
+};
 export type NumberedListElement = CommonElement & {
 	type: "numbered-list";
 	children: ListItemElement[];
@@ -79,8 +101,13 @@ export type BulletedListElement = CommonElement & {
 };
 export type ImageElement = CommonElement & {
 	type: "image";
+	width?: string | number;
 	srcUrl: string;
 	children: [CustomText];
+	bgColor?: string | null | undefined;
+	borderColor?: string | null | undefined;
+	shadowColor?: string | null | undefined;
+	rounded?: boolean;
 };
 export type TableCellElement = CommonElement & {
 	type: "table-cell";
@@ -101,6 +128,7 @@ export type TableRowElement = CommonElement & {
 export type TableElement = CommonElement & {
 	type: "table";
 	children: (TableHeadSectionElement | TableBodySectionElement | TableFootSectionElement)[];
+	border: boolean;
 };
 export type TableBodySectionElement = CommonElement & { type: "table-body"; children: TableRowElement[] };
 export type TableFootSectionElement = CommonElement & { type: "table-footer"; children: TableRowElement[] };
@@ -145,9 +173,10 @@ export type CardElement = CommonElement & {
 	bgColor?: string | null | undefined;
 	borderColor?: string | null | undefined;
 	shadowColor?: string | null | undefined;
-	borderAroundImage: boolean;
+	borderAroundImage?: boolean;
+	imageWidth?: number | string;
 	layoutImagePos: CardLayoutImagePos;
-	imageSizeAndPosition: ImageSizeAndPositionType;
+	imageSizeAndPosition?: ImageSizeAndPositionType;
 };
 
 /** @see {isFlexboxAlignContent} ts-auto-guard:type-guard */ export type FlexboxAlignContent =
@@ -171,7 +200,7 @@ export type CardElement = CommonElement & {
 	| "center"
 	| "baseline"
 	| "stretch";
-/** @see {isFlexboxFlexDirection} ts-auto-guard:type-guard */ export type FlexboxFlexDirection = "row" | "row-reverse" | "column" | "column-reverse";
+///** @see {isFlexboxFlexDirection} ts-auto-guard:type-guard */ export type FlexboxFlexDirection = "row" | "row-reverse"; // | "column" | "column-reverse";
 /** @see {isFlexboxFlexWrap} ts-auto-guard:type-guard */ export type FlexboxFlexWrap = "nowrap" | "wrap" | "wrap-reverse";
 /** @see {isFlexboxJustifyContent} ts-auto-guard:type-guard */ export type FlexboxJustifyContent =
 	| "flex-start"
@@ -187,7 +216,7 @@ export type FlexboxElement = CommonElement & {
 	alignContent?: FlexboxAlignContent;
 	alignItems?: FlexboxAlignItems;
 	alignSelf?: FlexboxAlignSelf;
-	flexDirection?: FlexboxFlexDirection;
+	//flexDirection?: FlexboxFlexDirection;
 	flexWrap?: FlexboxFlexWrap;
 	flexGrow?: number;
 	flexShrink?: number;
@@ -195,15 +224,16 @@ export type FlexboxElement = CommonElement & {
 	width?: number | string;
 	height?: number | string;
 	justifyContent?: FlexboxJustifyContent;
+	fixChildrenWidthRatios?: number[] | null | undefined;
 };
+
+export type HeadingNElement = Heading1Element | Heading2Element | Heading3Element | Heading4Element | Heading5Element | Heading6Element;
 
 export type CustomElement =
 	| ParagraphElement
 	| BlockQuoteElement
 	| ListItemElement
-	| Heading1Element
-	| Heading2Element
-	| Heading3Element
+	| HeadingNElement
 	| BulletedListElement
 	| NumberedListElement
 	| ImageElement
@@ -223,8 +253,6 @@ export type CustomElement =
 	| SectionBreakHeaderFooterCell
 	| FlexboxElement
 	| CardElement;
-
-export type HeadingNElement = Heading1Element | Heading2Element | Heading3Element;
 
 /** @see {isHeadingTypeName} ts-auto-guard:type-guard */
 export type HeadingNElementTypeName = HeadingNElement["type"];
@@ -267,11 +295,16 @@ export type CustomText = {
 	italic?: true;
 	underline?: true;
 	code?: true;
+	//smallCaps?: true;
 	pageNumberOverride?: true;
 	color?: string;
 };
 
-export type CustomEditor = BaseEditor & ReactEditor & HistoryEditor;
+export type CustomEditor = BaseEditor &
+	ReactEditor &
+	HistoryEditor & {
+		shouldInsertAfter: boolean;
+	};
 
 export type TextMarkTypes = keyof Omit<CustomText, "text">;
 

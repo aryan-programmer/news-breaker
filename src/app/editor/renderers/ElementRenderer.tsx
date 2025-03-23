@@ -45,6 +45,24 @@ export default function ElementRenderer(props: RenderElementProps) {
 						{children}
 					</h3>
 				);
+			case "heading-4":
+				return (
+					<h3 className="mb-2 mt-2 text-2xl font-serif leading-none" style={style} {...attributes}>
+						{children}
+					</h3>
+				);
+			case "heading-5":
+				return (
+					<h3 className="mb-1 mt-1 text-xl font-serif leading-none" style={style} {...attributes}>
+						{children}
+					</h3>
+				);
+			case "heading-6":
+				return (
+					<h3 className="mb-1 mt-1 font-serif leading-none" style={style} {...attributes}>
+						{children}
+					</h3>
+				);
 			case "list-item":
 				return (
 					<li style={style} {...attributes}>
@@ -59,7 +77,7 @@ export default function ElementRenderer(props: RenderElementProps) {
 				);
 			case "paragraph":
 				return (
-					<p style={style} {...attributes}>
+					<p className="mt-2" style={style} {...attributes}>
 						{children}
 					</p>
 				);

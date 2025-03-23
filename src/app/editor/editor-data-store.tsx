@@ -1,38 +1,610 @@
 "use client";
 import { randomAddress } from "@/lib/uniq-address";
-import { DEMO_IMAGE_URL } from "@/lib/utils";
 import _ from "lodash";
 import { Descendant } from "slate";
 import { create } from "zustand";
 import { recursiveTraverse } from "./editor-utils";
-import { generateDefaultSectionBreakElement } from "./renderers/SectionBreak";
+import { generateSpecificSectionBreakElement } from "./renderers/SectionBreak";
 
 export function get_demo_editor_value(): Descendant[] {
 	return [
 		{
 			type: "front-page-with-text",
-			mainImageUrl: "https://upload.wikimedia.org/wikipedia/commons/c/c7/View_inside_detector_at_the_CMS_cavern_LHC_CERN.jpg", //"https://upload.wikimedia.org/wikipedia/commons/0/06/LHC_quadrupole_magnets.jpg",
-			logoImageUrl: "https://upload.wikimedia.org/wikipedia/en/thumb/8/80/Wikipedia-logo-v2.svg/2244px-Wikipedia-logo-v2.svg.png",
+			mainImageUrl: "/Images/LDCE_Main.jpg",
+			logoImageUrl: "/Images/LDCE_EC_Logo.png",
 			children: [
-				{ id: randomAddress(), type: "heading-1", children: [{ text: "Heading 1 lorem ipsum dolor sit amet", italic: true, color: "#fff" }] },
-				{ id: randomAddress(), type: "heading-2", children: [{ text: "Heading 2", code: true }] },
+				{ id: randomAddress(), type: "heading-1", align: "center", children: [{ text: "TempPermanent", code: true /*, smallCaps: true*/ }] },
+				{
+					id: randomAddress(),
+					type: "heading-5",
+					children: [{ text: "A Once-only Newsletter by L. D. College of Engineering", bold: true }],
+					align: "right",
+				},
+				{ id: randomAddress(), type: "heading-6", children: [{ text: "1st April 2025: Amazing Breakthrough Day Edition" }] },
+				{ id: randomAddress(), type: "paragraph", children: [{ text: "" }] },
+				{
+					id: randomAddress(),
+					type: "heading-5",
+					children: [
+						{ text: "TempPermanent", code: true /*, smallCaps: true*/ },
+						{
+							text: " is an LDCE pseudo-e-Newsletter, providing insights into the advancements and achievements aligned with the institute's Vision and Mission.",
+						},
+					],
+					align: "center",
+				},
+				{ id: randomAddress(), type: "paragraph", children: [{ text: "" }] },
+				{
+					id: randomAddress(),
+					type: "heading-4",
+					children: [
+						{ text: "Investing in Future Learning: ", bold: true /*, smallCaps: true*/, color: "#f44" },
+						{ text: "Generous Contribution to Smart Classrooms" /*, smallCaps: true*/, color: "#f44" },
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "heading-4",
+					children: [
+						{ text: "Triumph at Robofest 3.0: ", bold: true /*, smallCaps: true*/, color: "#0f0" },
+						{ text: "Runner-up in Two-wheeled Self-balancing Robot Category" /*, smallCaps: true*/, color: "#0f0" },
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "heading-4",
+					children: [
+						{ text: "Advancing Education with Atal: ", bold: true /*, smallCaps: true*/, color: "#44f" },
+						{ text: "FDP for Faculty Enhancement Garners Success" /*, smallCaps: true*/, color: "#44f" },
+					],
+				},
 			],
-			textSectionBgColor: "#f99",
 			id: randomAddress(),
 			useMainImageAsBg: true,
 			mainImageSizeAndPosition: {
-				anchorY: "top",
+				anchorY: "bottom",
 				anchorX: "left",
 			},
 		},
 		{ id: randomAddress(), type: "paragraph", children: [{ text: "" }] },
 		{ type: "auto-toc", children: [{ text: "" }], id: randomAddress(), includeHeaderLevelUpto: 3 },
-		generateDefaultSectionBreakElement("lower", false),
-		{ id: randomAddress(), type: "heading-1", children: [{ text: "Actual content starts here", underline: true }] },
-		{ id: randomAddress(), type: "heading-2", children: [{ text: "Heading 2 " }, { text: "again", italic: true }] },
-		{ id: randomAddress(), type: "heading-3", children: [{ text: "Heading 3" }] },
+		generateSpecificSectionBreakElement("upper-roman", true, {
+			top: [[{ text: "" }], [{ text: "TempPermanant", code: true }], [{ text: "" }]],
+			bottomNotPage: [{ text: "1st April 2025" }],
+			bottomCenter: [{ text: "LDCE" }],
+		}),
+		{ id: randomAddress(), type: "heading-1", children: [{ text: "Editorial Staff", underline: true }] },
+		{ id: randomAddress(), type: "heading-5", children: [{ text: "Editors in Chief" }] },
 		{
 			id: randomAddress(),
+			type: "bulleted-list",
+			children: [
+				{ id: randomAddress(), type: "list-item", children: [{ text: "Mr. Aryan H Chudasama" }] },
+				{ id: randomAddress(), type: "list-item", children: [{ text: "Prof. Vijay Chavda" }] },
+			],
+		},
+		{ id: randomAddress(), type: "heading-5", children: [{ text: "Members" }] },
+		{
+			id: randomAddress(),
+			type: "flexbox",
+			fixChildrenWidthRatios: [1, 1],
+			children: [
+				{
+					id: randomAddress(),
+					type: "bulleted-list",
+					children: [
+						{ id: randomAddress(), type: "list-item", children: [{ text: "Dr. Hetal Joshiyara" }] },
+						{ id: randomAddress(), type: "list-item", children: [{ text: "Prof. Gaurav Sutaria" }] },
+						{ id: randomAddress(), type: "list-item", children: [{ text: "Prof. S. Ramanujan" }] },
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "bulleted-list",
+					children: [
+						{ id: randomAddress(), type: "list-item", children: [{ text: "Prof. H L Desai" }] },
+						{ id: randomAddress(), type: "list-item", children: [{ text: "Dr. D R Gohel" }] },
+					],
+				},
+			],
+		},
+		{ id: randomAddress(), type: "heading-1", children: [{ text: "Advisory Board", underline: true }] },
+		{ id: randomAddress(), type: "heading-5", children: [{ text: "Members" }] },
+		{
+			id: randomAddress(),
+			type: "flexbox",
+			fixChildrenWidthRatios: [1, 1],
+			children: [
+				{
+					id: randomAddress(),
+					type: "bulleted-list",
+					children: [
+						{ id: randomAddress(), type: "list-item", children: [{ text: "Dr. Gopal Tank" }] },
+						{ id: randomAddress(), type: "list-item", children: [{ text: "Prof. Rajendrakumar Jani" }] },
+						{ id: randomAddress(), type: "list-item", children: [{ text: "Dr. Manish Thakker" }] },
+						{ id: randomAddress(), type: "list-item", children: [{ text: "Dr. Hiteishi Diwanji" }] },
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "bulleted-list",
+					children: [
+						{ id: randomAddress(), type: "list-item", children: [{ text: "Dr. Chandulal Vithalani" }] },
+						{ id: randomAddress(), type: "list-item", children: [{ text: "Prof. Gaurang Ban" }] },
+					],
+				},
+			],
+		},
+		{ id: randomAddress(), type: "page-break", children: [{ text: "" }] },
+		{ id: randomAddress(), type: "heading-1", children: [{ text: "Vision and Mission", underline: true }] },
+		{ id: randomAddress(), type: "heading-2", children: [{ text: "Vision" }] },
+		{
+			id: randomAddress(),
+			type: "paragraph",
+			children: [
+				{
+					text: "To contribute for sustainable development of nation through achieving excellence in technical education and research while facilitating transformation of students into responsible citizens and competent professionals.",
+				},
+			],
+		},
+		{ id: randomAddress(), type: "heading-2", children: [{ text: "Mission" }] },
+		{
+			id: randomAddress(),
+			type: "bulleted-list",
+			children: [
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [{ text: "Upgrade learning resources and pedagogical skills for effective teaching-learning process." }],
+				},
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [{ text: "Foster research culture and strengthen networking with institutions, industries , research organization and alumni" }],
+				},
+				{ id: randomAddress(), type: "list-item", children: [{ text: "Encourage students for professional ethics and social responsibility" }] },
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [
+						{
+							text: "To impart affordable and quality education in order to meet the needs of industries and achieve excellence in teaching-learning process.",
+						},
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [
+						{
+							text: "To create a conducive research ambience that drives innovation and nurtures research-oriented scholars and outstanding professionals.",
+						},
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [
+						{
+							text: "To collaborate with other academic & research institutes as well as industries in order to strengthen education and multidisciplinary research.",
+						},
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [
+						{
+							text: "To promote equitable and harmonious growth of students, academicians, staff, society and industries, thereby becoming a center of excellence in technical education.",
+						},
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [{ text: "To practice and encourage high standards of professional ethics, transparency and accountability." }],
+				},
+			],
+		},
+		{ id: randomAddress(), type: "page-break", children: [{ text: "" }] },
+		{ id: randomAddress(), type: "heading-1", children: [{ text: "Principal's Message", underline: true }] },
+		{
+			id: randomAddress(),
+			type: "flexbox",
+			flexWrap: "wrap",
+			justifyContent: "center",
+			alignItems: "center",
+			fixChildrenWidthRatios: [3, 4, 3],
+			children: [
+				{ id: randomAddress(), type: "paragraph", children: [{ text: "" }] },
+				{
+					id: randomAddress(),
+					type: "card",
+					imageUrl: "/Images/Principal.jpeg",
+					borderAroundImage: true,
+					bgColor: "#ffa",
+					shadowColor: "#aaf",
+					borderColor: "#000",
+					layoutImagePos: "top",
+					imageSizeAndPosition: {},
+					children: [{ id: randomAddress(), type: "heading-4", align: "center", children: [{ text: "Dr. Nilay N. Bhuptani,\nPrincipal" }] }],
+				},
+				{ id: randomAddress(), type: "paragraph", children: [{ text: "" }] },
+			],
+		},
+		{ id: randomAddress(), type: "paragraph", children: [{ text: "Dear Students, Faculty and Stakeholders," }] },
+		{
+			id: randomAddress(),
+			type: "paragraph",
+			children: [
+				{
+					text: "It is my pleasure to greet you on Amazing Breakthrough Day. I congratulate Electronics and Communication Engineering Department for releasing 5th edition of newsletter and wish you continued success.",
+				},
+			],
+		},
+		{
+			id: randomAddress(),
+			type: "paragraph",
+			children: [
+				{
+					text: "I am happy to know that during last six month, E.C. Engineering Department has done significant work for development of computing infrastructure, placement, expert talk and faculty training. Ministry of Electronics and Information Technology (MeitY) has provided Synopsis tool for UG, PG and PhD students. I would like to emphasize the effective utilization of the resources available in the department. This advanced tool is now integral to our VLSI Design, Testing, and Verification courses for our undergraduate, postgraduate and PhD students. It not only enriches the learning experience but also aligns with the latest industry standards, ensuring that our students are well-prepared for the challenges of the semiconductor field. These resources are pivotal in enhancing practical skills and fostering innovation among our students. By integrating these tools into our curriculum, we are bridging the gap between theoretical knowledge and real-world application. I encourage all students to actively participate in workshops, seminars, and training sessions designed to equip you with the necessary skills for the upcoming opportunities in this rapidly evolving sector.",
+				},
+			],
+		},
+		{
+			id: randomAddress(),
+			type: "paragraph",
+			children: [
+				{
+					text: "As we continue to strive for academic excellence, I suggest our students to find the right balance between regular curriculum studies and student club activities. While extracurricular involvement is essential for holistic development, it is equally important to maintain a strong academic foundation. Striking this balance will help you make the most of your time at the department.",
+				},
+			],
+		},
+		{
+			id: randomAddress(),
+			type: "paragraph",
+			children: [
+				{
+					text: "Lastly, I would like to extend congratulations to our students who have successfully secured placements. Your achievements are a testament to your hard work, dedication, and the quality of education imparted by our faculty. We are immensely proud of you and wish you continued success in your future endeavors.",
+				},
+			],
+		},
+		{
+			id: randomAddress(),
+			type: "paragraph",
+			children: [{ text: "Let us continue to work together towards academic excellence and professional growth." }],
+		},
+		{ id: randomAddress(), type: "paragraph", children: [{ text: "Happy Amazing Breakthrough Day" }] },
+		{ id: randomAddress(), type: "paragraph", children: [{ text: "Dr. Nilay N. Bhuptani,\nPrincipal" }] },
+		{ id: randomAddress(), type: "paragraph", children: [{ text: "\n\n\n\n\n\n\n" }] },
+		{ id: randomAddress(), type: "block-quote", children: [{ text: "When there is a will, there is a way." }] },
+		{ id: randomAddress(), type: "paragraph", align: "right", children: [{ text: " - Common English Proverb" }] },
+		{ id: randomAddress(), type: "paragraph", children: [{ text: "Corollary:" }] },
+		{ id: randomAddress(), type: "block-quote", children: [{ text: "When there is a will to fail, obstacles will be found." }] },
+		{ id: randomAddress(), type: "paragraph", align: "right", children: [{ text: " - John McCarthy" }] },
+		generateSpecificSectionBreakElement("numeric", true, {
+			top: [[{ text: "" }], [{ text: "TempPermanant", code: true }], [{ text: "" }]],
+			bottomNotPage: [{ text: "1st April 2025" }],
+			bottomCenter: [{ text: "LDCE" }],
+		}),
+		{ id: randomAddress(), type: "heading-1", children: [{ text: "Major Events", underline: true }] },
+		{
+			id: randomAddress(),
+			type: "flexbox",
+			fixChildrenWidthRatios: [1, 1],
+			children: [
+				{
+					id: randomAddress(),
+					type: "card",
+					imageUrl: "/Images/RepublicDay2025.jpg",
+					borderAroundImage: true,
+					bgColor: "#fff",
+					shadowColor: "#000",
+					borderColor: "#ddd",
+					layoutImagePos: "top",
+					// imageWidth: "50%",
+					imageSizeAndPosition: {},
+					children: [
+						{ id: randomAddress(), type: "heading-2", children: [{ text: "Republic Day Celebration 2025" }] },
+						{
+							id: randomAddress(),
+							type: "paragraph",
+							children: [
+								{
+									text: "We were honored to have Shri Govind Nadkarni (Civil, ’72), an esteemed alumnus of L.D. College of Engineering, as the Guest of Honour for our Republic Day celebration on 26th January 2025 at Civil Lawn, LDCE.",
+								},
+							],
+						},
+						{
+							id: randomAddress(),
+							type: "paragraph",
+							children: [
+								{
+									text: "Throughout his career, Shri Nadkarni earned numerous prestigious accolades, including Engineer of the Year from TSPE and the National Distinguished Services Award from NCEES. He also made history as the first Indian American appointed to the Texas Board of Professional Engineers, serving as its Chairman.",
+								},
+							],
+						},
+						{
+							id: randomAddress(),
+							type: "paragraph",
+							children: [
+								{
+									text: "His commitment to education and community is reflected in the establishment of the Govind & Bhakti Nadkarni Charitable Trust, which funds engineering scholarships. Shri Nadkarni’s inspiring address at our event highlighted the core values of democracy, unity, and progress",
+								},
+							],
+						},
+						{ id: randomAddress(), type: "paragraph", children: [{ text: "We are deeply grateful for his presence and insights." }] },
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "card",
+					bgColor: "#ffa",
+					shadowColor: "#aaf",
+					borderColor: "#000",
+					layoutImagePos: "top",
+					// imageWidth: "50%",
+					imageSizeAndPosition: {},
+					children: [
+						{ id: randomAddress(), type: "heading-2", children: [{ text: "3rd Global Alumni Convention 4th Jan 2025" }] },
+						{ id: randomAddress(), type: "paragraph", children: [{ text: "LAA hosted its 3rd Global Alumni Convention on January 4, 2025." }] },
+						{
+							id: randomAddress(),
+							type: "paragraph",
+							children: [
+								{
+									text: "The event witnessed enthusiastic participation from alumni residing both within India and abroad, fostering a spirit of camaraderie and intellectual exchange.",
+								},
+							],
+						},
+						{
+							id: randomAddress(),
+							type: "paragraph",
+							children: [{ text: "Honurable Minister Shri Rushikesh Patel interacted with students and addressed the gathering." }],
+						},
+						{
+							id: randomAddress(),
+							type: "paragraph",
+							children: [
+								{
+									text: "Dignitaries included Smt. Sunaina Tomar (ACS), Shri Banchhanidhi Pani (Commissioner), Shri B.N. Navalawala, Dr. Nilay Bhuptani (Principal), Shri Abhishek Jain (Film Producer), Shri Rahul Shukla (Mech. 1970), Anand Patel (President, LAA).",
+								},
+							],
+						},
+						{
+							id: randomAddress(),
+							type: "paragraph",
+							children: [{ text: "The event featured departmental presentations and inspiring alumni stories." }],
+						},
+						{ id: randomAddress(), type: "paragraph", children: [{ text: "Shri B.N. Navalawala was presented with prestigious LD Ratna Award." }] },
+						{
+							id: randomAddress(),
+							type: "paragraph",
+							children: [
+								{
+									text: "The event culminated in a delightful gala dinner, providing a perfect opportunity for attendees to network, reminisce, and strengthen the bonds of the LDCE alumni community.",
+								},
+							],
+						},
+					],
+				},
+			],
+		},
+		{ id: randomAddress(), type: "heading-3", children: [{ text: "Global Alumni Convention: Images" }] },
+		{
+			id: randomAddress(),
+			type: "flexbox",
+			flexWrap: "wrap",
+			justifyContent: "center",
+			alignItems: "center",
+			fixChildrenWidthRatios: [1, 1, 1],
+			children: [
+				{
+					id: randomAddress(),
+					type: "card",
+					imageUrl: "/Images/GAC_2025 (1).jpg",
+					borderAroundImage: true,
+					bgColor: "#ffa",
+					shadowColor: "#aaf",
+					borderColor: "#000",
+					layoutImagePos: "top",
+					imageSizeAndPosition: {},
+					children: [{ id: randomAddress(), type: "heading-4", align: "center", children: [{ text: "Caption 1" }] }],
+				},
+				{
+					id: randomAddress(),
+					type: "card",
+					imageUrl: "/Images/GAC_2025 (2).jpg",
+					borderAroundImage: true,
+					bgColor: "#ffa",
+					shadowColor: "#aaf",
+					borderColor: "#000",
+					layoutImagePos: "top",
+					imageSizeAndPosition: {},
+					children: [{ id: randomAddress(), type: "heading-4", align: "center", children: [{ text: "Caption 2" }] }],
+				},
+				{
+					id: randomAddress(),
+					type: "card",
+					imageUrl: "/Images/GAC_2025 (3).jpg",
+					borderAroundImage: true,
+					bgColor: "#ffa",
+					shadowColor: "#aaf",
+					borderColor: "#000",
+					layoutImagePos: "top",
+					imageSizeAndPosition: {},
+					children: [{ id: randomAddress(), type: "heading-4", align: "center", children: [{ text: "Caption 3" }] }],
+				},
+				{
+					id: randomAddress(),
+					type: "card",
+					imageUrl: "/Images/GAC_2025 (4).jpg",
+					borderAroundImage: true,
+					bgColor: "#ffa",
+					shadowColor: "#aaf",
+					borderColor: "#000",
+					layoutImagePos: "bottom",
+					imageSizeAndPosition: {},
+					children: [{ id: randomAddress(), type: "heading-4", align: "center", children: [{ text: "Caption 4" }] }],
+				},
+				{
+					id: randomAddress(),
+					type: "card",
+					imageUrl: "/Images/GAC_2025 (5).jpg",
+					borderAroundImage: true,
+					bgColor: "#ffa",
+					shadowColor: "#aaf",
+					borderColor: "#000",
+					layoutImagePos: "bottom",
+					imageSizeAndPosition: {},
+					children: [{ id: randomAddress(), type: "heading-4", align: "center", children: [{ text: "Caption 5" }] }],
+				},
+			],
+		},
+		{
+			id: randomAddress(),
+			type: "card",
+			imageUrl: "/Images/Impulse2025.jpg",
+			borderAroundImage: false,
+			bgColor: "#faf",
+			shadowColor: "#afa",
+			borderColor: "#ddd",
+			layoutImagePos: "left",
+			imageSizeAndPosition: {},
+			children: [
+				{ id: randomAddress(), type: "heading-2", children: [{ text: "Impulse 2025" }] },
+				{
+					id: randomAddress(),
+					type: "paragraph",
+					children: [
+						{
+							text: "Impulse-2025, the Sports Festival of LDCE, was organized by the Elite Sports Club from February 19th to March 9th, 2025. Over 3500 students from various UG and PG courses participated, demonstrating their physical fitness and team spirit across multiple sports. The Environment, IC, and EC departments secured the first, second, and third positions for the best branch, respectively. See the sports section for more details",
+						},
+					],
+				},
+			],
+		},
+		{ id: randomAddress(), type: "page-break", children: [{ text: "" }] },
+		{ id: randomAddress(), type: "heading-1", children: [{ text: "Department Activities", underline: true }] },
+		{
+			id: randomAddress(),
+			type: "card",
+			bgColor: "#fff",
+			shadowColor: "#000",
+			borderColor: "#ddd",
+			layoutImagePos: "top",
+			children: [
+				{ id: randomAddress(), type: "heading-2", children: [{ text: "Inauguration of Cyber Force Club and Expert Session" }] },
+				{
+					id: randomAddress(),
+					type: "paragraph",
+					children: [
+						{
+							text: "The Information Technology Department inaugurated The Cyber Force Club and hosted an expert session by Mr. Jigar Raval from PRL at room no 3002, Annexe building on February 20, 2024. Around 110 students participated in the event.",
+						},
+					],
+				},
+			],
+		},
+		{
+			id: randomAddress(),
+			type: "card",
+			bgColor: "#fff",
+			shadowColor: "#000",
+			borderColor: "#ddd",
+			layoutImagePos: "top",
+			children: [
+				{ id: randomAddress(), type: "heading-2", children: [{ text: "Silicon Gujarat: Powering Indian’s Semiconductor Revolution" }] },
+				{
+					id: randomAddress(),
+					type: "paragraph",
+					children: [
+						{
+							text: "Department of Science and Technology, Government of Gujarat organized a 3-days Gujarat Semiconnect Conference 2025 on the theme “Silicon Gujarat: Powering Indian’s Semiconductor Revolution” from 5 to 7 March, 2025 at Mahatama Mandir, Gandhinagar along with IESA Vision Summit-2025 and ISPEC Packaging Ecosystem Conference – 2025. Leading manufactures, research organizations and academia across the world displayed various semiconductor technologies, novel semiconductor IC products and electronics integrated products during the conference. Many students from the EC department attended.",
+						},
+					],
+				},
+			],
+		},
+		{
+			id: randomAddress(),
+			type: "card",
+			bgColor: "#fff",
+			shadowColor: "#000",
+			borderColor: "#ddd",
+			layoutImagePos: "top",
+			children: [
+				{ id: randomAddress(), type: "heading-2", children: [{ text: "Training Program on Data Analytics & Applications" }] },
+				{
+					id: randomAddress(),
+					type: "paragraph",
+					children: [
+						{
+							text: "The Computer Department hosted a CTE, Gandhinagar approved Two-Week Short-Term Training Program on Data Analytics & Applications from February 19 to March 01, 2024, coordinated by Prof. Chirag S. Thaker, Dr Dhara Buch, and Prof. Payal Prajapati. The program featured speakers such as Prof. Jyoti Pareek, Shri Jaimin Desai, Dr Chirag S. Thaker, Dr Hetal Joshiara, Prof. Maitrik Shah, Dr Nikunj Domadia, and Dr Rajyalakshmi Jaiswal. Topics included NEP Implementation, Big Data Analytics with Hadoop, Deep Learning, Privacy in Data Processing, and Introduction & Challenges of Data Analytics.",
+						},
+					],
+				},
+			],
+		},
+		{ id: randomAddress(), type: "page-break", children: [{ text: "" }] },
+		{ id: randomAddress(), type: "heading-1", children: [{ text: "Industry Institute Interaction", underline: true }] },
+		{
+			id: randomAddress(),
+			type: "card",
+			bgColor: "#fff",
+			shadowColor: "#000",
+			borderColor: "#ddd",
+			layoutImagePos: "top",
+			children: [
+				{ id: randomAddress(), type: "heading-2", children: [{ text: "eInfochips Visit by EC Department" }] },
+				{
+					id: randomAddress(),
+					type: "paragraph",
+					children: [
+						{
+							text: "The EC Department organized an industrial visit to eInfochips, Ognaj on the days of 14th Febuary and 7th March 2025. The majority of the students of the EC department attended the industrial visit and learned about the inner working of a high-tech VLSI company.",
+						},
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "flexbox",
+					flexWrap: "wrap",
+					justifyContent: "center",
+					alignItems: "center",
+					fixChildrenWidthRatios: [1, 1],
+					children: [
+						{
+							id: randomAddress(),
+							type: "card",
+							imageUrl: "/Images/eicVisit 14-2-25.jpg",
+							borderAroundImage: true,
+							bgColor: "#ffa",
+							borderColor: "#000",
+							layoutImagePos: "top",
+							imageSizeAndPosition: {},
+							children: [{ id: randomAddress(), type: "heading-4", align: "center", children: [{ text: "14 Febuary 2025" }] }],
+						},
+						{
+							id: randomAddress(),
+							type: "card",
+							imageUrl: "/Images/eicVisit 7-3-25.jpg",
+							borderAroundImage: true,
+							bgColor: "#ffa",
+							borderColor: "#000",
+							layoutImagePos: "top",
+							imageSizeAndPosition: {},
+							children: [{ id: randomAddress(), type: "heading-4", align: "center", children: [{ text: "7 March 2025" }] }],
+						},
+					],
+				},
+			],
+		},
+		{ id: randomAddress(), type: "page-break", children: [{ text: "" }] },
+		{ id: randomAddress(), type: "heading-1", children: [{ text: "Paper Publications", underline: true }] },
+		{
+			id: randomAddress(),
+			border: true,
 			type: "table",
 			children: [
 				{
@@ -46,22 +618,51 @@ export function get_demo_editor_value(): Descendant[] {
 								{
 									id: randomAddress(),
 									type: "table-header-cell",
-									children: [{ id: randomAddress(), type: "heading-3", children: [{ text: "Time" }] }],
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [{ id: randomAddress(), type: "heading-5", children: [{ text: "Name of the Faculty" }] }],
+										},
+									],
 								},
 								{
 									id: randomAddress(),
 									type: "table-header-cell",
-									children: [{ id: randomAddress(), type: "heading-3", children: [{ text: "🎨 Frontend team" }] }],
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "heading-5",
+													children: [
+														{
+															text: "Title of the paper",
+														},
+													],
+												},
+											],
+										},
+									],
 								},
 								{
 									id: randomAddress(),
 									type: "table-header-cell",
-									children: [{ id: randomAddress(), type: "table-cell-content", children: [{ text: "Data row" }] }],
-								},
-								{
-									id: randomAddress(),
-									type: "table-header-cell",
-									children: [{ id: randomAddress(), type: "heading-3", children: [{ text: "👷 Backend team " }] }],
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "heading-5",
+													children: [{ text: "Name of Journal/Conference" }],
+												},
+											],
+										},
+									],
 								},
 							],
 						},
@@ -78,17 +679,41 @@ export function get_demo_editor_value(): Descendant[] {
 								{
 									id: randomAddress(),
 									type: "table-cell",
-									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "9:00 AM", bold: true }] }],
-								},
-								{
-									id: randomAddress(),
-									type: "table-cell",
-									colSpan: 3,
 									children: [
 										{
 											id: randomAddress(),
 											type: "table-cell-content",
-											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Opening Keynote 🎉" }] }],
+											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Prof. M A Shaikh & Prof. V R Patel" }] }],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [
+														{ text: "Optimizing CI engine ethanol fuel induction techniques using the AHP-PROMETHEE II hybrid decision model" },
+													],
+												},
+											],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Current World Environment" }] }],
 										},
 									],
 								},
@@ -101,7 +726,13 @@ export function get_demo_editor_value(): Descendant[] {
 								{
 									id: randomAddress(),
 									type: "table-cell",
-									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "10:30 AM", bold: true }] }],
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Dr.Vandana Patel & Dr.Ankit Shah" }] }],
+										},
+									],
 								},
 								{
 									id: randomAddress(),
@@ -110,15 +741,36 @@ export function get_demo_editor_value(): Descendant[] {
 										{
 											id: randomAddress(),
 											type: "table-cell-content",
-											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Introduction to 🅰️ngular" }] }],
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [
+														{
+															text: "Design and implementation of low power FPGA-based optimal multiband filter with Spline function for denoising ECG signals",
+														},
+													],
+												},
+											],
 										},
 									],
-									colSpan: 2,
 								},
 								{
 									id: randomAddress(),
 									type: "table-cell",
-									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Introduction to Gradle and Java 11 ☕" }] }],
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [{ text: "Computer Methods in Biomechanics and Biomedical Engineering, DOI: 10.1080/10255842.2023.2285721" }],
+												},
+											],
+										},
+									],
 								},
 							],
 						},
@@ -129,12 +781,13 @@ export function get_demo_editor_value(): Descendant[] {
 								{
 									id: randomAddress(),
 									type: "table-cell",
-									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "10:30 AM", bold: true }] }],
-								},
-								{
-									id: randomAddress(),
-									type: "table-cell",
-									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Strictly typed forms in v14" }] }],
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Prof. Z. R. Chhaya" }] }],
+										},
+									],
 								},
 								{
 									id: randomAddress(),
@@ -143,10 +796,48 @@ export function get_demo_editor_value(): Descendant[] {
 										{
 											id: randomAddress(),
 											type: "table-cell-content",
-											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Advanced Gradle and Java 11 ☕" }] }],
+											children: [
+												{
+													id: randomAddress(),
+													type: "numbered-list",
+													children: [
+														{
+															id: randomAddress(),
+															type: "list-item",
+															children: [{ text: "Design perspectives of the structural modes for ground liquid storage steel tanks" }],
+														},
+														{
+															id: randomAddress(),
+															type: "list-item",
+															children: [{ text: "Generalized single degree of freedom analysis for buckling of steel tanks" }],
+														},
+														{
+															id: randomAddress(),
+															type: "list-item",
+															children: [{ text: "Comparative study and review of IS 803:1976 with API 650 and NZSEE guidelines" }],
+														},
+													],
+												},
+											],
 										},
 									],
-									colSpan: 2,
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [{ text: "Structural Engineering Convention 2023 at VNIT Nagpur, 7-9 December 2023" }],
+												},
+											],
+										},
+									],
 								},
 							],
 						},
@@ -157,17 +848,385 @@ export function get_demo_editor_value(): Descendant[] {
 								{
 									id: randomAddress(),
 									type: "table-cell",
-									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "1:00 PM", bold: true }] }],
-								},
-								{
-									id: randomAddress(),
-									type: "table-cell",
-									colSpan: 3,
 									children: [
 										{
 											id: randomAddress(),
 											type: "table-cell-content",
-											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Lunch Break", underline: true }, { text: " 🍱" }] }],
+											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Dr.Manish V. Shah & Prof.S.R.Singh" }] }],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [
+														{
+															text: "Development of State of Art Test Setup to measure Thermal Conductivity of Soils Infused with Treated and Un-treated Natural",
+														},
+													],
+												},
+											],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [{ text: "Microorganisms Journal of Environmental Quality Management (Wiley)" }],
+												},
+											],
+										},
+									],
+								},
+							],
+						},
+						{
+							id: randomAddress(),
+							type: "table-row",
+							children: [
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Dr.Manish V. Shah" }] }],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [
+														{
+															text: "1. A systematic review on composition, effect and remediation methods of petroleum hydrocarbon contaminated waste drilling mud",
+														},
+													],
+												},
+											],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{ id: randomAddress(), type: "paragraph", children: [{ text: "1. Journal of Advances in Bioresearch (Special Issue-1)" }] },
+											],
+										},
+									],
+								},
+							],
+						},
+						{
+							id: randomAddress(),
+							type: "table-row",
+							children: [
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Dr.Manish V. Shah" }] }],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [
+														{
+															text: "2. Evaluation of natural foliation effect on deformation characteristic and shear strength parameters of Chamoli (Uttarakhand) rock using a Triaxial system",
+														},
+													],
+												},
+											],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [
+														{
+															text: "2. Proceedings of the ISRM 15th International Congress on Rock Mechanics and Rock Engineering & 72nd Geomechanics Colloquium – Challenges in Rock Mechanics and Rock Engineering, Schubert, W. & Kluckner, A. (eds), Salzburg, Austria",
+														},
+													],
+												},
+											],
+										},
+									],
+								},
+							],
+						},
+						{
+							id: randomAddress(),
+							type: "table-row",
+							children: [
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Prof.A.G.Hansora" }] }],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [
+														{
+															text: "Flexibility Matrix and Stiffness Matrix of 3D Curved Beam with Varying Curvature and Varying Cross-Sectional Area using Finite Displacement Transfer Method",
+														},
+													],
+												},
+											],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [{ text: "Journal of Computational Applied Mechanics (Scopus and Web of Science Indexed)," }],
+												},
+											],
+										},
+									],
+								},
+							],
+						},
+						{
+							id: randomAddress(),
+							type: "table-row",
+							children: [
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Prof.Poonam I. Modi" }] }],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [
+														{ text: "Development of novel un-fired masonry unit manufactured using silica-rich sandstone mining and cutting waste" },
+													],
+												},
+											],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [{ text: "Journal of building Engineering (Elsevier) (Scopus, Science Citation Expanded Indexed)" }],
+												},
+											],
+										},
+									],
+								},
+							],
+						},
+						{
+							id: randomAddress(),
+							type: "table-row",
+							children: [
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [{ text: "Manish V. Mehta, Mrunalkumar D. Chaudhari, Rakesh Chaudhari, Sakshum Khanna and Jaykumar Vora" }],
+												},
+											],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [
+														{
+															text: "Comprehensive Investigation of Hastelloy C-22 Powder Weld Overlay on SA 240 Type 316L Using Laser Beam Welding for Enhanced Performance",
+														},
+													],
+												},
+											],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [{ text: "Journal of Manufacturing and Materials Processing, Volume 7, Issue 6, 207, November 2023." }],
+												},
+											],
+										},
+									],
+								},
+							],
+						},
+						{
+							id: randomAddress(),
+							type: "table-row",
+							children: [
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [
+														{
+															text: "Dr. Pankaj Prajapati, Dr. Anilkumar J. Kshatriya,. Mr. Dhavalkumar N. Patel, Ms. Sima K. Gonsai, Mr. Hardik B. Tank, Ms. Kinjal R. Sheth",
+														},
+													],
+												},
+											],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{
+													id: randomAddress(),
+													type: "paragraph",
+													children: [{ text: "Comparative analysis of meta heuristics algorithm for differential amplifier design" }],
+												},
+											],
+										},
+									],
+								},
+								{
+									id: randomAddress(),
+									type: "table-cell",
+									children: [
+										{
+											id: randomAddress(),
+											type: "table-cell-content",
+											children: [
+												{ id: randomAddress(), type: "paragraph", children: [{ text: "Bulletin of Electrical Engineering and Informatics" }] },
+											],
 										},
 									],
 								},
@@ -175,144 +1234,140 @@ export function get_demo_editor_value(): Descendant[] {
 						},
 					],
 				},
-				{
-					id: randomAddress(),
-					type: "table-footer",
-					children: [
-						{
-							id: randomAddress(),
-							type: "table-row",
-							children: [
-								{
-									id: randomAddress(),
-									type: "table-cell",
-									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Time" }] }],
-								},
-								{
-									id: randomAddress(),
-									type: "table-cell",
-									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Frontend team" }] }],
-								},
-								{
-									id: randomAddress(),
-									type: "table-cell",
-									children: [{ id: randomAddress(), type: "table-cell-content", children: [{ text: "New Cell" }] }],
-								},
-								{
-									id: randomAddress(),
-									type: "table-cell",
-									children: [{ id: randomAddress(), type: "paragraph", children: [{ text: "Backend team" }] }],
-								},
-							],
-						},
-					],
-				},
 			],
 		},
-		{
-			id: randomAddress(),
-			type: "paragraph",
-			children: [
-				{ text: "This is editable " },
-				{ text: "rich", bold: true },
-				{ text: " text, " },
-				{ text: "much", italic: true },
-				{ text: " better than a " },
-				{ text: "<textarea>", code: true },
-				{ text: "!" },
-			],
-		},
-		{
-			id: randomAddress(),
-			type: "paragraph",
-			align: "justify",
-			children: [
-				{
-					text: "Since it's rich text, you can do things like turn a selection of text ",
-				},
-				{ text: "bold, ", bold: true },
-				{ text: "italic, ", italic: true },
-				{ text: "justify it, ", bold: true },
-				{ text: "and much more ", italic: true, bold: true, underline: true, code: true },
-				{ text: "like, ", color: "#f33" },
-				{ text: "turn ", color: "#3d3" },
-				{ text: "it ", color: "#33f" },
-				{ text: "very ", color: "#3dd" },
-				{ text: "color", color: "#f3f" },
-				{ text: "ful", color: "#dd3" },
-				{
-					text: ", or add a semantically rendered block quote in the middle of the page, like this:",
-				},
-			],
-		},
-		{
-			id: randomAddress(),
-			type: "block-quote",
-			children: [{ text: "A wise quote." }],
-		},
+		{ id: randomAddress(), type: "heading-1", children: [{ text: "Faculty Achievements", underline: true }] },
+		{ id: randomAddress(), type: "heading-2", children: [{ text: "Supervision of Doctoral Thesis" }] },
 		{
 			id: randomAddress(),
 			type: "bulleted-list",
 			children: [
-				{ id: randomAddress(), type: "list-item", children: [{ text: "Or, add" }] },
-				{ id: randomAddress(), type: "list-item", children: [{ text: "an unordered list of", bold: true }] },
 				{
 					id: randomAddress(),
 					type: "list-item",
 					children: [
 						{
-							text: "several elements",
-							italic: true,
-							bold: true,
-							underline: true,
-							code: true,
+							text: "Dr. Ankit K. Shah supervised the thesis titled “Control Of Switched Dynamical System” by Research Scholar Mr. Hardik R. Patel, which has been approved for the award of Doctor of Philosophy.",
+						},
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [
+						{
+							text: "Dr. Tejas V. Shah supervised the thesis titled “Edge Detection for Brain Tissue Segmentation in MR Image” by Research Scholar Mr. Ghanshyam Parmar, which has been approved for the award of Doctor of Philosophy.",
 						},
 					],
 				},
 			],
 		},
+
+		{ id: randomAddress(), type: "heading-2", children: [{ text: "Expert Sessions and Industrial Visits" }] },
 		{
 			id: randomAddress(),
-			type: "numbered-list",
+			type: "bulleted-list",
 			children: [
-				{ id: randomAddress(), type: "list-item", children: [{ text: "And add" }] },
-				{ id: randomAddress(), type: "list-item", children: [{ text: "a ordered list of", bold: true }] },
-				{ id: randomAddress(), type: "list-item", children: [{ text: "elements,", italic: true, bold: true, underline: true, code: true }] },
 				{
 					id: randomAddress(),
 					type: "list-item",
-					align: "justify",
 					children: [
 						{
-							text: "like so: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut iaculis eget lectus nec sagittis. Donec et venenatis nisi. Proin tempor feugiat diam ac suscipit. Cras fringilla justo quis elementum imperdiet. Proin aliquet purus purus, quis ultrices urna elementum sed. Mauris gravida id purus at congue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ligula purus, vestibulum eget dui vel, bibendum posuere leo. Ut posuere nunc eget turpis convallis pretium. Vestibulum mollis tempor est at posuere. Vestibulum iaculis sapien ac tincidunt consectetur. Aliquam ornare ante id enim ultrices vehicula. Quisque gravida eros ut rhoncus lacinia. ",
+							text: "Dr. Chirag Thaker delivered an expert session on Augmented Reality (AR) and Virtual Reality (VR) at the Vibrant Gujarat Global Trade Show 2024, Helipad Ground, Gandhinagar. He also conducted a session on 'Supervised vs. Unsupervised Classification' on February 2nd and led an industrial visit at EInfochips, Ahmedabad.",
+						},
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [{ text: "Dr. Zishan Noorani delivered an expert talk at Raj Computer Academy on February 2, 2024." }],
+				},
+			],
+		},
+
+		{ id: randomAddress(), type: "heading-2", children: [{ text: "Colloquium On Data Analysis" }] },
+		{
+			id: randomAddress(),
+			type: "bulleted-list",
+			children: [
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [
+						{
+							text: 'Dr Hiteishi Diwanji delivered expert talk on “Exploratory Data Analytics” at Two Week DTE approved Faculty Development Program on "Data Analytics and Applications" (NC-Guj-23) organized jointly by NITTR and Computer Engineering Department, L.D.College of Engineering.\nShe worked as coordinator for Training program and delivered lecture on "AI/ML war in BigBees" at FDP organized by DTE on Interwoven Intelligence: A Multidisciplinary approach using AI/ML.',
 						},
 					],
 				},
 			],
 		},
+
+		{ id: randomAddress(), type: "heading-2", children: [{ text: "PhD Accomplishments" }] },
 		{
 			id: randomAddress(),
-			type: "page-break",
-			children: [{ text: "" }],
+			type: "bulleted-list",
+			children: [
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [
+						{
+							text: "Dr. Mital N. Panchal defended her PhD titled “Novel privacy preserving fuzzy keyword search for encrypted data in cloud computing” from Sankalchand Patel University, Visnagar, on January 2, 2024.",
+						},
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [
+						{
+							text: "Dr. Shital Solankii defended her PhD titled “Design And Development Of Support Vector Machines Using Piecewise Linear Approximation Based Optimization Techniques” from Gujarat Technological University on March 4, 2024.",
+						},
+					],
+				},
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [{ text: "Prof. Pratima K. Shah successfully defended her PhD in Civil Engineering in January 2024." }],
+				},
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [{ text: "Prof. Rena N. Shukla successfully defended her PhD in Civil Engineering in February 2024." }],
+				},
+				{
+					id: randomAddress(),
+					type: "list-item",
+					children: [{ text: "Prof. Z. R. Chhaya successfully defended his PhD in Civil Engineering from IIT Roorkee in March 2024." }],
+				},
+			],
 		},
-		{ id: randomAddress(), type: "paragraph", children: [{ text: "" }] },
+
+		{ id: randomAddress(), type: "page-break", children: [{ text: "" }] },
+		{ id: randomAddress(), type: "heading-1", children: [{ text: "Students' Achievements", underline: true }] },
 		{
 			id: randomAddress(),
 			type: "flexbox",
-			alignItems: "center",
+			fixChildrenWidthRatios: [1, 1],
 			children: [
 				{
 					id: randomAddress(),
-					type: "flexbox",
-					flexBasis: 0,
-					flexGrow: 1,
+					type: "card",
+					imageUrl: "/Images/I1.jpg",
+					borderAroundImage: true,
+					bgColor: "#fff",
+					shadowColor: "#000",
+					borderColor: "#ddd",
+					layoutImagePos: "top",
+					// imageWidth: "50%",
+					imageSizeAndPosition: {},
 					children: [
 						{
 							id: randomAddress(),
 							type: "paragraph",
 							children: [
 								{
-									text: "The Standard Model: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut iaculis eget lectus nec sagittis. Donec et venenatis nisi. Proin tempor feugiat diam ac suscipit. Cras fringilla justo quis elementum imperdiet. Proin aliquet purus purus, quis ultrices urna elementum sed. Mauris gravida id purus at congue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ligula purus, vestibulum eget dui vel, bibendum posuere leo. Ut posuere nunc eget turpis convallis pretium. Vestibulum mollis tempor est at posuere. Vestibulum iaculis sapien ac tincidunt consectetur. Aliquam ornare ante id enim ultrices vehicula. Quisque gravida eros ut rhoncus lacinia.",
+									text: "Parikh Purva Ilesh and Dave Aakansha Bhaveshbhai from Environmental Engineering Department were awarded the Gold Medal in BE and ME respectively for the year 2023.",
 								},
 							],
 						},
@@ -320,33 +1375,21 @@ export function get_demo_editor_value(): Descendant[] {
 				},
 				{
 					id: randomAddress(),
-					type: "flexbox",
-					alignSelf: "center",
-					alignItems: "center",
-					flexDirection: "row",
-					flexBasis: 0,
-					flexGrow: 2,
+					type: "card",
+					bgColor: "#fff",
+					imageUrl: "/Images/I2.jpg",
+					shadowColor: "#000",
+					borderColor: "#ddd",
+					layoutImagePos: "bottom",
+					// imageWidth: "50%",
+					imageSizeAndPosition: {},
 					children: [
 						{
 							id: randomAddress(),
-							type: "card",
-							imageUrl: DEMO_IMAGE_URL,
-							borderAroundImage: true,
-							bgColor: "#fff",
-							shadowColor: "#000",
-							borderColor: "#ddd",
-							layoutImagePos: "top",
-							imageSizeAndPosition: {},
+							type: "paragraph",
 							children: [
-								{ id: randomAddress(), type: "heading-3", children: [{ text: "The Standard Model" }] },
 								{
-									id: randomAddress(),
-									type: "paragraph",
-									children: [
-										{
-											text: "The Standard Model of particle physics is the theory describing three of the four known fundamental forces in the universe and classifying all known elementary particles.",
-										},
-									],
+									text: "Shah Malav Dharmendrakumar, a PG student, under the guidance of Dr. R. J. Jani was awarded the Gold Medal for being a branch topper in M.E. (MECHANICAL – I. C. ENGINE & AUTOMOBILE) at GTU's 13th Annual convocation.",
 								},
 							],
 						},
@@ -356,211 +1399,44 @@ export function get_demo_editor_value(): Descendant[] {
 		},
 		{
 			id: randomAddress(),
-			type: "page-break",
-			children: [{ text: "" }],
-		},
-		{
-			id: randomAddress(),
 			type: "card",
-			imageUrl: DEMO_IMAGE_URL,
-			borderAroundImage: false,
-			bgColor: "#ffa",
-			shadowColor: "#aaf",
-			borderColor: "#000",
-			layoutImagePos: "right",
-			imageSizeAndPosition: {},
-			children: [
-				{ id: randomAddress(), type: "heading-3", children: [{ text: "The Standard Model" }] },
-				{
-					id: randomAddress(),
-					type: "paragraph",
-					children: [
-						{
-							text: "Interactions in the Standard Model",
-						},
-					],
-				},
-			],
-		},
-		{
-			id: randomAddress(),
-			type: "card",
-			imageUrl: DEMO_IMAGE_URL,
-			borderAroundImage: true,
-			bgColor: "#fff",
+			bgColor: "#c6e2e8",
 			shadowColor: "#000",
 			borderColor: "#ddd",
 			layoutImagePos: "left",
+			// imageWidth: "50%",
 			imageSizeAndPosition: {},
 			children: [
 				{
 					id: randomAddress(),
-					type: "paragraph",
-					children: [
-						{
-							text: "It was developed in stages throughout the latter half of the 20th century.",
-						},
-					],
-				},
-			],
-		},
-		{
-			id: randomAddress(),
-			type: "page-break",
-			children: [{ text: "" }],
-		},
-		{
-			id: randomAddress(),
-			type: "flexbox",
-			justifyContent: "center",
-			alignItems: "stretch",
-			flexDirection: "row",
-			children: [
-				{
-					id: randomAddress(),
-					type: "flexbox",
-					alignSelf: "center",
-					alignItems: "center",
-					flexDirection: "row",
-					flexBasis: 0,
-					flexGrow: 1,
-					flexShrink: 1,
-					children: [
-						{
-							id: randomAddress(),
-							type: "card",
-							imageUrl: "https://upload.wikimedia.org/wikipedia/commons/0/06/LHC_quadrupole_magnets.jpg",
-							borderAroundImage: false,
-							bgColor: "#faf",
-							shadowColor: "#afa",
-							borderColor: "#ddd",
-							layoutImagePos: "top",
-							imageSizeAndPosition: {},
-							children: [
-								{ id: randomAddress(), type: "heading-3", children: [{ text: "Interactions in the Standard Model" }] },
-								{
-									id: randomAddress(),
-									type: "paragraph",
-									children: [
-										{
-											text: "All Feynman diagrams in the model are built from combinations of these vertices. q is any quark, g is a gluon, X is any charged particle, γ is a photon, f is any fermion, m is any particle with mass (with the possible exception of the neutrinos), mB is any boson with mass.",
-										},
-									],
-								},
-							],
-						},
-					],
-				},
-				{
-					id: randomAddress(),
-					type: "flexbox",
-					alignSelf: "center",
-					alignItems: "center",
-					flexDirection: "row",
-					flexBasis: 0,
-					flexGrow: 1,
-					flexShrink: 1,
-					children: [
-						{
-							id: randomAddress(),
-							type: "card",
-							imageUrl: DEMO_IMAGE_URL,
-							borderAroundImage: true,
-							bgColor: "#00000000",
-							shadowColor: "#00000000",
-							borderColor: "#00000000",
-							layoutImagePos: "bottom",
-							imageSizeAndPosition: {},
-							children: [
-								{ id: randomAddress(), type: "heading-3", children: [{ text: "The Standard Model" }] },
-								{
-									id: randomAddress(),
-									type: "paragraph",
-									children: [
-										{
-											text: "It was developed in stages throughout the latter half of the 20th century, through the work of many scientists worldwide, with the current formulation being finalized in the mid-1970s upon experimental confirmation of the existence of quarks. ",
-										},
-									],
-								},
-							],
-						},
-					],
-				},
-			],
-		},
-		{
-			id: randomAddress(),
-			type: "flexbox",
-			justifyContent: "center",
-			alignItems: "stretch",
-			flexDirection: "row",
-			children: [
-				{
-					id: randomAddress(),
 					type: "flexbox",
 					alignItems: "stretch",
-					alignSelf: "stretch",
-					height: "100%",
-					flexDirection: "row",
-					flexBasis: 0,
-					flexGrow: 1,
-					flexShrink: 1,
+					fixChildrenWidthRatios: [1, 1, 1],
 					children: [
 						{
 							id: randomAddress(),
-							type: "card",
-							imageUrl: "https://upload.wikimedia.org/wikipedia/commons/0/06/LHC_quadrupole_magnets.jpg",
-							borderAroundImage: true,
-							bgColor: "#aff",
-							shadowColor: "#faa",
-							borderColor: "#000",
-							layoutImagePos: "back",
-							imageSizeAndPosition: { stretch: true },
+							type: "paragraph",
 							children: [
 								{
-									id: randomAddress(),
-									type: "paragraph",
-									children: [
-										{
-											text: "In diagrams with multiple particle labels separated by '/', one particle label is chosen. In diagrams with particle labels separated by '|', the labels must be chosen in the same order. For example, in the four boson electroweak case the valid diagrams are WWWW, WWZZ, WWγγ, WWZγ. The conjugate of each listed vertex (reversing the direction of arrows) is also allowed.",
-											color: "#fff",
-										},
-									],
+									text: "Ayan Vaidya, Harsh Balsaraf and Yukta Dodia won the award of Hexapod Robot in the Grand Finale of India’s biggest Robotics competition “ROBOFEST GUJARAT 3.0”",
 								},
 							],
 						},
-					],
-				},
-				{
-					id: randomAddress(),
-					type: "flexbox",
-					alignItems: "stretch",
-					alignSelf: "stretch",
-					flexDirection: "row",
-					flexBasis: 0,
-					flexGrow: 1,
-					flexShrink: 1,
-					children: [
 						{
 							id: randomAddress(),
-							type: "card",
-							imageUrl:
-								"https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Weinberg_angle_%28relation_between_coupling_constants%29.svg/2560px-Weinberg_angle_%28relation_between_coupling_constants%29.svg.png",
-							borderAroundImage: false,
-							bgColor: "#00000000",
-							shadowColor: "#00000000",
-							borderColor: "#000",
-							layoutImagePos: "back",
-							imageSizeAndPosition: {},
+							type: "image",
+							srcUrl: "/Images/image-017-101.jpg",
+							shadowColor: "#000",
+							rounded: true,
+							bgColor: "#fff",
+							children: [{ text: "" }],
+						},
+						{
+							id: randomAddress(),
+							type: "paragraph",
 							children: [
 								{
-									id: randomAddress(),
-									type: "paragraph",
-									children: [
-										{
-											text: "Weinberg's weak mixing angle θW, and relation between coupling constants g, g′, and e.",
-										},
-									],
+									text: "The team also won prize money of Rs. 2,50,000 (Two lakh Fifty thousand only) on 16th March 2024. The team was mentored by Prof. Dr. C.H.Vithalani.",
 								},
 							],
 						},
@@ -568,129 +1444,20 @@ export function get_demo_editor_value(): Descendant[] {
 				},
 			],
 		},
-		{
-			id: randomAddress(),
-			type: "paragraph",
-			align: "center",
-			children: [{ text: "Try it out for yourself!" }],
-		},
-		generateDefaultSectionBreakElement("upper-roman", true),
-		{ id: randomAddress(), type: "heading-1", children: [{ text: "What is Lorem Ipsum?" }] },
+		{ id: randomAddress(), type: "page-break", children: [{ text: "" }] },
+		{ id: randomAddress(), type: "heading-2", children: [{ text: "Sports: Impulse 2025" }] },
 		{
 			id: randomAddress(),
 			type: "card",
+			imageUrl: "/Images/Impulse2025Results.jpg",
 			borderAroundImage: false,
-			bgColor: "#ffa",
-			shadowColor: "#aaf",
-			borderColor: "#000",
-			layoutImagePos: "right",
+			bgColor: "#afa",
+			shadowColor: "#faf",
+			borderColor: "#ddd",
+			imageWidth: "75%",
+			layoutImagePos: "bottom",
 			imageSizeAndPosition: {},
-			children: [
-				{
-					id: randomAddress(),
-					type: "paragraph",
-					align: "justify",
-					children: [
-						{
-							text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
-						},
-					],
-				},
-			],
-		},
-		{ id: randomAddress(), type: "heading-2", children: [{ text: "Why do we use it?" }] },
-		{
-			id: randomAddress(),
-			type: "paragraph",
-			align: "justify",
-			children: [
-				{
-					text: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).",
-				},
-			],
-		},
-		{ id: randomAddress(), type: "heading-2", children: [{ text: "Where does it come from?" }] },
-		{
-			id: randomAddress(),
-			type: "paragraph",
-			align: "justify",
-			children: [
-				{
-					text: 'Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.',
-				},
-			],
-		},
-		{
-			id: randomAddress(),
-			type: "paragraph",
-			align: "justify",
-			children: [
-				{
-					text: 'The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested. Sections 1.10.32 and 1.10.33 from "de Finibus Bonorum et Malorum" by Cicero are also reproduced in their exact original form, accompanied by English versions from the 1914 translation by H. Rackham.',
-				},
-			],
-		},
-		{ id: randomAddress(), type: "heading-2", children: [{ text: "Where can I get some?" }] },
-		{
-			id: randomAddress(),
-			type: "paragraph",
-			align: "justify",
-			children: [
-				{
-					text: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.",
-				},
-			],
-		},
-		{ id: randomAddress(), type: "heading-3", children: [{ text: "See below: 5 paragraphs, 484 words, 3345 bytes of Lorem Ipsum" }] },
-		{
-			id: randomAddress(),
-			type: "paragraph",
-			align: "left",
-			children: [
-				{
-					text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut iaculis eget lectus nec sagittis. Donec et venenatis nisi. Proin tempor feugiat diam ac suscipit. Cras fringilla justo quis elementum imperdiet. Proin aliquet purus purus, quis ultrices urna elementum sed. Mauris gravida id purus at congue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ligula purus, vestibulum eget dui vel, bibendum posuere leo. Ut posuere nunc eget turpis convallis pretium. Vestibulum mollis tempor est at posuere. Vestibulum iaculis sapien ac tincidunt consectetur. Aliquam ornare ante id enim ultrices vehicula. Quisque gravida eros ut rhoncus lacinia. ",
-				},
-			],
-		},
-		{
-			id: randomAddress(),
-			type: "paragraph",
-			align: "center",
-			children: [
-				{
-					text: "Aliquam velit leo, venenatis ut magna sed, mattis tempus nisi. Suspendisse feugiat nulla at ligula consequat feugiat. Sed in vestibulum lacus, ut tincidunt sem. Aliquam libero quam, volutpat sed justo et, ultrices eleifend ipsum. Morbi vitae pharetra mauris. Maecenas ullamcorper, sem at condimentum accumsan, velit lectus efficitur tortor, pretium eleifend justo tellus non ipsum. Morbi lacinia ex non lectus consectetur, sit amet pulvinar tellus rutrum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris commodo, sem vel aliquam pellentesque, est risus mattis nunc, sit amet aliquam nisl eros quis purus. In venenatis eget felis non consectetur. Duis vehicula finibus nisl in malesuada. Quisque nec aliquet nisl. Nam non augue id tortor dignissim malesuada. Integer sed maximus augue. ",
-				},
-			],
-		},
-		{
-			id: randomAddress(),
-			type: "paragraph",
-			align: "right",
-			children: [
-				{
-					text: "Suspendisse sit amet ante egestas, molestie nisl in, lobortis odio. Donec vitae fringilla eros. Suspendisse lorem massa, gravida eget augue a, ultrices rhoncus lacus. Suspendisse potenti. In vehicula, ante id venenatis egestas, nisi lorem auctor turpis, quis lobortis diam augue id purus. Praesent mauris dolor, egestas vitae ex nec, mollis fermentum felis. Nulla rhoncus sed lorem ac euismod. Nunc mattis gravida ante, quis volutpat nulla. Duis eu ullamcorper tortor, eu vestibulum nisi. Aliquam non eleifend arcu. Pellentesque tincidunt, nisi non tristique porttitor, justo ante imperdiet risus, ut posuere ipsum purus nec lectus. Quisque erat justo, tristique eget tortor et, semper tristique sapien. ",
-				},
-			],
-		},
-		{
-			id: randomAddress(),
-			type: "paragraph",
-			align: "justify",
-			children: [
-				{
-					text: "Pellentesque laoreet, mi a dignissim pretium, felis tellus rhoncus massa, condimentum laoreet dolor sem nec odio. Donec finibus interdum nunc, eu vehicula leo rhoncus fringilla. Nullam vel elit consequat, suscipit ex eget, pretium felis. In condimentum enim et justo molestie mattis. Proin porta eros quis elit malesuada, vitae hendrerit mauris volutpat. Suspendisse ultricies bibendum iaculis. Vivamus pharetra pharetra justo, in malesuada mi efficitur sit amet. Nullam ut quam at nisi volutpat gravida. Sed euismod sapien quis finibus blandit. In non erat ante. Cras sollicitudin pulvinar laoreet. ",
-				},
-			],
-		},
-		{
-			id: randomAddress(),
-			type: "paragraph",
-			align: "justify",
-			children: [
-				{
-					text: "Morbi pretium diam sed sapien iaculis suscipit. Nunc dictum justo eu risus euismod posuere. Nunc volutpat malesuada porttitor. Sed blandit odio nunc, cursus gravida risus malesuada at. Pellentesque tristique dui magna, quis condimentum nisl maximus vel. Maecenas dictum sem sed iaculis elementum. Duis blandit, nulla non pharetra laoreet, elit erat mollis leo, pulvinar tincidunt metus mi et neque. In hac habitasse platea dictumst. Nullam malesuada nisi eu quam vestibulum tincidunt. Sed lectus ligula, viverra eget neque eu, imperdiet interdum est. Mauris interdum sollicitudin volutpat. ",
-				},
-			],
+			children: [{ id: randomAddress(), type: "heading-4", align: "center", children: [{ text: "Impulse 2025 Cricket Results" }] }],
 		},
 	];
 }

@@ -3,6 +3,7 @@ import { getAddress, randomAddress } from "@/lib/uniq-address";
 import { DEMO_IMAGE_URL } from "@/lib/utils";
 import { Descendant, Editor, Element, Node, Path, Point, Element as SlateElement, Transforms } from "slate";
 import { EditorNormalizeOptions } from "slate/dist/interfaces/editor";
+import { ElementSettingsSidebarStore } from "./elements/ElementSettingsSidebar";
 import {
 	AlignType,
 	AlignTypeNoJustify,
@@ -48,7 +49,6 @@ export function setColorMark(editor: CustomEditor, color: string) {
 
 export function getColorMark(editor: CustomEditor) {
 	const marks = Editor.marks(editor);
-	console.log({ marks });
 	return marks?.color ?? "#000";
 }
 
@@ -96,7 +96,7 @@ export function toggleBlock(editor: CustomEditor, format: AlignType | CustomElem
 		} else {
 			newProperties = {
 				type: isActive ? "paragraph" : format,
-			};
+			} as Partial<SlateElement>;
 			const currSelection = editor.selection?.anchor.path;
 			if (currSelection != null) {
 				let curr: Node = editor;
@@ -336,5 +336,22 @@ export function resetNodes(
 
 	if (point) {
 		Transforms.select(editor, point);
+	}
+}
+
+export function insertNodeSpecial<T extends Node>(editor: Editor, nodes: T, settingsSidebarStore: ElementSettingsSidebarStore | null | undefined) {
+	const selectionData = settingsSidebarStore?.data;
+	console.log(selectionData);
+	if (selectionData != null && (selectionData.element.type === "card" || selectionData.element.type === "flexbox")) {
+		Transforms.insertNodes(editor, nodes, { at: Path.next(selectionData.path) });
+	} else {
+		Transforms.insertNodes(editor, [
+			nodes,
+			{
+				id: randomAddress(),
+				type: "paragraph",
+				children: [{ text: "" }],
+			},
+		]);
 	}
 }

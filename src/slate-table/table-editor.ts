@@ -8,7 +8,7 @@ import { CellElement } from "./utils/types";
 import { EDITOR_TO_SELECTION, EDITOR_TO_WITH_TABLE_OPTIONS } from "./weak-maps";
 
 // number of rows and cols can't be less than 1
-function clamp(n: number) {
+export function clamp(n: number) {
 	return n < 1 ? 1 : n;
 }
 
@@ -44,6 +44,7 @@ export const TableEditor = {
 			editor,
 			{
 				id: randomAddress(),
+				border: true,
 				type: table,
 				children: [
 					{

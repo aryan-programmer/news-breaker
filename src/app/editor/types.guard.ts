@@ -2,7 +2,7 @@
  * Generated type guards for "types.ts".
  * WARNING: Do not manually change this file.
  */
-import { AlignType, PageNumberFormatType, FlexboxAlignContent, FlexboxAlignItems, FlexboxAlignSelf, FlexboxFlexDirection, FlexboxFlexWrap, FlexboxJustifyContent, HeadingNElementTypeName, TextChildrenOnlyElementNames, TypeNamesOfElementsWhoseTypesCannotBeChanged, CustomElementTypeStr, ListElementTypeStr } from "./types";
+import { AlignType, PageNumberFormatType, HeaderLevels, FlexboxAlignContent, FlexboxAlignItems, FlexboxAlignSelf, FlexboxFlexWrap, FlexboxJustifyContent, HeadingNElementTypeName, TextChildrenOnlyElementNames, TypeNamesOfElementsWhoseTypesCannotBeChanged, CustomElementTypeStr, ListElementTypeStr } from "./types";
 
 export function isAlignType(obj: unknown): obj is AlignType {
     const typedObj = obj as AlignType
@@ -22,6 +22,18 @@ export function isPageNumberFormatType(obj: unknown): obj is PageNumberFormatTyp
             typedObj === "upper" ||
             typedObj === "lower-roman" ||
             typedObj === "upper-roman")
+    )
+}
+
+export function isHeaderLevelNumber(obj: unknown): obj is HeaderLevels {
+    const typedObj = obj as HeaderLevels
+    return (
+        (typedObj === 1 ||
+            typedObj === 2 ||
+            typedObj === 3 ||
+            typedObj === 4 ||
+            typedObj === 5 ||
+            typedObj === 6)
     )
 }
 
@@ -61,16 +73,6 @@ export function isFlexboxAlignSelf(obj: unknown): obj is FlexboxAlignSelf {
     )
 }
 
-export function isFlexboxFlexDirection(obj: unknown): obj is FlexboxFlexDirection {
-    const typedObj = obj as FlexboxFlexDirection
-    return (
-        (typedObj === "row" ||
-            typedObj === "row-reverse" ||
-            typedObj === "column" ||
-            typedObj === "column-reverse")
-    )
-}
-
 export function isFlexboxFlexWrap(obj: unknown): obj is FlexboxFlexWrap {
     const typedObj = obj as FlexboxFlexWrap
     return (
@@ -97,7 +99,10 @@ export function isHeadingTypeName(obj: unknown): obj is HeadingNElementTypeName 
     return (
         (typedObj === "heading-1" ||
             typedObj === "heading-2" ||
-            typedObj === "heading-3")
+            typedObj === "heading-3" ||
+            typedObj === "heading-4" ||
+            typedObj === "heading-5" ||
+            typedObj === "heading-6")
     )
 }
 
@@ -107,6 +112,9 @@ export function isElementNameThatOfTextChildrenOnlyElement(obj: unknown): obj is
         (typedObj === "heading-1" ||
             typedObj === "heading-2" ||
             typedObj === "heading-3" ||
+            typedObj === "heading-4" ||
+            typedObj === "heading-5" ||
+            typedObj === "heading-6" ||
             typedObj === "paragraph" ||
             typedObj === "block-quote" ||
             typedObj === "list-item" ||
@@ -143,6 +151,9 @@ export function isCustomElementTypeStr(obj: unknown): obj is CustomElementTypeSt
         (typedObj === "heading-1" ||
             typedObj === "heading-2" ||
             typedObj === "heading-3" ||
+            typedObj === "heading-4" ||
+            typedObj === "heading-5" ||
+            typedObj === "heading-6" ||
             typedObj === "paragraph" ||
             typedObj === "block-quote" ||
             typedObj === "list-item" ||

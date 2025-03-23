@@ -18,6 +18,9 @@ import {
 	fa1,
 	fa2,
 	fa3,
+	fa4,
+	fa5,
+	fa6,
 	faAlignCenter,
 	faAlignJustify,
 	faAlignLeft,
@@ -33,6 +36,7 @@ import {
 	faListAlt,
 	faListOl,
 	faListUl,
+	faParagraph,
 	faPlus,
 	faQuoteLeft,
 	faTable,
@@ -55,7 +59,7 @@ import {
 import { withSimpleCopyPaste } from "../custom-copy-paste";
 import { EditorStore, pruneTableCellPercentageWidths, useEditorStore } from "../editor-data-store";
 import { isTableCellPercentageWidthsRecord } from "../editor-data-store.guard";
-import { resetNodes, toggleMark, withNormalizedCustomElements, withNormalizedFrontPage } from "../editor-utils";
+import { insertNodeSpecial, resetNodes, toggleMark, withNormalizedCustomElements, withNormalizedFrontPage } from "../editor-utils";
 import { insertTableOfContents } from "../renderers/AutoTableOfContents";
 import { insertCard } from "../renderers/CardRenderer";
 import { insertImage } from "../renderers/EditableImage";
@@ -100,10 +104,33 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-	const editor = useMemo(
-		() => withTable(withNormalizedFrontPage(withNormalizedCustomElements(withHistory(withSimpleCopyPaste(withReact(createEditor()))))), {}),
-		[],
-	);
+	// const [shouldInsertAfter, setShouldInsertAfter] = useState(true);
+
+	const editor = useMemo(() => {
+		const res = withTable(withNormalizedFrontPage(withNormalizedCustomElements(withHistory(withSimpleCopyPaste(withReact(createEditor()))))), {});
+		// Object.defineProperty(res, "shouldInsertAfter", {
+		// 	get() {
+		// 		return shouldInsertAfter;
+		// 	},
+		// 	set(val: boolean) {
+		// 		setShouldInsertAfter(val);
+		// 	},
+		// 	configurable: true,
+		// });
+		return res;
+	}, []);
+
+	// useEffect(() => {
+	// 	Object.defineProperty(editor, "shouldInsertAfter", {
+	// 		get() {
+	// 			return shouldInsertAfter;
+	// 		},
+	// 		set(val: boolean) {
+	// 			setShouldInsertAfter(val);
+	// 		},
+	// 		configurable: true,
+	// 	});
+	// }, [editor, shouldInsertAfter]);
 
 	const initialValue = useMemo(() => editorStore.children, [editorStore]);
 
@@ -117,7 +144,7 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 		[editor.operations, editorStore],
 	);
 
-	const onInsertImage = useCallback(() => insertImage(editor, DEMO_IMAGE_URL), [editor]);
+	const onInsertImage = useCallback(() => insertImage(editor, DEMO_IMAGE_URL, settingsSidebarStore), [editor, settingsSidebarStore]);
 	const onInsertPageBreak = useCallback(() => insertPageBreak(editor), [editor]);
 	const onInsertTableOfContents = useCallback(() => insertTableOfContents(editor), [editor]);
 	const onInsertTable = useCallback(() => TableEditor.insertTable(editor, { rows: 3, cols: 3 }), [editor]);
@@ -125,6 +152,9 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 	const onInsertFlexbox = useCallback(() => insertFlexbox(editor, settingsSidebarStore), [editor, settingsSidebarStore]);
 	const onAddPageNumber = useCallback(() => toggleMark(editor, "pageNumberOverride"), [editor]);
 	const onInsertCard = useCallback(() => insertCard(editor, settingsSidebarStore), [editor, settingsSidebarStore]);
+	const onInsertParagraph = useCallback(() => {
+		insertNodeSpecial(editor, { id: randomAddress(), type: "paragraph", children: [{ text: "" }] }, settingsSidebarStore);
+	}, [editor, settingsSidebarStore]);
 
 	const onFlexboxVisibilitySwitch = useCallback(() => editorStore.setIsFlexboxVisiblityOn(!editorStore.isFlexboxVisiblityOn), [editorStore]);
 
@@ -209,6 +239,9 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 						<MarkButton hoverText="Code" format="code">
 							<FontAwesomeIcon icon={faCode} />
 						</MarkButton>
+						{/* <MarkButton hoverText="Small Caps" format="smallCaps">
+							<SmallCapsIcon width={20} height={20} />
+						</MarkButton> */}
 						<MarkColorPicker />
 						<BlockButton hoverText="Heading 1" format="heading-1">
 							<FontAwesomeIcon icon={fa1} />
@@ -218,6 +251,15 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 						</BlockButton>
 						<BlockButton hoverText="Heading 3" format="heading-3">
 							<FontAwesomeIcon icon={fa3} />
+						</BlockButton>
+						<BlockButton hoverText="Heading 4" format="heading-4">
+							<FontAwesomeIcon icon={fa4} />
+						</BlockButton>
+						<BlockButton hoverText="Heading 5" format="heading-5">
+							<FontAwesomeIcon icon={fa5} />
+						</BlockButton>
+						<BlockButton hoverText="Heading 6" format="heading-6">
+							<FontAwesomeIcon icon={fa6} />
 						</BlockButton>
 						<BlockButton hoverText="Blockquote" format="block-quote">
 							<FontAwesomeIcon icon={faQuoteLeft} />
@@ -276,6 +318,9 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 								</DropdownMenuItem>
 								<DropdownMenuItem onSelect={onAddPageNumber}>
 									<PageNumberIcon /> Page Number
+								</DropdownMenuItem>
+								<DropdownMenuItem onSelect={onInsertParagraph}>
+									<FontAwesomeIcon icon={faParagraph} /> Paragraph After
 								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>

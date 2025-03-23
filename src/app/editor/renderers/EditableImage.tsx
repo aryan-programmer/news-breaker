@@ -1,17 +1,40 @@
 import { Button } from "@/components/ui/Button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/Form";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { ColorPicker } from "@/components/ui/ColorPicker";
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+	joinNumberAndUnit,
+	splitUnits,
+	UnitFieldEditor,
+	units,
+} from "@/components/ui/Form";
 import { Input } from "@/components/ui/Input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { useStoreAsIs } from "@/hooks/useStore";
 import { randomAddress } from "@/lib/uniq-address";
-import { forwardFnDropAsync } from "@/lib/utils";
+import {
+	colorValidator,
+	coreceEmptyOrTransparentToUndef,
+	coreceEmptyToUndef,
+	forwardFnDropAsync,
+	isNonNullAndNonEmpty,
+	prefixUrlWithSiteNameIfNecessary,
+} from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { MouseEvent, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { Location, Transforms } from "slate";
 import { ReactEditor, useSlateStatic } from "slate-react";
 import { z } from "zod";
-import { useElementSettingsSidebarStore } from "../elements/ElementSettingsSidebar";
+import { insertNodeSpecial } from "../editor-utils";
+import { ElementSettingsSidebarStore, useElementSettingsSidebarStore } from "../elements/ElementSettingsSidebar";
 import { CustomEditor, ImageElement, RenderElementAttributesProp } from "../types";
+import { isAlignType } from "../types.guard";
 
 export type EditableImageProps = {
 	attributes: RenderElementAttributesProp;
@@ -19,14 +42,9 @@ export type EditableImageProps = {
 	children: unknown;
 };
 
-export function insertImage(editor: CustomEditor, url: string) {
+export function insertImage(editor: CustomEditor, url: string, settingsSidebarStore: ElementSettingsSidebarStore | null | undefined) {
 	const image: ImageElement = { type: "image", srcUrl: url, children: [{ text: "" }], id: randomAddress() };
-	Transforms.insertNodes(editor, image);
-	Transforms.insertNodes(editor, {
-		id: randomAddress(),
-		type: "paragraph",
-		children: [{ text: "" }],
-	});
+	insertNodeSpecial(editor, image, settingsSidebarStore);
 }
 
 export default function EditableImage({ attributes, element, children }: EditableImageProps) {
@@ -51,16 +69,29 @@ export default function EditableImage({ attributes, element, children }: Editabl
 		[settingsSidebarStore, element, attributes, editor, path],
 	);
 	return (
-		<div {...attributes}>
+		<div {...attributes} className="px-1">
 			<div className="h-0 text-transparent outline-0 outline-none absolute w-0" style={{ fontSize: 0 }}>
 				{children as any}
 			</div>
-			<div contentEditable={false} className="w-full h-full">
+			<div
+				contentEditable={false}
+				className={`w-full h-full flex flex-row ${element.rounded ? "rounded-xl" : ""} ${isNonNullAndNonEmpty(element.shadowColor) ? "pb-1" : ""}`}
+				style={{
+					backgroundColor: coreceEmptyToUndef(element.shadowColor),
+					justifyContent: element.align ?? "center",
+				}}>
 				{/* eslint-disable-next-line @next/next/no-img-element*/}
 				<img
 					alt=""
 					src={element.srcUrl}
-					className="block max-w-full max-h-full shadow-none data-[selected=on]:drop-shadow-lg data-[selected=on]:shadow-foreground"
+					className={`block max-w-full max-h-full ${element.rounded ? "rounded-xl" : ""} ${
+						isNonNullAndNonEmpty(element.bgColor) ? "p-1" : ""
+					} shadow-none data-[selected=on]:drop-shadow-lg data-[selected=on]:shadow-foreground`}
+					style={{
+						backgroundColor: coreceEmptyToUndef(element.bgColor),
+						borderColor: coreceEmptyToUndef(element.borderColor),
+						width: element.width ?? undefined,
+					}}
 					onClick={select}
 					data-selected={settingsSidebarStore?.data?.element?.id === element.id ? "on" : "off"}
 				/>
@@ -71,7 +102,14 @@ export default function EditableImage({ attributes, element, children }: Editabl
 
 const formSchema = z.object({
 	url: z.string().url("Enter a valid URL"),
-	//align: z.string().nonempty().refine(isAlignType, "Enter a valid alignment"),
+	width: z.number({ invalid_type_error: "Enter a valid value for width" }).min(0, { message: "width can not be less than 0" }),
+	// .refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
+	widthUnit: z.enum(units, { invalid_type_error: "Enter a valid unit for width" }),
+	align: z.string().nonempty().refine(isAlignType, "Enter a valid alignment"),
+	bgColor: z.string().refine(colorValidator, "Enter a valid color or keep it blank"),
+	borderColor: z.string().refine(colorValidator, "Enter a valid color or keep it blank"),
+	shadowColor: z.string().refine(colorValidator, "Enter a valid color or keep it blank"),
+	rounded: z.boolean(),
 });
 
 function EditableImageSidebarSettings({
@@ -79,11 +117,18 @@ function EditableImageSidebarSettings({
 	editor,
 	at,
 }: Omit<EditableImageProps, "children"> & { editor: CustomEditor; at: Location }): React.ReactNode {
+	const defaultWidth = splitUnits(element.width);
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			url: element.srcUrl,
-			//align: element.align ?? "left",
+			url: prefixUrlWithSiteNameIfNecessary(element.srcUrl),
+			width: defaultWidth[0],
+			widthUnit: defaultWidth[1],
+			align: element.align ?? "left",
+			bgColor: element.bgColor ?? undefined,
+			borderColor: element.borderColor ?? undefined,
+			shadowColor: element.shadowColor ?? undefined,
+			rounded: element.rounded ?? false,
 		},
 	});
 
@@ -94,7 +139,12 @@ function EditableImageSidebarSettings({
 			editor,
 			{
 				srcUrl: values.url,
-				//align: values.align
+				width: joinNumberAndUnit([values.width, values.widthUnit]),
+				align: values.align,
+				bgColor: coreceEmptyOrTransparentToUndef(values.bgColor),
+				borderColor: coreceEmptyOrTransparentToUndef(values.borderColor),
+				shadowColor: coreceEmptyOrTransparentToUndef(values.shadowColor),
+				rounded: values.rounded,
 			},
 			{ at },
 		);
@@ -115,11 +165,12 @@ function EditableImageSidebarSettings({
 						</FormItem>
 					)}
 				/>
-				{/* <FormField
+				<UnitFieldEditor form={form} label="Width" valueField="width" unitField="widthUnit" />
+				<FormField
 					control={form.control}
 					name="align"
 					render={({ field: { onChange, ...field } }) => (
-						<FormItem>
+						<FormItem className="w-full">
 							<FormLabel>Alignment</FormLabel>
 							<FormControl>
 								<Select {...field} onValueChange={onChange}>
@@ -136,7 +187,80 @@ function EditableImageSidebarSettings({
 							<FormMessage className="w-100" />
 						</FormItem>
 					)}
-				/> */}
+				/>
+				<FormField
+					control={form.control}
+					name="rounded"
+					render={({ field }) => (
+						<FormItem className="flex flex-row items-start space-x-3 space-y-0 mt-1">
+							<FormControl>
+								<Checkbox checked={field.value} onCheckedChange={field.onChange} />
+							</FormControl>
+							<div className="space-y-1 leading-none">
+								<FormLabel>Rounded borders?</FormLabel>
+							</div>
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="bgColor"
+					render={({ field }) => (
+						<FormItem>
+							<div className="grid grid-cols-2 place-content-center mb-2 mt-2">
+								<div className="h-min self-center justify-self-end">
+									<FormLabel className="mr-1">Background Color</FormLabel>
+								</div>
+								<div>
+									<FormControl>
+										<ColorPicker {...field} useAlpha />
+									</FormControl>
+								</div>
+							</div>
+							<FormMessage className="w-100" />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name="borderColor"
+					render={({ field }) => (
+						<FormItem>
+							<div className="grid grid-cols-2 mb-2">
+								<div className="h-min self-center justify-self-end">
+									<FormLabel className="mr-1">Border Color</FormLabel>
+								</div>
+								<div>
+									<FormControl>
+										<ColorPicker {...field} useAlpha />
+									</FormControl>
+								</div>
+							</div>
+							<FormMessage className="w-100" />
+						</FormItem>
+					)}
+				/>
+
+				<FormField
+					control={form.control}
+					name="shadowColor"
+					render={({ field }) => (
+						<FormItem>
+							<div className="grid grid-cols-2 place-content-center">
+								<div className="h-min self-center justify-self-end">
+									<FormLabel className="mr-1">Shadow Color</FormLabel>
+								</div>
+								<div>
+									<FormControl>
+										<ColorPicker {...field} useAlpha />
+									</FormControl>
+								</div>
+							</div>
+							<FormMessage className="w-100" />
+						</FormItem>
+					)}
+				/>
 				<Button className="mt-2 mb-12 mx-auto" type="submit">
 					Apply
 				</Button>

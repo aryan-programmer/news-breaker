@@ -1,3 +1,4 @@
+import { TableElement } from "@/app/editor/types";
 import { Editor, Element, Location, Node, NodeEntry, Operation, Path, Point, Range, Transforms } from "slate";
 import { filledMatrix, isOfType, matrix } from "./utils";
 import { Edge, NodeEntryWithContext, SelectionMode } from "./utils/types";
@@ -12,6 +13,19 @@ export const TableCursor = {
 		});
 
 		return !!table;
+	},
+
+	getTableAndPath(editor: Editor, options: { at: Path }): [TableElement, Path] | undefined {
+		let pathV = options.at;
+		while (pathV.length > 0) {
+			const [node, path] = Editor.node(editor, pathV);
+			if (node === undefined) break;
+			if ("type" in node && node.type === "table") {
+				return [node as any as TableElement, path];
+			}
+			pathV = Path.parent(path);
+		}
+		return undefined;
 	},
 	/**
 	 * Moves the cursor to the cell above the current selection.

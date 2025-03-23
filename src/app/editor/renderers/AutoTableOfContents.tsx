@@ -4,6 +4,7 @@ import { useCallback } from "react";
 import { Transforms } from "slate";
 import { ReactEditor, useSlateStatic } from "slate-react";
 import { AutoTableOfContentsElement, CustomEditor, RenderElementAttributesProp } from "../types";
+import { isHeaderLevelNumber } from "../types.guard";
 
 export type AutoTableOfContentsProps = {
 	attributes: RenderElementAttributesProp;
@@ -30,7 +31,7 @@ export function AutoTableOfContents({ attributes, children, element }: AutoTable
 			Transforms.setNodes<AutoTableOfContentsElement>(
 				editor,
 				{
-					includeHeaderLevelUpto: iv === 1 || iv === 2 || iv === 3 ? iv : 3,
+					includeHeaderLevelUpto: isHeaderLevelNumber(iv) ? iv : 3,
 				},
 				{ at: path },
 			);
@@ -55,6 +56,9 @@ export function AutoTableOfContents({ attributes, children, element }: AutoTable
 						<SelectItem value="1">Heading 1</SelectItem>
 						<SelectItem value="2">Heading 2</SelectItem>
 						<SelectItem value="3">Heading 3</SelectItem>
+						<SelectItem value="4">Heading 4</SelectItem>
+						<SelectItem value="5">Heading 5</SelectItem>
+						<SelectItem value="6">Heading 6</SelectItem>
 					</SelectContent>
 				</Select>
 			</div>

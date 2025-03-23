@@ -6,13 +6,14 @@ import { ButtonGroup, ButtonGroupItem } from "@/components/ui/IconRadioGroup";
 import { Input } from "@/components/ui/Input";
 import { useStoreAsIs } from "@/hooks/useStore";
 import {
-	anchorXToJustifyContent,
-	anchorYToAlignItems,
+	anchorXToJustifyContentClass,
+	anchorYToAlignItemsClass,
 	colorValidator,
 	coreceEmptyOrTransparentToUndef,
 	coreceEmptyToUndef,
 	forwardFnDropAsync,
 	isNonNullAndNonEmpty,
+	prefixUrlWithSiteNameIfNecessary,
 } from "@/lib/utils";
 import { faAlignCenter, faAlignLeft, faAlignRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -51,16 +52,16 @@ export function FrontPageWithText({ attributes, children, element }: FrontPageWi
 	return (
 		<div className="aspect-a4 max-w-xl mx-auto h-auto flex items-start content-start relative" onClick={select}>
 			<div
-				className="absolute top-0 left-0 w-full h-full border-indigo-400 border-2 flex flex-col items-stretch justify-stretch"
+				className="absolute top-0 left-0 w-full h-full border-indigo-400 border-2 flex flex-col items-stretch justify-stretch  p-1"
 				style={element.textSectionBgColor == null || element.textSectionBgColor === "" ? {} : { backgroundColor: element.textSectionBgColor }}>
 				<div className="p-1 w-full z-10" {...attributes}>
 					{children as any}
 				</div>
 				{isNonNullAndNonEmpty(element.mainImageUrl) ? (
 					<div
-						className={`max-w-full max-h-full min-h-0 min-w-0 flex grow ${anchorXToJustifyContent(
+						className={`max-w-full max-h-full min-h-0 min-w-0 flex grow ${anchorXToJustifyContentClass(
 							element.mainImageSizeAndPosition?.anchorX,
-						)} ${anchorYToAlignItems(element.mainImageSizeAndPosition?.anchorY)}
+						)} ${anchorYToAlignItemsClass(element.mainImageSizeAndPosition?.anchorY)}
 						${element.useMainImageAsBg === true ? "absolute bottom-0 top-0 right-0 left-0" : ""}`}>
 						{/* eslint-disable-next-line @next/next/no-img-element*/}
 						<img
@@ -99,8 +100,8 @@ export function FrontPageWithTextSidebarSettings({
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			mainImageUrl: element.mainImageUrl ?? "",
-			logoImageUrl: element.logoImageUrl ?? "",
+			mainImageUrl: prefixUrlWithSiteNameIfNecessary(element.mainImageUrl) ?? "",
+			logoImageUrl: prefixUrlWithSiteNameIfNecessary(element.logoImageUrl) ?? "",
 			bgColor: element.textSectionBgColor ?? "",
 			useMainImageAsBg: element.useMainImageAsBg ?? false,
 			stretch: element.mainImageSizeAndPosition?.stretch ?? false,

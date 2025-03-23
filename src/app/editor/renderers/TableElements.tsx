@@ -13,6 +13,7 @@ export function TableElementRenderer({
 	attributes,
 	children,
 	className,
+	element,
 }: {
 	attributes: RenderElementAttributesProp;
 	element: TableElement;
@@ -23,7 +24,7 @@ export function TableElementRenderer({
 	const [isSelecting] = TableCursor.selection(editor);
 
 	return (
-		<Table className={cn(!!isSelecting ? "table-selection-none" : "", className)} {...attributes}>
+		<Table className={cn(!!isSelecting ? "table-selection-none" : "", className)} {...attributes} border={element.border}>
 			{children as any}
 		</Table>
 	);

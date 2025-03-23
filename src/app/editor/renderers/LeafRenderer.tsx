@@ -19,6 +19,10 @@ export function LeafRenderer({ attributes, children, leaf }: RenderLeafProps) {
 		children = <u>{children}</u>;
 	}
 
+	// if (leaf.smallCaps) {
+	// 	children = <span style={{ fontVariant: "small-caps" }}>{children}</span>;
+	// }
+
 	if (isNonNullAndNonEmpty(leaf.color)) {
 		children = <span style={{ color: leaf.color }}>{children}</span>;
 	}

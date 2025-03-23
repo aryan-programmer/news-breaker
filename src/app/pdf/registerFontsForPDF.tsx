@@ -397,20 +397,17 @@ function registerFontsForPDF() {
 				},
 			],
 		},
-	];
+	] as const satisfies Parameters<typeof Font.register>[0][];
 
 	fontData.forEach((font) => {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 		Font.register(font);
 	});
 
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 	Font.registerEmojiSource({
 		format: "png",
 		url: "https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/",
 	});
 
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 	Font.registerHyphenationCallback((word: string) => [word]);
 }
 

@@ -1,4 +1,5 @@
 import { StyleSheet } from "@react-pdf/renderer";
+import { Style } from "@react-pdf/stylesheet";
 import { monospacePDFFont, sansSerifPDFFont, serifPDFFont } from "../registerFontsForPDF";
 
 export const styles = StyleSheet.create({
@@ -151,6 +152,21 @@ export const styles = StyleSheet.create({
 		paddingLeft: 20,
 		paddingTop: "4px",
 	},
+	"tocField:heading-4": {
+		lineHeight: 1,
+		paddingLeft: 30,
+		paddingTop: "4px",
+	},
+	"tocField:heading-5": {
+		lineHeight: 1,
+		paddingLeft: 40,
+		paddingTop: "4px",
+	},
+	"tocField:heading-6": {
+		lineHeight: 1,
+		paddingLeft: 50,
+		paddingTop: "4px",
+	},
 	"tocFieldText:heading-1": {
 		fontSize: "1.5rem",
 		fontWeight: "semibold",
@@ -160,6 +176,9 @@ export const styles = StyleSheet.create({
 		fontWeight: "medium",
 	},
 	"tocFieldText:heading-3": {},
+	"tocFieldText:heading-4": {},
+	"tocFieldText:heading-5": {},
+	"tocFieldText:heading-6": {},
 
 	bold: {
 		fontWeight: "bold",
@@ -198,7 +217,7 @@ export const styles = StyleSheet.create({
 		fontSize: "2.5rem",
 		fontFamily: serifPDFFont,
 		fontWeight: "extrabold",
-		lineHeight: 1,
+		// lineHeight: 1,
 	},
 	"heading-2": {
 		//mb-3 text-4xl font-serif font-extrabold leading-none
@@ -207,7 +226,7 @@ export const styles = StyleSheet.create({
 		fontSize: "2.25rem",
 		fontFamily: serifPDFFont,
 		fontWeight: "bold",
-		lineHeight: 1,
+		// lineHeight: 1,
 	},
 	"heading-3": {
 		//mb-2 text-3xl font-serif font-extrabold leading-none
@@ -215,7 +234,30 @@ export const styles = StyleSheet.create({
 		marginBottom: "5px",
 		fontSize: "1.875rem",
 		fontFamily: serifPDFFont,
-		lineHeight: 1,
+		// lineHeight: 1,
+	},
+	"heading-4": {
+		//mb-2 text-3xl font-serif font-extrabold leading-none
+		marginTop: "2px",
+		marginBottom: "5px",
+		fontSize: "1.5rem",
+		fontFamily: serifPDFFont,
+		// lineHeight: 1,
+	},
+	"heading-5": {
+		//mb-2 text-3xl font-serif font-extrabold leading-none
+		marginTop: "1px",
+		marginBottom: "3px",
+		fontSize: "1.25rem",
+		fontFamily: serifPDFFont,
+		// lineHeight: 1,
+	},
+	"heading-6": {
+		//mb-2 text-3xl font-serif font-extrabold leading-none
+		marginTop: "1px",
+		marginBottom: "3px",
+		fontFamily: serifPDFFont,
+		// lineHeight: 1,
 	},
 
 	list: {
@@ -260,4 +302,4 @@ export const styles = StyleSheet.create({
 		backgroundColor: "rgba(241, 245, 249, 0.4)",
 		color: "#64748b",
 	},
-});
+} as const satisfies Record<string, Style>);

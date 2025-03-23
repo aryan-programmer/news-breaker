@@ -7,8 +7,8 @@ import { Ctx } from "../PDFContextData";
 import "../registerFontsForPDF";
 import { styles } from "./styles";
 
-export function PDFTextStringRenderer({ element, ctx }: { ctx: Ctx; element: CustomText }) {
-	let style: Style = {};
+export function PDFTextStringRenderer({ element, ctx, style: styleOrig }: { ctx: Ctx; element: CustomText; style?: Style }) {
+	let style: Style = styleOrig ?? {};
 	if (element.bold) style = { ...style, ...styles.bold };
 	if (element.italic) style = { ...style, ...styles.italic };
 	if (element.underline) style = { ...style, ...styles.underline };

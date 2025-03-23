@@ -64,7 +64,7 @@ export function coreceEmptyOrTransparentToUndef(v: string | null | undefined): s
 	return v == null || v.length === 0 || v === "#00000000" ? undefined : v;
 }
 
-export function anchorXToJustifyContent(anchorX: "left" | "right" | "center" | null | undefined) {
+export function anchorXToJustifyContentClass(anchorX: "left" | "right" | "center" | null | undefined) {
 	switch (anchorX) {
 		case "left":
 			return "justify-start";
@@ -78,7 +78,7 @@ export function anchorXToJustifyContent(anchorX: "left" | "right" | "center" | n
 	}
 }
 
-export function anchorYToAlignItems(anchorX: "top" | "bottom" | "center" | null | undefined) {
+export function anchorYToAlignItemsClass(anchorX: "top" | "bottom" | "center" | null | undefined) {
 	switch (anchorX) {
 		case "top":
 			return "items-start";
@@ -90,4 +90,17 @@ export function anchorYToAlignItems(anchorX: "top" | "bottom" | "center" | null 
 		default:
 			return "items-center";
 	}
+}
+
+export function prefixUrlWithSiteNameIfNecessary(url: string): string;
+export function prefixUrlWithSiteNameIfNecessary(url: string | null | undefined): string | null | undefined;
+export function prefixUrlWithSiteNameIfNecessary(url: string | null | undefined): string | null | undefined {
+	if (url == null) return url;
+	else if (url.startsWith("/")) return window.location.origin + url;
+	else return url;
+}
+
+export function isNumeric(value: string): boolean {
+	// @ts-expect-error Req see https://github.com/angular/angular/blob/4.3.x/packages/common/src/pipes/number_pipe.ts#L172
+	return !isNaN(value - parseFloat(value));
 }
