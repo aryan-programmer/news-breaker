@@ -402,7 +402,7 @@ export function get_demo_editor_value(): Descendant[] {
 				{
 					id: randomAddress(),
 					type: "card",
-					imageUrl: "/Images/GAC_2025 (1).jpg",
+					imageUrl: "/Images/GAC_2025_1.jpg",
 					borderAroundImage: true,
 					bgColor: "#ffa",
 					shadowColor: "#aaf",
@@ -414,7 +414,7 @@ export function get_demo_editor_value(): Descendant[] {
 				{
 					id: randomAddress(),
 					type: "card",
-					imageUrl: "/Images/GAC_2025 (2).jpg",
+					imageUrl: "/Images/GAC_2025_2.jpg",
 					borderAroundImage: true,
 					bgColor: "#ffa",
 					shadowColor: "#aaf",
@@ -426,7 +426,7 @@ export function get_demo_editor_value(): Descendant[] {
 				{
 					id: randomAddress(),
 					type: "card",
-					imageUrl: "/Images/GAC_2025 (3).jpg",
+					imageUrl: "/Images/GAC_2025_3.jpg",
 					borderAroundImage: true,
 					bgColor: "#ffa",
 					shadowColor: "#aaf",
@@ -438,7 +438,7 @@ export function get_demo_editor_value(): Descendant[] {
 				{
 					id: randomAddress(),
 					type: "card",
-					imageUrl: "/Images/GAC_2025 (4).jpg",
+					imageUrl: "/Images/GAC_2025_4.jpg",
 					borderAroundImage: true,
 					bgColor: "#ffa",
 					shadowColor: "#aaf",
@@ -450,7 +450,7 @@ export function get_demo_editor_value(): Descendant[] {
 				{
 					id: randomAddress(),
 					type: "card",
-					imageUrl: "/Images/GAC_2025 (5).jpg",
+					imageUrl: "/Images/GAC_2025_5.jpg",
 					borderAroundImage: true,
 					bgColor: "#ffa",
 					shadowColor: "#aaf",
@@ -577,7 +577,7 @@ export function get_demo_editor_value(): Descendant[] {
 						{
 							id: randomAddress(),
 							type: "card",
-							imageUrl: "/Images/eicVisit 14-2-25.jpg",
+							imageUrl: "/Images/eicVisit_14-2-25.jpg",
 							borderAroundImage: true,
 							bgColor: "#ffa",
 							borderColor: "#000",
@@ -588,7 +588,7 @@ export function get_demo_editor_value(): Descendant[] {
 						{
 							id: randomAddress(),
 							type: "card",
-							imageUrl: "/Images/eicVisit 7-3-25.jpg",
+							imageUrl: "/Images/eicVisit_7-3-25.jpg",
 							borderAroundImage: true,
 							bgColor: "#ffa",
 							borderColor: "#000",
