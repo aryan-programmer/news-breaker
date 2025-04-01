@@ -1,5 +1,7 @@
+/* eslint-disable jsx-a11y/alt-text */
 import { SectionBreakElement, SectionBreakHeaderFooterEditorElement } from "@/app/editor/types";
-import { Page, Text, View } from "@react-pdf/renderer";
+import { isNonNullAndNonEmpty } from "@/lib/utils";
+import { Image, Page, Text, View } from "@react-pdf/renderer";
 import { useMemo } from "react";
 import { Descendant } from "slate";
 import { Ctx } from "../PDFContextData";
@@ -20,6 +22,29 @@ function PDFHeaderFooterRenderer({ element, ctx }: { ctx: Ctx; element: SectionB
 				<PDFElementRenderer element={right} isLastElementInView ctx={ctx} />
 			</View>
 		</View>
+	);
+}
+
+function PDFBackgroundRenderer({ element, isOdd }: { ctx: Ctx; element: SectionBreakElement; isOdd: boolean }) {
+	const imageUrl = isOdd ? element.oddPageImageUrl : element.evenPageImageUrl;
+	const bgColor = isOdd ? element.oddPageBackgroundColor : element.evenPageBackgroundColor;
+	return isNonNullAndNonEmpty(imageUrl) ? (
+		<Image
+			style={{
+				width: "100%",
+				height: "100%",
+				backgroundColor: bgColor,
+			}}
+			source={imageUrl}
+		/>
+	) : (
+		<View
+			style={{
+				width: "100%",
+				height: "100%",
+				backgroundColor: bgColor,
+			}}
+		/>
 	);
 }
 
@@ -45,6 +70,11 @@ export function PDFSectionRenderer({
 	return (
 		<Page style={styles.sectionedBodyPage}>
 			<View
+				render={({ pageNumber }) => <PDFBackgroundRenderer element={section} isOdd={pageNumber % 2 === 1} ctx={ctx} />}
+				fixed
+				style={styles.fixedBackground}
+			/>
+			<View
 				render={({ pageNumber }) => <PDFHeaderFooterRenderer element={pageNumber % 2 === 0 ? evenHeader : oddHeader} isHeader ctx={ctx} />}
 				fixed
 				style={styles.fixedHeader}
@@ -60,6 +90,7 @@ export function PDFSectionRenderer({
 					}}
 				/>
 			) : null}
+
 			<View style={styles.sectionedBody}>{elements.map((c, i, arr) => itemRenderer(c, i === arr.length - 1, ctx))}</View>
 			<View
 				render={({ pageNumber }) => <PDFHeaderFooterRenderer element={pageNumber % 2 === 0 ? evenFooter : oddFooter} isHeader={false} ctx={ctx} />}

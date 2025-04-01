@@ -8,7 +8,7 @@ import { PDFTextLikeElementRenderer } from "./textLikeRenderers";
 export function PDFAutoTableOfContentsRenderer({ element, ctx }: { element: AutoTableOfContentsElement; ctx: Ctx }) {
 	return (
 		<View wrap style={styles.tocContainer}>
-			<Text style={{ ...styles["heading-1"], textAlign: "center", width: "100%", borderBottom: "2px dashed #faa" }}>Table of Contents</Text>
+			<Text style={{ ...styles["heading-1"], textAlign: "center", width: "100%", borderBottom: "4px dashed #f33" }}>Table of Contents</Text>
 			{ctx.pdfContext.headersList.map((header) => {
 				if (+header.type.split("-")[1] > element.includeHeaderLevelUpto) return null;
 				const pageNum = ctx.pdfContext.pageNumbers[header.id];

@@ -36,11 +36,15 @@ export function PDFDocument({
 	return (
 		<Document>
 			<PDFFrontPageRenderer element={first} ctx={ctx} />
-			{blanks.map((blank, i) => (
-				<Page style={styles.body} key={i}>
-					{blank.map((c, i, arr) => itemRenderer(c, i === arr.length - 1, ctx))}
-				</Page>
-			))}
+			{blanks.length === 0
+				? null
+				: blanks.map((blank, i) =>
+						blank.length === 0 ? null : (
+							<Page style={styles.body} key={i}>
+								{blank.map((c, i, arr) => itemRenderer(c, i === arr.length - 1, ctx))}
+							</Page>
+						),
+				  )}
 			{withSections.map(({ section, elements, isFirst }, i) => (
 				<PDFSectionRenderer section={section} elements={elements} key={i} ctx={ctx} isFirst={isFirst} />
 			))}

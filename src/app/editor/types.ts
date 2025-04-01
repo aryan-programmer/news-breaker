@@ -156,6 +156,10 @@ export type SectionBreakElement = CommonElement & {
 	type: "section-break";
 	pageNumberFormat: PageNumberFormatType;
 	resetPageNumbering: boolean;
+	oddPageBackgroundColor?: string;
+	evenPageBackgroundColor?: string;
+	oddPageImageUrl?: string;
+	evenPageImageUrl?: string;
 	children: [
 		SectionBreakHeaderFooterEditorElementGeneric<"odd-header">,
 		SectionBreakHeaderFooterEditorElementGeneric<"odd-footer">,

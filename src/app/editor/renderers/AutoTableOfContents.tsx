@@ -1,8 +1,8 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { randomAddress } from "@/lib/uniq-address";
-import { useCallback } from "react";
 import { Transforms } from "slate";
 import { ReactEditor, useSlateStatic } from "slate-react";
+import { useChangeCallbackWithTransformerForNode } from "../editor-utils";
 import { AutoTableOfContentsElement, CustomEditor, RenderElementAttributesProp } from "../types";
 import { isHeaderLevelNumber } from "../types.guard";
 
@@ -22,22 +22,15 @@ export function insertTableOfContents(editor: CustomEditor) {
 	});
 }
 
+function coreceHeaderLevel(v: string) {
+	const iv = +v;
+	return isHeaderLevelNumber(iv) ? iv : 3;
+}
+
 export function AutoTableOfContents({ attributes, children, element }: AutoTableOfContentsProps) {
 	const editor = useSlateStatic();
 	const path = ReactEditor.findPath(editor, element);
-	const onLevelChange = useCallback(
-		(v: string) => {
-			const iv = +v;
-			Transforms.setNodes<AutoTableOfContentsElement>(
-				editor,
-				{
-					includeHeaderLevelUpto: isHeaderLevelNumber(iv) ? iv : 3,
-				},
-				{ at: path },
-			);
-		},
-		[editor, path],
-	);
+	const onLevelChange = useChangeCallbackWithTransformerForNode(editor, path, "includeHeaderLevelUpto", coreceHeaderLevel, element);
 	return (
 		<div contentEditable={false} {...attributes}>
 			<h1 className="py-2 mb-2 text-5xl font-extrabold leading-none w-100 text-center bg-black text-white">Table of Contents</h1>

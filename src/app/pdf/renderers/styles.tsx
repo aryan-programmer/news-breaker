@@ -79,6 +79,13 @@ export const styles = StyleSheet.create({
 		fontFamily: sansSerifPDFFont,
 		fontSize: 12,
 	},
+	fixedBackground: {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+	},
 	fixedHeader: {
 		position: "absolute",
 		top: 0,
@@ -202,11 +209,12 @@ export const styles = StyleSheet.create({
 	},
 	lastParagraph: {},
 	blockquote: {
-		borderLeft: "2px solid #ddd",
+		borderLeft: "2px solid #000",
 		marginLeft: 0,
 		marginRight: 0,
 		paddingLeft: "10px",
-		color: "#aaa",
+		paddingRight: "10px",
+		color: "#000",
 		fontStyle: "italic",
 	},
 

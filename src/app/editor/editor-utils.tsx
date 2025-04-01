@@ -1,7 +1,8 @@
 "use client";
 import { getAddress, randomAddress } from "@/lib/uniq-address";
 import { DEMO_IMAGE_URL } from "@/lib/utils";
-import { Descendant, Editor, Element, Node, Path, Point, Element as SlateElement, Transforms } from "slate";
+import { useCallback } from "react";
+import { Descendant, Editor, Element, Location, Node, Path, Point, Element as SlateElement, Transforms } from "slate";
 import { EditorNormalizeOptions } from "slate/dist/interfaces/editor";
 import { ElementSettingsSidebarStore } from "./elements/ElementSettingsSidebar";
 import {
@@ -354,4 +355,28 @@ export function insertNodeSpecial<T extends Node>(editor: Editor, nodes: T, sett
 			},
 		]);
 	}
+}
+
+export function useChangeCallbackForNode<T extends Node, TKey extends keyof T>(editor: CustomEditor, path: Location, key: TKey, _unusedElem: T) {
+	return useCallback(
+		(v: T[TKey]) => {
+			Transforms.setNodes<T>(editor, { [key]: v } as unknown as Partial<T>, { at: path });
+		},
+		[editor, key, path],
+	);
+}
+
+export function useChangeCallbackWithTransformerForNode<T extends Node, TInput, TKey extends keyof T>(
+	editor: CustomEditor,
+	path: Location,
+	key: TKey,
+	fn: (v: TInput) => T[TKey],
+	_unusedElem: T,
+) {
+	return useCallback(
+		(v: TInput) => {
+			Transforms.setNodes<T>(editor, { [key]: fn(v) } as unknown as Partial<T>, { at: path });
+		},
+		[editor, fn, key, path],
+	);
 }

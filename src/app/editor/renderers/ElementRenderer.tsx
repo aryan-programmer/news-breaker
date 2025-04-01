@@ -77,7 +77,7 @@ export default function ElementRenderer(props: RenderElementProps) {
 				);
 			case "paragraph":
 				return (
-					<p className="mt-2" style={style} {...attributes}>
+					<p className="[&:not(:first-child)]:mt-2" style={style} {...attributes}>
 						{children}
 					</p>
 				);

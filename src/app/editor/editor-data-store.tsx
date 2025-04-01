@@ -13,7 +13,7 @@ export function get_demo_editor_value(): Descendant[] {
 			mainImageUrl: "/Images/LDCE_Main.jpg",
 			logoImageUrl: "/Images/LDCE_EC_Logo.png",
 			children: [
-				{ id: randomAddress(), type: "heading-1", align: "center", children: [{ text: "TempPermanent", code: true /*, smallCaps: true*/ }] },
+				{ id: randomAddress(), type: "heading-1", align: "center", children: [{ text: "TemPermanent", code: true /*, smallCaps: true*/ }] },
 				{
 					id: randomAddress(),
 					type: "heading-5",
@@ -26,7 +26,7 @@ export function get_demo_editor_value(): Descendant[] {
 					id: randomAddress(),
 					type: "heading-5",
 					children: [
-						{ text: "TempPermanent", code: true /*, smallCaps: true*/ },
+						{ text: "TemPermanent", code: true /*, smallCaps: true*/ },
 						{
 							text: " is an LDCE pseudo-e-Newsletter, providing insights into the advancements and achievements aligned with the institute's Vision and Mission.",
 						},
@@ -67,9 +67,14 @@ export function get_demo_editor_value(): Descendant[] {
 			},
 		},
 		{ id: randomAddress(), type: "paragraph", children: [{ text: "" }] },
+		generateSpecificSectionBreakElement("lower-roman", true, {
+			top: [[{ text: "" }], [{ text: "TemPermanent", code: true }], [{ text: "" }]],
+			bottomNotPage: [{ text: "1st April 2025" }],
+			bottomCenter: [{ text: "LDCE" }],
+		}),
 		{ type: "auto-toc", children: [{ text: "" }], id: randomAddress(), includeHeaderLevelUpto: 3 },
 		generateSpecificSectionBreakElement("upper-roman", true, {
-			top: [[{ text: "" }], [{ text: "TempPermanant", code: true }], [{ text: "" }]],
+			top: [[{ text: "" }], [{ text: "TemPermanent", code: true }], [{ text: "" }]],
 			bottomNotPage: [{ text: "1st April 2025" }],
 			bottomCenter: [{ text: "LDCE" }],
 		}),
@@ -283,7 +288,7 @@ export function get_demo_editor_value(): Descendant[] {
 		{ id: randomAddress(), type: "block-quote", children: [{ text: "When there is a will to fail, obstacles will be found." }] },
 		{ id: randomAddress(), type: "paragraph", align: "right", children: [{ text: " - John McCarthy" }] },
 		generateSpecificSectionBreakElement("numeric", true, {
-			top: [[{ text: "" }], [{ text: "TempPermanant", code: true }], [{ text: "" }]],
+			top: [[{ text: "" }], [{ text: "TemPermanent", code: true }], [{ text: "" }]],
 			bottomNotPage: [{ text: "1st April 2025" }],
 			bottomCenter: [{ text: "LDCE" }],
 		}),
