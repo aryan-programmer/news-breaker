@@ -6,7 +6,7 @@ import { create } from "zustand";
 import { recursiveTraverse } from "./editor-utils";
 import { generateSpecificSectionBreakElement } from "./renderers/SectionBreak";
 
-export function get_demo_editor_value(): Descendant[] {
+export function getFullDemoEditorValue(): Descendant[] {
 	return [
 		{
 			type: "front-page-with-text",
@@ -1467,6 +1467,30 @@ export function get_demo_editor_value(): Descendant[] {
 	];
 }
 
+export function getBlankEditorValue(): Descendant[] {
+	return [
+		{
+			type: "front-page-with-text",
+			children: [{ id: randomAddress(), type: "heading-1", align: "center", children: [{ text: "TemPermanent", code: true /*, smallCaps: true*/ }] }],
+			id: randomAddress(),
+		},
+		{ id: randomAddress(), type: "paragraph", children: [{ text: "" }] },
+		generateSpecificSectionBreakElement("lower-roman", true, {
+			top: [[{ text: "" }], [{ text: "TemPermanent", code: true }], [{ text: "" }]],
+			bottomNotPage: [{ text: "Date" }],
+			bottomCenter: [{ text: "Company" }],
+		}),
+		{ type: "auto-toc", children: [{ text: "" }], id: randomAddress(), includeHeaderLevelUpto: 3 },
+		generateSpecificSectionBreakElement("upper-roman", true, {
+			top: [[{ text: "" }], [{ text: "TemPermanent", code: true }], [{ text: "" }]],
+			bottomNotPage: [{ text: "Date" }],
+			bottomCenter: [{ text: "Company" }],
+		}),
+		{ id: randomAddress(), type: "heading-1", children: [{ text: "Title", underline: true }] },
+		{ id: randomAddress(), type: "paragraph", children: [{ text: "Paragraph" }] },
+	];
+}
+
 /** @see {isTableCellPercentageWidthsRecord} ts-auto-guard:type-guard */
 export type TableCellPercentageWidthsRecord = Readonly<Record<string, string>>;
 
@@ -1489,7 +1513,7 @@ export const useEditorStore = create<EditorStore>()(
 	// persist<EditorStore>(
 	(set, get) => ({
 		isFlexboxVisiblityOn: true,
-		children: get_demo_editor_value(),
+		children: getBlankEditorValue(),
 		tableCellPercentageWidths: {},
 		setChildren(value: Descendant[]) {
 			set({ children: value });

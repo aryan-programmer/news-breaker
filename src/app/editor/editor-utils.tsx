@@ -2,7 +2,7 @@
 import { getAddress, randomAddress } from "@/lib/uniq-address";
 import { DEMO_IMAGE_URL } from "@/lib/utils";
 import { useCallback } from "react";
-import { Descendant, Editor, Element, Location, Node, Path, Point, Element as SlateElement, Transforms } from "slate";
+import { Descendant, Editor, Element, Location, Node, Path, Element as SlateElement, Transforms } from "slate";
 import { EditorNormalizeOptions } from "slate/dist/interfaces/editor";
 import { ElementSettingsSidebarStore } from "./elements/ElementSettingsSidebar";
 import {
@@ -295,6 +295,7 @@ export function withNormalizedFrontPage(editor: CustomEditor) {
 				},
 				{ at: [1] },
 			);
+			return;
 		}
 		const nextNode = editor.children[1];
 		if (!(nextNode != null && Element.isElement(nextNode) && nextNode.type === "paragraph")) {
@@ -307,6 +308,7 @@ export function withNormalizedFrontPage(editor: CustomEditor) {
 				},
 				{ at: [1] },
 			);
+			return;
 		}
 
 		// Fall back to the original `normalize` to enforce other constraints.
@@ -314,30 +316,6 @@ export function withNormalizedFrontPage(editor: CustomEditor) {
 	};
 
 	return editor;
-}
-
-export function resetNodes(
-	editor: Editor,
-	options: {
-		nodes?: Node | Node[];
-		at?: Location;
-	} = {},
-): void {
-	const children = [...editor.children];
-
-	children.forEach((node) => editor.apply({ type: "remove_node", path: [0], node }));
-
-	if (options.nodes) {
-		const nodes = Node.isNode(options.nodes) ? [options.nodes] : options.nodes;
-
-		nodes.forEach((node, i) => editor.apply({ type: "insert_node", path: [i], node: node }));
-	}
-
-	const point = options.at && Point.isPoint(options.at) ? options.at : Editor.end(editor, []);
-
-	if (point) {
-		Transforms.select(editor, point);
-	}
 }
 
 export function insertNodeSpecial<T extends Node>(editor: Editor, nodes: T, settingsSidebarStore: ElementSettingsSidebarStore | null | undefined) {
@@ -379,4 +357,30 @@ export function useChangeCallbackWithTransformerForNode<T extends Node, TInput, 
 		},
 		[editor, fn, key, path],
 	);
+}
+
+export function withUniqueIds(editor: CustomEditor) {
+	const { normalize } = editor;
+
+	editor.normalize = (options?: EditorNormalizeOptions) => {
+		const map: { [key: string]: true } = {};
+		for (const [elem, path] of Node.elements(editor, {})) {
+			if ("type" in elem && Element.isElement(elem)) {
+				if (elem.id == null) {
+					Transforms.setNodes(editor, { id: randomAddress() }, { at: path });
+					return;
+				}
+				if (elem.id in map) {
+					console.log("Duplicate found: ", elem.id, path);
+					Transforms.setNodes(editor, { id: randomAddress() }, { at: path });
+					return;
+				}
+				map[elem.id] = true;
+			}
+		}
+		// Fall back to the original `normalize` to enforce other constraints.
+		normalize(options);
+	};
+
+	return editor;
 }

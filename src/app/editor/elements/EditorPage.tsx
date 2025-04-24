@@ -1,6 +1,6 @@
 "use client";
 import isHotkey from "is-hotkey";
-import { ChangeEvent, useCallback, useMemo, useRef } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createEditor, Descendant } from "slate";
 import { withHistory } from "slate-history";
 import { Editable, Slate, withReact } from "slate-react";
@@ -12,7 +12,7 @@ import { TooltipProvider } from "@/components/ui/Tooltip";
 import { useCallbackDropAsync } from "@/hooks/useCallbackDropAsync";
 import { useStoreAsIs } from "@/hooks/useStore";
 import { randomAddress } from "@/lib/uniq-address";
-import { DEMO_IMAGE_URL } from "@/lib/utils";
+import { DEMO_IMAGE_URL, isNonNullAndNonEmpty } from "@/lib/utils";
 import { TableCursor, TableEditor, withTable } from "@/slate-table";
 import {
 	fa1,
@@ -45,7 +45,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Menubar } from "@radix-ui/react-menubar";
 import { useNavigationGuard } from "next-navigation-guard";
-import { useRouter } from "next/navigation";
 import {
 	CardIcon,
 	EyeIcon,
@@ -57,9 +56,19 @@ import {
 	PageNumberIcon,
 } from "../../../components/ui/SVGIcons";
 import { withSimpleCopyPaste } from "../custom-copy-paste";
-import { EditorStore, pruneTableCellPercentageWidths, useEditorStore } from "../editor-data-store";
+import { showConfirmDialog } from "../dialogs/ConfirmDialog";
+import { DialogProvider, DialogStore, useDialogStore } from "../dialogs/DialogProvider";
+import { FilenameInputDialog } from "../dialogs/FilenameInputDialog";
+import {
+	EditorStore,
+	getBlankEditorValue,
+	getFullDemoEditorValue,
+	pruneTableCellPercentageWidths,
+	TableCellPercentageWidthsRecord,
+	useEditorStore,
+} from "../editor-data-store";
 import { isTableCellPercentageWidthsRecord } from "../editor-data-store.guard";
-import { insertNodeSpecial, resetNodes, toggleMark, withNormalizedCustomElements, withNormalizedFrontPage } from "../editor-utils";
+import { insertNodeSpecial, toggleMark, withNormalizedCustomElements, withNormalizedFrontPage, withUniqueIds } from "../editor-utils";
 import { insertTableOfContents } from "../renderers/AutoTableOfContents";
 import { insertCard } from "../renderers/CardRenderer";
 import { insertImage } from "../renderers/EditableImage";
@@ -90,10 +99,22 @@ const NAVIGATION_HOTKEYS = {
 	SHIFT_TAB: isHotkey("shift+tab"),
 };
 
-export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
+export function EditorPageSub({
+	editorStore,
+	dialogStore,
+	initialValue,
+	onShowDemoPage,
+	onFileReset,
+	onUpload,
+}: {
+	dialogStore: DialogStore;
+	editorStore: EditorStore;
+	initialValue: Descendant[];
+	onShowDemoPage: () => void;
+	onFileReset: () => void;
+	onUpload: (v: { children: Descendant[]; tableCellPercentageWidths: TableCellPercentageWidthsRecord }) => void;
+}) {
 	const settingsSidebarStore = useStoreAsIs(useElementSettingsSidebarStore);
-
-	const router = useRouter();
 
 	useNavigationGuard({
 		enabled: process.env.NODE_ENV === "production",
@@ -104,35 +125,17 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 
 	const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-	// const [shouldInsertAfter, setShouldInsertAfter] = useState(true);
-
 	const editor = useMemo(() => {
-		const res = withTable(withNormalizedFrontPage(withNormalizedCustomElements(withHistory(withSimpleCopyPaste(withReact(createEditor()))))), {});
-		// Object.defineProperty(res, "shouldInsertAfter", {
-		// 	get() {
-		// 		return shouldInsertAfter;
-		// 	},
-		// 	set(val: boolean) {
-		// 		setShouldInsertAfter(val);
-		// 	},
-		// 	configurable: true,
-		// });
+		const res = withUniqueIds(
+			withTable(withNormalizedFrontPage(withNormalizedCustomElements(withHistory(withSimpleCopyPaste(withReact(createEditor()))))), {}),
+		);
 		return res;
 	}, []);
 
-	// useEffect(() => {
-	// 	Object.defineProperty(editor, "shouldInsertAfter", {
-	// 		get() {
-	// 			return shouldInsertAfter;
-	// 		},
-	// 		set(val: boolean) {
-	// 			setShouldInsertAfter(val);
-	// 		},
-	// 		configurable: true,
-	// 	});
-	// }, [editor, shouldInsertAfter]);
-
-	const initialValue = useMemo(() => editorStore.children, [editorStore]);
+	useEffect(() => {
+		editorStore.setChildren(initialValue);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const onEditorValueChange = useCallback(
 		(value: Descendant[]) => {
@@ -158,20 +161,38 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 
 	const onFlexboxVisibilitySwitch = useCallback(() => editorStore.setIsFlexboxVisiblityOn(!editorStore.isFlexboxVisiblityOn), [editorStore]);
 
-	const onFileDownload = useCallback(() => {
+	const onFileDownload = useCallbackDropAsync(async () => {
 		const element = document.createElement("a");
+		let fileName = await dialogStore.showDialog<string | null | undefined>({
+			title: "Specify a file name",
+			description: "Enter a file name for the file to save to the downloads folder.",
+			element(resolve, _reject) {
+				return {
+					content: <FilenameInputDialog resolve={resolve} />,
+					closeHandler() {
+						resolve(null);
+					},
+				};
+			},
+		});
+		if (!isNonNullAndNonEmpty(fileName)) {
+			return;
+		}
+		if (!fileName.endsWith(".json")) {
+			fileName += ".json";
+		}
+
 		const tableCellPercentageWidths = pruneTableCellPercentageWidths(editor.children, editorStore.tableCellPercentageWidths);
-		element.setAttribute(
-			"href",
-			"data:text/plain;charset=utf-8," +
-				encodeURIComponent(
-					JSON.stringify({
-						children: editor.children,
-						tableCellPercentageWidths,
-					}),
-				),
-		);
-		element.setAttribute("download", `File-${randomAddress()}.json`);
+		const uriContent =
+			"data:application/json;charset=utf-8," +
+			encodeURIComponent(
+				JSON.stringify({
+					children: editor.children,
+					tableCellPercentageWidths,
+				}),
+			);
+		element.setAttribute("href", uriContent);
+		element.setAttribute("download", fileName);
 
 		element.style.display = "none";
 		document.body.appendChild(element);
@@ -181,7 +202,7 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 		document.body.removeChild(element);
 
 		editorStore.overwriteTableCellPercentageWidths(tableCellPercentageWidths);
-	}, [editor.children, editorStore]);
+	}, [dialogStore, editor.children, editorStore]);
 
 	const onFileUploadButtonClick = useCallback(() => {
 		const curr = fileInputRef.current;
@@ -197,30 +218,28 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 			const jsonData = JSON.parse(await file.text()) as unknown;
 			if (jsonData == null || typeof jsonData !== "object") return;
 			if ("children" in jsonData) {
-				const data = jsonData.children as Descendant[];
-				resetNodes(editor, { nodes: data });
-				editorStore.setChildren(data);
+				const children = jsonData.children as Descendant[];
 				if ("tableCellPercentageWidths" in jsonData) {
-					const tableCellPercentageWidths = jsonData.tableCellPercentageWidths;
-					if (!isTableCellPercentageWidthsRecord(tableCellPercentageWidths)) editorStore.overwriteTableCellPercentageWidths({});
-					else editorStore.overwriteTableCellPercentageWidths(pruneTableCellPercentageWidths(data, tableCellPercentageWidths));
+					const data = jsonData.tableCellPercentageWidths;
+					onUpload({
+						children,
+						tableCellPercentageWidths: isTableCellPercentageWidthsRecord(data) ? data : {},
+					});
+				} else {
+					onUpload({
+						children,
+						tableCellPercentageWidths: {},
+					});
 				}
 			}
 		},
-		[editor, editorStore],
+		[onUpload],
 	);
 
 	const onFileExportToPDF = useCallbackDropAsync(async () => {
 		const fileURL = URL.createObjectURL(await multiPassRender(editor.children, editorStore.tableCellPercentageWidths));
 		window.open(fileURL);
 	}, [editor.children, editorStore.tableCellPercentageWidths]);
-
-	const onFileReset = useCallback(() => {
-		// const value = get_demo_editor_value();
-		// editorStore.setChildren(value);
-		// resetNodes(editor, { nodes: value });
-		router.refresh();
-	}, [router]);
 
 	return (
 		<div className="w-full">
@@ -347,6 +366,9 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 							<DropdownMenuItem onSelect={onFileReset} variant="destructive-outline">
 								<FontAwesomeIcon icon={faFileCircleXmark} /> New File
 							</DropdownMenuItem>
+							<DropdownMenuItem onSelect={onShowDemoPage} variant="destructive-outline">
+								<FontAwesomeIcon icon={faFileCircleXmark} /> Show full demo
+							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</Menubar>
@@ -408,14 +430,74 @@ export function EditorPageSub({ editorStore }: { editorStore: EditorStore }) {
 	);
 }
 
+async function showOverwriteConfirmDialog(dialogStore: DialogStore | null | undefined) {
+	if (dialogStore == null) {
+		return false;
+	}
+	return await showConfirmDialog(dialogStore, {
+		title: "You have unsaved changes that will be lost.",
+		description: "Are you sure you want to overwrite your current file?",
+		yes: "Yes, overwrite",
+		no: "No, cancel overwrite and keep the current file",
+	});
+}
+
 export function EditorPage() {
+	const dialogStore = useStoreAsIs(useDialogStore);
 	const editorStore = useStoreAsIs(useEditorStore);
-	return editorStore == null ? (
+	const [key, setKey] = useState(randomAddress());
+	const [initialValue, setInitialValue] = useState(null as Descendant[] | null);
+
+	useEffect(() => {
+		if (editorStore != null && initialValue == null) {
+			setInitialValue(editorStore.children);
+		}
+	}, [editorStore, initialValue]);
+
+	const onFileReset = useCallbackDropAsync(async () => {
+		if ((await showOverwriteConfirmDialog(dialogStore)) !== true) {
+			return;
+		}
+		setInitialValue(getBlankEditorValue());
+		setKey(randomAddress());
+	}, [dialogStore]);
+
+	const onShowDemoPage = useCallbackDropAsync(async () => {
+		if ((await showOverwriteConfirmDialog(dialogStore)) !== true) {
+			return;
+		}
+		setInitialValue(getFullDemoEditorValue());
+		setKey(randomAddress());
+	}, [dialogStore]);
+
+	const onUpload = useCallbackDropAsync(
+		async (v: { children: Descendant[]; tableCellPercentageWidths: TableCellPercentageWidthsRecord }) => {
+			if ((await showOverwriteConfirmDialog(dialogStore)) !== true) {
+				return;
+			}
+			setInitialValue(v.children);
+			setKey(randomAddress());
+			editorStore?.overwriteTableCellPercentageWidths(v.tableCellPercentageWidths);
+		},
+		[dialogStore, editorStore],
+	);
+
+	return editorStore == null || initialValue == null || dialogStore == null ? (
 		<></>
 	) : (
 		<TooltipProvider>
 			<ElementSettingsSidebarProvider>
-				<EditorPageSub editorStore={editorStore} />{" "}
+				<DialogProvider>
+					<EditorPageSub
+						key={key}
+						dialogStore={dialogStore}
+						editorStore={editorStore}
+						initialValue={initialValue}
+						onFileReset={onFileReset}
+						onShowDemoPage={onShowDemoPage}
+						onUpload={onUpload}
+					/>
+				</DialogProvider>
 			</ElementSettingsSidebarProvider>
 		</TooltipProvider>
 	);
